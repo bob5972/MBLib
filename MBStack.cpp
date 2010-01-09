@@ -123,7 +123,7 @@ void MBStack<itemType>::pop (itemType &item)
 	if (mySize <=0) {	
 		PANIC("Attempted to pop an empty stack");
 	}
-	item = next();
+	item = top();
 	pop();
 }
 

@@ -29,7 +29,7 @@ const MBSet<itemType>& MBSet<itemType>::operator = (const MBSet & set)
 {
 	myItems = set.myItems;
 	mySize = set.mySize;
-	isUsed(s.isUsed);
+	isUsed(set.isUsed);
     return *this;
 }
 
@@ -118,7 +118,7 @@ bool MBSet<itemType>::remove(const itemType &t)
 template<class itemType>
 const MBVector<itemType>& MBSet<itemType>:: items() const
 {
-	apvector<itemType> oup(mySize);
+	MBVector<itemType> oup(mySize);
 	int x(0),seen(0);
 	while (seen<mySize) {
 		if (isUsed[x]) {

@@ -44,7 +44,7 @@ void DebugPrintLogHelper(const char* message, const char* file, int line)
 		return;
 	}
 	
-	if(MJB_DEBUG_STD_LOG_MESSAGES) {
+	if(MJB_DEBUG_LOG_MESSAGES) {
 		//NOT_IMPLEMENTED();
 	}
 }

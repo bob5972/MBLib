@@ -1,10 +1,10 @@
+#ifndef MJBASSERT_H_201001091506
+#define MJBASSERT_H_201001091506
 
 #include <stdio.h>
 #include <stdlib.h>
 
 #include "mjbassert.h"
-
-
 
 inline void AssertionHelper(int x, const char* file, int line)
 {
@@ -25,3 +25,5 @@ inline void ErrorHelper(const char* message, const char* file, int line)
 	fprintf(stderr, "Error %s:%d: %s\n", file, line, message);
 	exit(1);
 }
+
+#endif //MJBASSERT_H_201001091506

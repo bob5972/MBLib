@@ -45,7 +45,5 @@ typedef unsigned char byte;
 #endif
 
 
-typedef int bool;
-
 #endif //TYPES_H_200910301741
 

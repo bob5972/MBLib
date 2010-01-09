@@ -1,6 +1,8 @@
 #ifndef MBStack_H_201001091426
 #define MBStack_H_201001091426
 
+#include "mjbtypes.h"
+
 template<class itemType>
 class MBStack
 {

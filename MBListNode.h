@@ -1,6 +1,8 @@
 #ifndef MBListNode_H_201001091425
 #define MBListNode_H_201001091425
 
+#include "mjbtypes.h"
+
 template<class itemType>
 struct MBListNode
 {

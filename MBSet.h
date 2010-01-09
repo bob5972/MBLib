@@ -1,6 +1,8 @@
 #ifndef MBSET_H_201001091440
 #define MBSET_H_201001091440
 
+// NOT TESTED
+
 #include "MBVector.h"
 
 template <class itemType>
@@ -25,8 +27,8 @@ class MBSet
 		const MBVector<itemType>& items() const;
 		
 	private:
-		apvector<itemType> myItems;
-		apvector<bool> isUsed;
+		MBVector<itemType> myItems;
+		MBVector<bool> isUsed;
 		
 		int mySize;
 };

@@ -1,7 +1,10 @@
 #ifndef MBSTRING_H_201001091354
 #define MBSTRING_H_201001091354
 
-#include <iostream.h>
+#include <istream>
+#include <ostream>
+
+using namespace std;
 
 class MBString
 {
@@ -10,6 +13,8 @@ class MBString
     	
     	MBString();
     	
+    	//size-only constructor
+    	explicit MBString(int size);
         MBString(int size, char fill);        
         //Construct from C-String
         MBString(const char * s);        
@@ -50,10 +55,7 @@ class MBString
         const MBString & operator += ( char ch );
         //Append char
     
-    private:
-    	//size-only constructor
-    	explicit MBString(int size); 
-    	
+    private:    	
     	int myLength;
     	int myCapacity;
     	char * myChars;

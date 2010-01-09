@@ -11,7 +11,7 @@ MBListNode<itemType>::MBListNode(const itemType &newValue)
 }
 
 template<class itemType>
-MBListNode<itemType>::MBListNode(const itemType &newValue, MBNode<itemType> *targetNode)
+MBListNode<itemType>::MBListNode(const itemType &newValue, MBListNode<itemType> *targetNode)
 :	next(targetNode),
 	value(newValue)
 {
@@ -19,7 +19,7 @@ MBListNode<itemType>::MBListNode(const itemType &newValue, MBNode<itemType> *tar
 
 template<class itemType>
 MBListNode<itemType>::MBListNode()
-:	nextNode(NULL)
+:	next(NULL)
 {
 }
 
