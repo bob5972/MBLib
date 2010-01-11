@@ -6,7 +6,10 @@ CPPFLAGS = -Wall -g
 
 OBJECTS=mjbassert.o mjbdebug.o MBString.o MBVector.o MBStack.o MBQueue.o MBSet.o MBListNode.o
 
-all: ${OBJECTS}
+all: MBLib.a
+
+MBLib.a: ${OBJECTS}
+	ar cr MBLib.a ${OBJECTS}
 
 mjbdebug.o: mjbdebug.cpp mjbdebug.h
 

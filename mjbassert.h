@@ -2,6 +2,9 @@
 #ifndef MJBASSERT_H_201001091250
 #define MJBASSERT_H_201001091250
 
+#include "config.h"
+#include "mjbdebug.h"
+
 #ifdef MJB_ENABLE_ASSERTIONS
 	#ifdef MJB_DISABLE_ASSERTIONS
 		#warning Conflicting assertion behavior specified.  Defaulting to enabled.

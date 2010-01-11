@@ -1,8 +1,7 @@
 #ifndef MJBDEBUG_H_201001091239
 #define MJBDEBUG_H_201001091239
 
-//should be pulled form a config header
-#define MJB_ENABLE_DEBUG
+#include "config.h"
 
 //backtraces and logfile not implemented
 

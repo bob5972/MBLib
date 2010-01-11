@@ -2,6 +2,8 @@
 #ifndef TYPES_H_200910301741
 #define TYPES_H_200910301741
 
+#include "config.h"
+
 #include <limits.h>
 
 #ifndef NULL
