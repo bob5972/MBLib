@@ -54,6 +54,9 @@ class MBString
         //Append str
         const MBString & operator += ( char ch );
         //Append char
+        
+    //Utility
+    	static MBString toString(int x);
     
     private:    	
     	int myLength;
@@ -81,9 +84,6 @@ MBString operator + ( const MBString & lhs, const MBString & rhs );
 MBString operator + ( char ch, const MBString & str );
 MBString operator + ( const MBString & str, char ch );
 
-
-// util functions
-MBString toString(int x);
 
 
 #endif //MBSTRING_H_201001091354

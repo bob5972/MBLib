@@ -423,7 +423,7 @@ MBString operator + ( const MBString & str, char ch )
 }
 
 //Not terribly efficient, but effective.
-MBString toString(int x)
+MBString MBString::toString(int x)
 {
 	MBString oup;
 	bool negative = false;
