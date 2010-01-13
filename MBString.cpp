@@ -425,6 +425,10 @@ MBString operator + ( const MBString & str, char ch )
 //Not terribly efficient, but effective.
 MBString MBString::toString(int x)
 {
+	if( x == 0) {
+		return "0";
+	}
+	
 	MBString oup;
 	bool negative = false;
 	if(x <0) {
