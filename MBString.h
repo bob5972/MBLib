@@ -79,7 +79,11 @@ bool operator >= ( const MBString & lhs, const MBString & rhs );
 // concatenation operator +
 MBString operator + ( const MBString & lhs, const MBString & rhs );
 MBString operator + ( char ch, const MBString & str );
-MBString operator + ( const MBString & str, char ch );    	
+MBString operator + ( const MBString & str, char ch );
+
+
+// util functions
+MBString toString(int x);
 
 
 #endif //MBSTRING_H_201001091354

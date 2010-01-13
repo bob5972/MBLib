@@ -421,3 +421,38 @@ MBString operator + ( const MBString & str, char ch )
 	oup += ch;
 	return oup;
 }
+
+//Not terribly efficient, but effective.
+MBString toString(int x)
+{
+	MBString oup;
+	bool negative = false;
+	if(x <0) {
+		negative=true;
+		x = -x;
+	}
+	
+	int digit;
+	char c;
+	
+	while(x>0) {
+		digit = x%10;
+		c = '0' + digit;
+		oup += c;
+		x-= digit;
+		x/=10;
+	}
+	
+	int size = oup.length();
+	for(int x=0;x<size/2;x++) {
+		c = oup[x];
+		oup[x] = oup[size-x-1];
+		oup[size-x-1] = c;
+	}
+	
+	if(negative) {
+		oup = '-'+oup;
+	}
+	
+	return oup;
+}
