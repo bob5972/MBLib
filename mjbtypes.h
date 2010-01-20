@@ -30,6 +30,8 @@
 	#define false 0
 #endif
 
+typedef bool boolean;
+
 typedef unsigned char byte;
 
 //autodetect this or require it?
