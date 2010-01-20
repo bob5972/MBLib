@@ -4,19 +4,32 @@
 
 
 BitArray::BitArray()
-:myBits(NULL),
- mySize(0),
- myFill(FALSE)
-{ }
+{
+	mySize = 0;
+	myArrSize = DEFAULT_SPACE;
+	myFill = FALSE;
+	myBits = new uint32[myArrSize];
+	
+	int bFill = 0;
+	
+	for(int x=0;x<myArrSize;x++) {
+		myBits[x] = bFill;
+	}
+}
+	
 
 BitArray::BitArray(int size)
 {
-	ASSERT(size > 0);
+	ASSERT(size >= 0);
 	
 	myFill = FALSE;
 	mySize = size;
 
 	myArrSize = mySize/UNIT_SIZE+((mySize%UNIT_SIZE>0)?1:0);
+	
+	if(myArrSize < DEFAULT_SPACE) {
+		myArrSize = DEFAULT_SPACE;
+	}
 	
 	myBits = new uint32[myArrSize];
 	
@@ -29,13 +42,19 @@ BitArray::BitArray(int size)
 
 BitArray::BitArray(int size, bool initial)
 {
-	ASSERT(size > 0);
+	ASSERT(size >= 0);
 	
 	myFill = initial;
 	mySize = size;
 	
 	myArrSize = mySize/UNIT_SIZE+((mySize%UNIT_SIZE>0)?1:0);
+	
+	if(myArrSize < DEFAULT_SPACE) {
+		myArrSize = DEFAULT_SPACE;
+	}
+	
 	myBits = new uint32[myArrSize];
+	
 	int bFill = 0;
 	if(myFill) {
 		bFill = ALL_ON;
@@ -57,6 +76,35 @@ BitArray::BitArray(const BitArray &a)
 	for(int x=0;x<myArrSize;x++) {
 		myBits[x] = a.myBits[x];
 	}
+}
+
+BitArray::~BitArray()
+{
+	delete myBits;
+	myBits = NULL;
+}
+
+void BitArray::consume(BitArray& a)
+{
+	delete myBits;
+	myBits = a.myBits;
+	mySize = a.mySize;
+	myArrSize = a.myArrSize;
+	
+	a.myArrSize = DEFAULT_SPACE;
+	a.myBits = new uint32[a.myArrSize];
+	a.mySize = 0;
+}
+
+
+void BitArray::makeEmpty()
+{
+	mySize = 0;
+}	
+
+bool BitArray::operator [] (int x) const
+{
+	return get(x);
 }
 
 bool BitArray::getFillValue() const

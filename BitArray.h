@@ -12,6 +12,7 @@ class BitArray
 		BitArray(const BitArray &a);
 		explicit BitArray(int size);
 		BitArray(int size, bool initial);
+		~BitArray();
 		
 		bool getFillValue() const;
 		void setFillValue(bool f);
@@ -32,9 +33,15 @@ class BitArray
 		
 		int size() const;
 		void resize(int length);
+		void makeEmpty();
 		
-		bool& operator [] (int x);
 		bool operator [] (int x) const;
+		
+		//This is a weird function.
+		//It empties this array, copies over everything from a,
+		//  and then leaves a empty.
+		//Fill is left unchanged
+		void consume(BitArray & a);
 	
 	
 	
@@ -46,6 +53,7 @@ class BitArray
 		
 		static const int ALL_ON = 0xFFFFFFFF;
 		static const int UNIT_SIZE = 32;
+		static const int DEFAULT_SPACE = 1;
 	
 	
 };

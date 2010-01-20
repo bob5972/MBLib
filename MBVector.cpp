@@ -51,6 +51,26 @@ MBVector<itemType>::~MBVector()
 }
 
 template <class itemType>
+void MBVector<itemType>::makeEmpty()
+{
+	resize(0);
+}
+
+template <class itemType>
+void MBVector<itemType>::consume(MBVector<itemType> &v)
+{
+	makeEmpty();
+	
+	myItems = v.myItems;
+	mySize = v.mySize;
+	myCapacity = v.mySize;
+	
+	v.myItems = NULL;
+	v.mySize = 0;
+	v.myCapacity = 0;
+}
+
+template <class itemType>
 const MBVector<itemType> &
 	MBVector<itemType>::operator = (const MBVector<itemType> & rhs)
 {
@@ -119,12 +139,14 @@ void MBVector<itemType>::resize(int newSize)
 	}
 
 	if (newSize == 0) {
-		if (myCapacity > 0)
+		if (myCapacity > 0) {
 			delete[] myItems;
+		}
 		myItems = NULL;
 		mySize = myCapacity = newSize;//=0
 		return;
 	}
+	
 	itemType *t = new itemType[newSize];
 
 	for(int x=0;x<mySize;x++) {

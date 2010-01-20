@@ -28,6 +28,7 @@ class MBVector
 		int length() const;
 		int size() const;
 		bool isEmpty() const;
+		void makeEmpty();
 		
 	//Indexing
 		itemType & operator [ ] (int index);
@@ -57,6 +58,11 @@ class MBVector
 		//returns the item on the end of the vector and decreases the size by 1
 		//ie (the last item pushed)
 		const itemType & pop();
+		
+		//This is a weird function.
+		//It empties this vector, copies over everything from
+		//  v, and then empties v.
+		void consume(MBVector<itemType> &v);
 		
 
 		
