@@ -4,7 +4,7 @@ CXX=g++
 CPPFLAGS = -Wall -g 
 #CPPFLAGS  = -O3 -fomit-frame-pointer
 
-OBJECTS=mjbassert.o mjbdebug.o MBString.o MBVector.o MBStack.o MBQueue.o MBSet.o MBListNode.o BitArray.o IntMap.o
+OBJECTS=mjbassert.o mjbdebug.o MBString.o MBVector.o MBStack.o MBQueue.o MBSet.o BitArray.o IntMap.o
 
 all: MBLib.a
 
