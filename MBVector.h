@@ -31,6 +31,8 @@ class MBVector
 		void makeEmpty();
 		
 	//Indexing
+		const itemType & get(int index) const;
+		itemType& get(int index);
 		itemType & operator [ ] (int index);
 		const itemType & operator [ ] (int index) const;
 		

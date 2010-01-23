@@ -107,6 +107,26 @@ int MBVector<itemType>::size() const
 }
 
 template <class itemType>
+itemType & MBVector<itemType>::get (int x)
+{
+	if (x >= mySize || x < 0) {
+		PANIC("Illegal vector index.");
+	}
+	
+	return myItems[x];
+}
+
+
+template<class itemType>
+const itemType & MBVector<itemType>::get (int x) const
+{
+	if (x >= mySize || x < 0) {
+		PANIC("Illegal vector index.");
+	}
+	return myItems[x];
+}
+
+template <class itemType>
 itemType & MBVector<itemType>::operator [] (int x)
 {
 	if (x >= mySize || x < 0) {
