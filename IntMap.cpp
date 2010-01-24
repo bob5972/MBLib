@@ -267,7 +267,7 @@ void IntMap::rehash()
 	myFreeSpace = mySpace;
 	
 	for(int x=0;x<oldKeys.size();x++) {
-		if(oldFull.get(x) && myActiveFlags.get(x)) {
+		if(oldFull.get(x) && oldActive.get(x)) {
 			put(oldKeys[x],oldValues[x]);
 		}
 	}

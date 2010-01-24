@@ -8,6 +8,12 @@ OBJECTS=mjbassert.o mjbdebug.o MBString.o MBVector.o MBStack.o MBQueue.o MBSet.o
 
 all: MBLib.a
 
+test: test.bin
+	./test.bin
+
+test.bin: MBLib.a test.cpp
+	g++ -g test.cpp MBLib.a -o test.bin
+
 MBLib.a: ${OBJECTS}
 	ar cr MBLib.a ${OBJECTS}
 
@@ -32,7 +38,7 @@ BitArray.o: BitArray.cpp BitArray.h
 IntMap.o: IntMap.cpp IntMap.h
 
 clean:
-	rm -f ${OBJECTS} MBLib.a
+	rm -f ${OBJECTS} MBLib.a test.bin
 
 #test: all
 #	./runTests.sh
