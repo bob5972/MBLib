@@ -230,12 +230,16 @@ void BitArray::resetRange(int first, int last)
 
 void BitArray::setAll()
 {
-	setRange(0,mySize-1);
+	for(int x=0;x<myArrSize;x++) {
+		myBits[x] = ALL_ON;
+	}
 }
 
 void BitArray::resetAll()
 {
-	resetRange(0,mySize-1);
+	for(int x=0;x<myArrSize;x++) {
+		myBits[x] = 0;
+	}
 }
 
 void BitArray::put(int i, bool b)
