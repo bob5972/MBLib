@@ -237,7 +237,7 @@ void IntMap::put(int key, int value)
 
 void IntMap::rehash()
 {
-	int newSpace = newSpace*2 + 1;
+	int newSpace = mySpace*2 + 1;
 	
 	while(mySize/((double)newSpace) > myLoad) {
 		newSpace = newSpace*2 + 1;
