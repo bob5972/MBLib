@@ -83,6 +83,7 @@ MBString::MBString(const MBString & str)
 MBString::~MBString()
 {
 	delete [] myChars;
+	myChars = NULL;
 }
 
 const MBString&  MBString::operator = (const MBString & str)
