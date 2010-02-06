@@ -1,5 +1,5 @@
-#ifndef MB_VECTOR_CPP
-#define MB_VECTOR_CPP
+#ifndef MBVector_CPP_201002052320
+#define MBVector_CPP_201002052320
 
 #include <stdlib.h>
 #include "MBVector.h"
@@ -268,4 +268,4 @@ int MBVector<itemType>::trim()
 	return oup;
 }
 
-#endif
+#endif //MBVector_CPP_201002052320
