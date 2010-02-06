@@ -33,6 +33,4 @@ inline void PanicHelper(const char* message, const char* file, int line);
 
 inline void ErrorHelper(const char* message, const char* file, int line);
 
-#include "mjbassert.cpp"
-
 #endif //MJBASSERT_H_201001091250
