@@ -27,10 +27,12 @@
 
 #define ERROR(msg) { ErrorHelper( (msg), __FILE__, __LINE__); }
 
-void AssertionHelper( int x , const char* file, int line);
+inline void AssertionHelper( int x , const char* file, int line);
 
-void PanicHelper(const char* message, const char* file, int line);
+inline void PanicHelper(const char* message, const char* file, int line);
 
-void ErrorHelper(const char* message, const char* file, int line);
+inline void ErrorHelper(const char* message, const char* file, int line);
+
+#include "mjbassert.cpp"
 
 #endif //MJBASSERT_H_201001091250

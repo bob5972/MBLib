@@ -1,3 +1,6 @@
+#ifndef MJBASSERT_CPP_201001091506
+#define MJBASSERT_CPP_201001091506
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -23,3 +26,4 @@ inline void ErrorHelper(const char* message, const char* file, int line)
 	exit(1);
 }
 
+#endif //MJBASSERT_CPP_201001091506
