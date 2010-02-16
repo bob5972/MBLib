@@ -251,7 +251,8 @@ const MBString& MBString::operator += ( const MBString & str )
 {
 	if (myCapacity < myLength + str.myLength+1) {
 		char* temp = myChars;
-		while (myCapacity <myLength + str.myLength) {
+		while (myCapacity <myLength + str.myLength+1) {
+			ASSERT(myCapacity > 0);
 			myCapacity *= 2;
 		}
 		myChars = new char[myCapacity];
@@ -276,6 +277,7 @@ const MBString& MBString::operator += ( char ch )
 {
 	if (myCapacity < myLength + 2) {
 		char* temp = myChars;
+		ASSERT(myCapacity > 0);
 		myCapacity *= 2;
 		
 		myChars = new char[myCapacity];
