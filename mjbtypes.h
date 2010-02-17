@@ -33,9 +33,13 @@ typedef bool boolean;
 
 typedef unsigned char byte;
 
-//autodetect this or require it?
-#define WORD_BIT 32
+//There has to be some way to get this from the compiler
+#ifndef WORD_BIT
+	#define WORD_BIT 32
+#endif
 
+//I realize this is redundant, but I want to point out
+//  the stupidity of being unable to determine word size.
 #ifndef WORD_BIT
 	#error Unable to determine word size
 #endif
