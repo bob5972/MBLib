@@ -68,7 +68,7 @@ valueType& MBMap<keyType,valueType>::get(const keyType& key)
 {
 	//There's probably a better way that'll do this in one query
 	
-	if(myMap.find(key) != myMap.end()) {
+	if(myMap.find(key) == myMap.end()) {
 		PANIC("Map element not found!");
 	}
 	
