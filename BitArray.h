@@ -18,10 +18,12 @@ class BitArray
 		void setFillValue(bool f);
 		bool get(int x) const;
 		
-		void put(int x, bool v);
-		void set(int x);
+		//returns the old value
+		bool put(int x, bool v);
+		bool set(int x);
+		bool reset(int x);
+		
 		void flip(int x);
-		void reset(int x);
 		
 		//affects the bits from [first..last] inclusive
 		void setRange(int first, int last);

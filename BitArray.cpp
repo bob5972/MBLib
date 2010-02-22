@@ -125,20 +125,40 @@ bool BitArray::get(int i) const
 	return (myBits[i/UNIT_SIZE] & (1<<(i%UNIT_SIZE))) != 0;
 }
 
-void BitArray::set(int i)
+bool BitArray::put(int i, bool b)
+{
+	if(b) {
+		return set(i);
+	} else {
+		return reset(i);
+	}
+}
+
+bool BitArray::set(int i)
 {
 	ASSERT(i>= 0);
 	ASSERT(i < mySize);
 	
-	myBits[i/UNIT_SIZE] |= (1<<(i%UNIT_SIZE));
+	bool oup = get(i);
+	
+	if(!oup) {
+		myBits[i/UNIT_SIZE] |= (1<<(i%UNIT_SIZE));
+	}
+	
+	return oup;
 }
 
-void BitArray::reset(int i)
+bool BitArray::reset(int i)
 {
 	ASSERT(i>=0);
 	ASSERT(i<mySize);
 	
-	myBits[i/UNIT_SIZE] &= ~(1<<(i%UNIT_SIZE));
+	bool oup = get(i);
+	
+	if(oup) {
+		myBits[i/UNIT_SIZE] &= ~(1<<(i%UNIT_SIZE));
+	}
+	return oup;
 }
 
 void BitArray::flip(int i)
@@ -239,15 +259,6 @@ void BitArray::resetAll()
 {
 	for(int x=0;x<myArrSize;x++) {
 		myBits[x] = 0;
-	}
-}
-
-void BitArray::put(int i, bool b)
-{
-	if(b) {
-		set(i);
-	} else {
-		reset(i);
 	}
 }
 
