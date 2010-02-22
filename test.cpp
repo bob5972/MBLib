@@ -58,6 +58,7 @@ void testMBMap()
 void testIntMap()
 {
 	IntMap m;
+	IntMap n;
 
 	cout << "Testing IntMap ..." << endl;
 	
@@ -75,6 +76,18 @@ void testIntMap()
 	for(int x=0;x<100;x++) {
 		if( x != m.get(x)) {
 			cerr << "Error on x = "<<x<<endl;
+		}
+	}
+
+	n.insertAll(m);
+	for(int x=0;x<100;x++) {
+		if( x != n.get(x)) {
+			cerr << "Error on insertAll, x = " << x << endl;
+		}
+	}
+	for(int x=100;x<200;x++) {
+		if( n.containsKey(x)) {
+			cerr << "Error on insertAll, x = " << x << endl;
 		}
 	}
 	

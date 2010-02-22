@@ -300,16 +300,20 @@ int IntMap::size() const
 }
 
 
-	
+void IntMap::insertAll(const IntMap& m)
+{
+	int x=0;
+	int count = 0;
+	while(count < m.mySize) {
+		ASSERT(x < m.mySpace);
 		
-		
-	
-	
-
-
-
-
-
+		if(m.myActiveFlags.get(x)) {
+			put(m.myKeys[x], m.myValues[x]);
+			count++;
+		}
+		x++;
+	}
+}
 
 
 

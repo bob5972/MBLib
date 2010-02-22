@@ -13,16 +13,18 @@
 	#define null 0
 #endif
 
+#ifndef FALSE
+	/* This is the naked Truth */
+	#define FALSE 0
+#endif
+
 #ifndef TRUE
+	/* and this is the Light */
 	#define TRUE 1
 #endif
 
 #ifndef true
 	#define true 1
-#endif
-
-#ifndef FALSE
-	#define FALSE 0
 #endif
 
 #ifndef false

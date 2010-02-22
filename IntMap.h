@@ -30,6 +30,11 @@ class IntMap
 		
 		//returns true iff the key was present
 		bool remove(int key);
+		
+		//insert all keys from m into this map
+		//  if the key already exists, use the new value
+		//  linear time to the capacity (NOT size) of m
+		void insertAll(const IntMap &m);
 	
 	private:
 		//positive hash value between 0 and tableSize-1

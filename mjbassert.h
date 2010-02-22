@@ -19,7 +19,7 @@
 	#define ASSERT(x)
 #endif
 
-#define NOT_REACHED() { AssertionHelper( (0) , __FILE__, __LINE__); }
+#define NOT_REACHED() { PanicHelper( "Not Reached", __FILE__, __LINE__); }
 
 #define NOT_IMPLEMENTED() { PanicHelper( "Not Implemented", __FILE__, __LINE__); }
 
