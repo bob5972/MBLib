@@ -205,7 +205,7 @@ bool IntMap::isEmpty() const
 	return mySize == 0;
 }
 
-void IntMap::put(int key, int value)
+bool IntMap::put(int key, int value)
 {
 	//load check
 	if( mySize >= mySpace || ((double)mySize)/mySpace >= myLoad) {
@@ -219,8 +219,9 @@ void IntMap::put(int key, int value)
 	if(myFullFlags.get(ind) && myActiveFlags.get(ind)) {
 		ASSERT(myKeys[ind] == key);
 		
+		int oldValue = myValues[ind];
 		myValues[ind] = value;
-		return;
+		return (oldValue == value);
 	}
 	
 	ASSERT(!myActiveFlags.get(ind));
@@ -232,7 +233,7 @@ void IntMap::put(int key, int value)
 	
 	myKeys[ind] = key;
 	myValues[ind] = value;
-	return;
+	return TRUE;
 }
 
 void IntMap::rehash()
@@ -300,19 +301,22 @@ int IntMap::size() const
 }
 
 
-void IntMap::insertAll(const IntMap& m)
+bool IntMap::insertAll(const IntMap& m)
 {
+	bool oup = FALSE;
 	int x=0;
 	int count = 0;
 	while(count < m.mySize) {
 		ASSERT(x < m.mySpace);
 		
 		if(m.myActiveFlags.get(x)) {
-			put(m.myKeys[x], m.myValues[x]);
+			oup |= put(m.myKeys[x], m.myValues[x]);
 			count++;
 		}
 		x++;
 	}
+	
+	return oup;
 }
 
 

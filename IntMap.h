@@ -26,15 +26,20 @@ class IntMap
 		//returns the new value
 		int decrement(int key);
 		
-		void put(int key, int value);
+		//return true iff the map changed
+		bool put(int key, int value);
 		
-		//returns true iff the key was present
+		//returns true iff the map changed
+		// (Note that deleting an entry of (1,0) will "change"
+		//  the map, even though get(1) will return 0
+		//  before an after the delete call
+		//  (due to the default value of 0)
 		bool remove(int key);
 		
 		//insert all keys from m into this map
 		//  if the key already exists, use the new value
 		//  linear time to the capacity (NOT size) of m
-		void insertAll(const IntMap &m);
+		bool insertAll(const IntMap &m);
 	
 	private:
 		//positive hash value between 0 and tableSize-1
