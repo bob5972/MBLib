@@ -53,6 +53,12 @@ class IntMap
 		//     if not, it will return an empty index
 		int getIndexOfKey(int key) const;
 		
+		//returns the first free index in this key's
+		// hash sequence, or -1 if full
+		// ie, calling this function for an insertion
+		//  presupposes the key is not in the table
+		int getFreeIndex(int key) const;
+		
 		//makes the underlying table larger
 		void rehash();
 		

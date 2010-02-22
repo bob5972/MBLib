@@ -164,6 +164,26 @@ int IntMap::getIndexOfKey(int key) const
 	return -1;
 }
 
+int IntMap::getFreeIndex(int key) const
+{
+	int hashI = hash(key);		
+	int x=hashI;
+	bool firstTime = true;
+
+	while(x != hashI || firstTime) {
+		if(!myActiveFlags.get(x)) {
+			return x;
+		}
+		
+		x+=SEARCH_INCR;
+		x%=mySpace;
+		firstTime=false;
+	}
+	
+	//we've been through the whole table without finding a free spot
+	return -1;
+}
+
 
 int IntMap::get(int key) const
 {
@@ -208,21 +228,29 @@ bool IntMap::isEmpty() const
 bool IntMap::put(int key, int value)
 {
 	//load check
-	if( mySize >= mySpace || ((double)mySize)/mySpace >= myLoad) {
+	if( mySize + 1 >= mySpace || ((double)mySize+1)/mySpace >= myLoad) {
 		rehash();
 	}
-		
+	
 	//we are guaranteed to have an empty spot
+	ASSERT(mySize < mySpace);
+	ASSERT(myFreeSpace > 0);
+		
 	int ind = getIndexOfKey(key);
 	
-	//are we replacing a value?
-	if(myFullFlags.get(ind) && myActiveFlags.get(ind)) {
-		ASSERT(myKeys[ind] == key);
-		
-		int oldValue = myValues[ind];
-		myValues[ind] = value;
-		return (oldValue == value);
+	if(ind != -1) {
+		//are we replacing a value?
+		if(myFullFlags.get(ind) && myActiveFlags.get(ind)) {
+			ASSERT(myKeys[ind] == key);
+			
+			int oldValue = myValues[ind];
+			myValues[ind] = value;
+			return (oldValue == value);
+		}
 	}
+	
+	//key is NOT in the tree
+	ind = getFreeIndex(key);
 	
 	ASSERT(!myActiveFlags.get(ind));
 	
