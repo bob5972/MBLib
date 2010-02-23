@@ -268,4 +268,12 @@ int MBVector<itemType>::trim()
 	return oup;
 }
 
+template<class itemType>
+void MBVector<itemType>::pushAll(const MBVector<itemType> &v)
+{
+	for(int x=0;x<v.length();x++) {
+		push(v[x]);
+	}
+}
+
 #endif //MBVector_CPP_201002052320

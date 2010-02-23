@@ -66,7 +66,8 @@ class MBVector
 		//  v, and then empties v.
 		void consume(MBVector<itemType> &v);
 		
-
+		//pushes all the elements of v into this vector
+		void pushAll(const MBVector<itemType> & v);
 		
 		//frees excess array locations
 		//(ie more available memory)
