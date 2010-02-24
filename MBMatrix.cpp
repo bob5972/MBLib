@@ -116,6 +116,20 @@ const itemType & MBMatrix<itemType>::get (int r, int c) const
 	return myItems[r][c];
 }
 
+template <class itemType>
+void MBMatrix<itemType>::put (int r, int c, const itemType& t)
+{
+	if (r >= myRows || r < 0) {
+		PANIC("Illegal Matrix row.");
+	}
+	
+	if (c >= myCols || c < 0) {
+		PANIC("Illegal Matrix column.");
+	}
+	
+	myItems[r][c] = t;
+}
+
 template<class itemType>
 void MBMatrix<itemType>::resize(int rows, int cols)
 {
