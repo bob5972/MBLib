@@ -22,6 +22,7 @@ class MBMatrix
 	//Accessors
 		int numRows() const;
 		int numColumns() const;
+		int numCols() const;
 		
 		const itemType & get(int row, int col) const;
 		itemType& get(int row, int col);

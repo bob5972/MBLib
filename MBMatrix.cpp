@@ -82,6 +82,12 @@ int MBMatrix<itemType>::numColumns() const
 	return myCols;
 }
 
+template<class itemType>
+int MBMatrix<itemType>::numCols() const
+{
+	return myCols;
+}
+
 template <class itemType>
 itemType & MBMatrix<itemType>::get (int r, int c)
 {
