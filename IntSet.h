@@ -1,6 +1,9 @@
 #ifndef IntSet_H_201002241140
 #define IntSet_H_201002241140
 
+#include "IntMap.h"
+#include "MBVector.h"
+
 class IntSet
 {
 	public:

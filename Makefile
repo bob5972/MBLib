@@ -4,8 +4,9 @@ CXX=g++
 CPPFLAGS = -Wall -g 
 #CPPFLAGS  = -O3 -fomit-frame-pointer
 
-OBJECTS=mjbassert.o mjbdebug.o MBString.o MBVector.o MBStack.o MBQueue.o \
-		MBSet.o BitArray.o IntMap.o MBMap.o  MBMatrix.o
+OBJECTS=mjbassert.o mjbdebug.o MBString.o MBVector.o MBStack.o \
+		MBQueue.o MBSet.o BitArray.o IntMap.o MBMap.o  MBMatrix.o \
+		IntSet.o
 
 all: MBLib.a
 
@@ -30,6 +31,7 @@ BitArray.o: BitArray.cpp BitArray.h
 IntMap.o: IntMap.cpp IntMap.h
 MBMap.o: MBMap.cpp MBMap.h
 MBMatrix.o: MBMatrix.cpp MBMatrix.h
+IntSet.o: IntSet.cpp IntSet.h
 
 clean:
 	rm -f ${OBJECTS} MBLib.a test.bin

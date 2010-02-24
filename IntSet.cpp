@@ -5,7 +5,7 @@
 IntSet::IntSet()
 {   }
 
-IntSet(const IntSet &s)
+IntSet::IntSet(const IntSet &s)
 {
 	insertAll(s);
 }
