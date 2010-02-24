@@ -269,7 +269,15 @@ int MBVector<itemType>::trim()
 }
 
 template<class itemType>
-void MBVector<itemType>::pushAll(const MBVector<itemType> &v)
+void MBVector<itemType>::pushAllTo(MBVector<itemType> &v) const
+{
+	for(int x=0;x<length();x++) {
+		v.push(get(x));
+	}
+}
+
+template<class itemType>
+void MBVector<itemType>::pushAllFrom(const MBVector<itemType> &v)
 {
 	for(int x=0;x<v.length();x++) {
 		push(v[x]);

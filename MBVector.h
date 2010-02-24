@@ -67,7 +67,10 @@ class MBVector
 		void consume(MBVector<itemType> &v);
 		
 		//pushes all the elements of v into this vector
-		void pushAll(const MBVector<itemType> & v);
+		void pushAllFrom(const MBVector<itemType> & v);
+		
+		//pushes all the elements of this vector into v
+		void pushAllTo(MBVector<itemType> & v) const;
 		
 		//frees excess array locations
 		//(ie more available memory)
