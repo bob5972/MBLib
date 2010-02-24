@@ -77,7 +77,13 @@ class MBVector
 		//post: myCapacity == mySize
 		//returns the number of freed indexes
 		//(ie how many itemTypes were deallocated)
-		int trim();		
+		int trim();
+		
+		//does NOT resize the vector
+		//merely increases the size of the
+		// underlying array, so that future
+		// growing will be faster
+		void ensureCapacity(int c);	
 	
 	private:
 		int mySize,myCapacity;
