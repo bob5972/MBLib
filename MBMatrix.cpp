@@ -151,6 +151,9 @@ void MBMatrix<itemType>::resize(int rows, int cols)
 	for(int r=0;r<rows;r++) {
 		myItems[r].resize(cols);
 	}
+	
+	myRows = rows;
+	myCols = cols;
 }
 
 template<class itemType>
