@@ -131,6 +131,12 @@ void MBMatrix<itemType>::put (int r, int c, const itemType& t)
 }
 
 template<class itemType>
+void MBMatrix<itemType>::resize(int dim)
+{
+	resize(dim,dim);
+}
+
+template<class itemType>
 void MBMatrix<itemType>::resize(int rows, int cols)
 {
 	if (rows < 0) {

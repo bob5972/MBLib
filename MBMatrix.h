@@ -32,8 +32,8 @@ class MBMatrix
 		void fillAll(const itemType& t);
 		
     //Modifiers
-		//Resizes Matrix to length newSize
 		void resize (int newRow, int newCol);
+		void resize (int dim);
 	
 	private:
 		int myRows;
