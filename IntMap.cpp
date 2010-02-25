@@ -64,6 +64,8 @@ IntMap::IntMap(int space, double load)
 	mySize = 0;
 	mySpace = space;
 	myFreeSpace = space;
+	
+	ASSERT(mySpace % SEARCH_INCR == 1);
 }
 
 IntMap::IntMap(const IntMap &m)
@@ -82,6 +84,10 @@ IntMap::IntMap(const IntMap &m)
 		space = DEFAULT_SPACE;
 	}
 	
+	if(space % SEARCH_INCR != 1) {
+		space = space - (space%SEARCH_INCR)+1;
+	}
+	
 	myKeys.resize(space);
 	myValues.resize(space);
 	myFullFlags.resize(space);
@@ -95,6 +101,8 @@ IntMap::IntMap(const IntMap &m)
 			put(m.myKeys[x],m.myValues[x]);
 		}
 	}
+	
+	ASSERT(mySpace % SEARCH_INCR == 1);
 }
 
 void IntMap::makeEmpty()
@@ -166,6 +174,8 @@ int IntMap::getIndexOfKey(int key) const
 
 int IntMap::getFreeIndex(int key) const
 {
+	ASSERT(mySpace % SEARCH_INCR == 1);
+	
 	int hashI = hash(key);		
 	int x=hashI;
 	bool firstTime = true;
@@ -230,11 +240,13 @@ bool IntMap::put(int key, int value)
 	//load check
 	if( mySize + 1 >= mySpace || ((double)mySize+1)/mySpace >= myLoad) {
 		rehash();
+		ASSERT(mySpace % SEARCH_INCR == 1);
 	}
 	
 	//we are guaranteed to have an empty spot
 	ASSERT(mySize < mySpace);
 	ASSERT(myFreeSpace > 0);
+	ASSERT(mySpace % SEARCH_INCR == 1);
 		
 	int ind = getIndexOfKey(key);
 	
@@ -250,8 +262,10 @@ bool IntMap::put(int key, int value)
 	}
 	
 	//key is NOT in the tree
+	ASSERT(mySpace % SEARCH_INCR == 1);
 	ind = getFreeIndex(key);
 	
+	ASSERT(ind >= 0);	
 	ASSERT(!myActiveFlags.get(ind));
 	
 	mySize++;
@@ -300,6 +314,8 @@ void IntMap::rehash()
 			put(oldKeys[x],oldValues[x]);
 		}
 	}
+	
+	ASSERT(mySpace % SEARCH_INCR == 1);
 }
 
 
