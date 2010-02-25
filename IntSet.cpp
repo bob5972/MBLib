@@ -10,6 +10,16 @@ IntSet::IntSet(const IntSet &s)
 	insertAll(s);
 }
 
+bool IntSet::isEmpty() const
+{
+	return size() == 0;
+}
+
+int IntSet::size() const
+{
+	return values.size();
+}
+
 bool IntSet::makeEmpty()
 {
 	if(isEmpty()) {

@@ -16,7 +16,7 @@ class IntSet
 		bool contains(int x) const;
 		
 		bool isEmpty() const;
-		bool size() const;
+		int size() const;
 		
 		//returns true iff the set was modified
 		bool insert(int x);
