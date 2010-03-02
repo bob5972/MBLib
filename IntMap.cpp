@@ -208,25 +208,35 @@ int IntMap::get(int key) const
 
 int IntMap::increment(int key)
 {
+	return increment(key, 1);
+}
+
+int IntMap::increment(int key, int amount)
+{
 	int i = findKey(key);
 	if(i == -1) {
-		put(key,1);
-		return 1;
+		put(key,amount);
+		return amount;
 	}
 	
-	myValues[i] += 1;
+	myValues[i] += amount;
 	return myValues[i];
 }
 
 int IntMap::decrement(int key)
 {
+	return decrement(key,1);
+}
+
+int IntMap::decrement(int key, int amount)
+{
 	int i = findKey(key);
 	if(i == -1) {
-		put(key,-1);
-		return -1;
+		put(key,-amount);
+		return -amount;
 	}
 	
-	myValues[i] += -1;
+	myValues[i] -= amount;
 	return myValues[i];
 }
 

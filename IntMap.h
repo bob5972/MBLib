@@ -26,6 +26,11 @@ class IntMap
 		//returns the new value
 		int decrement(int key);
 		
+		//returns the new value
+		int increment(int key, int amount);
+		//returns the new value
+		int decrement(int key, int amount);
+		
 		//return true iff the map changed
 		bool put(int key, int value);
 		
