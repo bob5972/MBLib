@@ -29,11 +29,13 @@ class IntSet
 		bool insertAll(const IntSet &s);
 		
 		//pushed onto v
-		void getValues(MBVector<int> &v);
+		void getValues(MBVector<int> &v) const;
 	
 	private:
 		IntMap m;
 		MBVector<int> values;
+		
+		bool checkInvariants() const;
 };
 
 

@@ -267,7 +267,7 @@ bool IntMap::put(int key, int value)
 			
 			int oldValue = myValues[ind];
 			myValues[ind] = value;
-			return (oldValue == value);
+			return (oldValue != value);
 		}
 	}
 	

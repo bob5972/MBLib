@@ -48,6 +48,16 @@ bool IntSet::insert(int x)
 	return oup;
 }
 
+bool IntSet::checkInvariants() const
+{
+	for(int x=0;x<values.length();x++) {
+		for(int y=x+1;y<values.length();y++) {
+			ASSERT(values[x] != values[y]);
+		}
+	}
+	return TRUE;
+}
+
 bool IntSet::remove(int x)
 {
 	bool oup = m.remove(x);
@@ -61,7 +71,7 @@ bool IntSet::remove(int x)
 			}
 		}
 	}
-
+	
 	ASSERT(oup == FALSE);	
 	return oup;
 }
@@ -77,7 +87,7 @@ bool IntSet::insertAll(const IntSet &s)
 	return oup;
 }
 
-void IntSet::getValues(MBVector<int> &v)
+void IntSet::getValues(MBVector<int> &v) const
 {
 	values.pushAllTo(v);
 }
