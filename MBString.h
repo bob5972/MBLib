@@ -10,25 +10,25 @@ class MBString
 {
     public:
     //Constructors
-    	
+
     	MBString();
-    	
+
     	//size-only constructor
     	explicit MBString(int size);
-        MBString(int size, char fill);        
+        MBString(int size, char fill);
         //Construct from C-String
-        MBString(const char * s);        
+        MBString(const char * s);
        	MBString(const MBString & str);
         MBString(char x);
 	//Destructor
         ~MBString();
-        
-    
+
+
     //Assignment
     	const MBString & operator = (const MBString & str);
         const MBString & operator = (const char* s);
         const MBString & operator = (char c);
-    
+
     //Accessors
     	int length() const;
    	    //Number of Characters
@@ -37,34 +37,34 @@ class MBString
    	    //returns index of leftmost instance of str
    	    int find(char x) const;
    	    int find(const MBString & str) const;
-   	    
+
 		//These return new strings
    	    MBString substr(int pos, int len) const;
    	    MBString toUpper() const;
    	    MBString toLower() const;
-   	    
+
     //Indexing
     	char   operator[ ]( int k ) const;
      	//Range-checked indexing
      	char & operator[ ]( int k );
    		//Range-checked indexing
-  		
+
     //Modifiers
         const MBString & operator += ( const MBString & str );
         //Append str
         const MBString & operator += ( char ch );
         //Append char
-        
+
     //Utility
     	static MBString toString(int x);
-    
-    private:    	
+
+    private:
     	int myLength;
     	int myCapacity;
     	char * myChars;
 };
 
-//IO Functions     
+//IO Functions
 
 //IO Member Functions
 ostream& operator << ( ostream& os, const MBString& str );

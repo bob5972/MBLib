@@ -60,15 +60,15 @@ class MBVector
 		//returns the item on the end of the vector and decreases the size by 1
 		//ie (the last item pushed)
 		const itemType & pop();
-		
+
 		//This is a weird function.
 		//It empties this vector, copies over everything from
 		//  v, and then empties v.
 		void consume(MBVector<itemType> &v);
-		
+
 		//pushes all the elements of v into this vector
 		void pushAllFrom(const MBVector<itemType> & v);
-		
+
 		//pushes all the elements of this vector into v
 		void pushAllTo(MBVector<itemType> & v) const;
 		
@@ -78,7 +78,7 @@ class MBVector
 		//returns the number of freed indexes
 		//(ie how many itemTypes were deallocated)
 		int trim();
-		
+
 		//does NOT resize the vector
 		//merely increases the size of the
 		// underlying array, so that future
