@@ -3,6 +3,7 @@ CXX=g++
 
 CPPFLAGS = -Wall -g 
 #CPPFLAGS  = -O3 -fomit-frame-pointer
+#CPPFLAGS = -O3 -ftree-vectorizer-verbose=2
 
 OBJECTS=mjbassert.o mjbdebug.o MBString.o MBVector.o MBStack.o \
 		MBQueue.o MBSet.o BitArray.o IntMap.o MBMap.o  MBMatrix.o \
