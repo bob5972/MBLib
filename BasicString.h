@@ -31,7 +31,7 @@ class BasicString
         const BasicString & operator = (char c);
 
     	//Number of Characters
-    	inline int length() const;
+    	int length() const;
    	    
    	    //return as C-String
    	    //The returned string must NOT be freed by the caller
@@ -50,11 +50,11 @@ class BasicString
    	    BasicString toLower() const;
 
     	//Range-checked indexing
-    	inline char   operator[ ]( int k ) const;
-    	inline char getCharAt(int k) const;
+    	char   operator[ ]( int k ) const;
+    	char getCharAt(int k) const;
      	
      	//Range-checked indexing
-     	inline char & operator[ ]( int k );
+     	char & operator[ ]( int k );
    		
 
         //Append str
