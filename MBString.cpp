@@ -430,13 +430,13 @@ MBString operator + ( const MBString & str, char ch )
 }
 
 //Not terribly efficient, but effective.
-MBShareString MBShareString::toString(int x)
+MBString MBString::toString(int x)
 {
 	if( x == 0) {
 		return "0";
 	}
 	
-	MBShareString oup;
+	MBString oup;
 	bool negative = false;
 	if(x <0) {
 		negative=true;
