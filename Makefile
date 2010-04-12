@@ -7,7 +7,7 @@ CPPFLAGS = -Wall -g
 
 OBJECTS=mjbassert.o mjbdebug.o MBString.o MBVector.o MBStack.o \
 		MBQueue.o MBSet.o BitArray.o IntMap.o MBMap.o  MBMatrix.o \
-		IntSet.o
+		IntSet.o BasicString.o
 
 all: MBLib.a
 
@@ -33,6 +33,7 @@ IntMap.o: IntMap.cpp IntMap.h
 MBMap.o: MBMap.cpp MBMap.h
 MBMatrix.o: MBMatrix.cpp MBMatrix.h
 IntSet.o: IntSet.cpp IntSet.h
+BasicString.o: BasicString.cpp BasicString.h
 
 clean:
 	rm -f ${OBJECTS} MBLib.a test.bin
