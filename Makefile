@@ -7,7 +7,7 @@ CPPFLAGS = -Wall -g
 
 OBJECTS=mjbassert.o mjbdebug.o MBString.o MBVector.o MBStack.o \
 		MBQueue.o MBSet.o BitArray.o IntMap.o MBMap.o  MBMatrix.o \
-		IntSet.o BasicString.o
+		IntSet.o MBShareString.o
 
 all: MBLib.a
 

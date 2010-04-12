@@ -7,155 +7,99 @@
 #include "mjbdebug.h"
 #include "mjbassert.h"
 
-MBString::StringRef::StringRef()
-:refCount(1),
- str()
-{  }
-
-MBString::StringRef::StringRef(int size, char fill)
-:refCount(1),
- str(size, fill)
-{  }
-
-MBString::StringRef::StringRef(char x)
-:refCount(1),
- str(x)
-{  }
-
-MBString::StringRef::StringRef(int size)
-:refCount(1),
- str(size)
-{  }
-
-MBString::StringRef::StringRef(const char* cstr)
-:refCount(1),
- str(cstr)
-{  }
-
-MBString::StringRef::StringRef(const BasicString& bstr)
-:refCount(1),
- str(bstr)
-{  }
-
 MBString::MBString()
-:myRef(NULL)
+:myLength(0),
+ myCapacity(1),
+ myChars(new char[myCapacity])
 {
-	myRef = new StringRef();
+	myChars[myLength] = '\0';
 }
 
 
 MBString::MBString(int size, char fill)
-:myRef(NULL)
+:myLength(size),
+ myCapacity(size+1),
+ myChars(new char[myCapacity])
 {
-	myRef = new StringRef(size, fill);
+	for (int x=0;x<myLength;x++)
+	{
+		myChars[x] = fill;
+	}
+	myChars[myLength] = '\0';
 }
 
 MBString::MBString(int size)
-:myRef(NULL)
+:myLength(size),
+ myCapacity(size+1),
+ myChars(new char[myCapacity])
 {
-	myRef = new StringRef(size);
+	myChars[myLength] = '\0';
 }
 
 MBString::MBString(char x)
-:myRef(NULL)
+:myLength(1),
+ myCapacity(2),
+ myChars(new char[myCapacity])
 {
-	myRef = new StringRef(x);
+	myChars[0]=x;
+	myChars[1]='\0';
 }
 
 //Precondition: c is a null-terminated string, or c = NULL
 MBString::MBString(const char * c)
-:myRef(NULL)
+:myLength(0),
+ myCapacity(0),
+ myChars(null)
 {	
-	myRef = new StringRef(c);	
+	if (c) {
+		while (c[myLength++]);
+		myLength--;
+		myCapacity = myLength+1;
+		myChars = new char[myCapacity];
+		for (int x=0;x<myLength;x++) {
+			myChars[x] = c[x];
+		}
+	} else {
+		myLength = 0;
+		myCapacity = 1;
+		myChars = new char[myCapacity];
+	}
+	
+	myChars[myLength] = '\0';
+	
 }
 
 MBString::MBString(const MBString & str)
-:myRef(NULL)
-{	
-	ASSERT(str.myRef != NULL);
-	linkRef(str.myRef);
-	ASSERT(myRef != NULL);
-}
-
-MBString::MBString(const BasicString & bstr)
-:myRef(NULL)
-{	
-	myRef = new StringRef(bstr);
+:myLength(str.myLength),
+ myCapacity(myLength+1),
+ myChars(new char[myCapacity])
+{
+	for (int x=0;x<myLength;x++) {
+		myChars[x] = str.myChars[x];
+	}
+	myChars[myLength] = '\0';
 }
 
 MBString::~MBString()
 {
-	unlinkRef();
-}
-
-
-void MBString::unlinkRef()
-{
-	if(myRef != NULL) {
-		ASSERT(myRef->refCount > 0);
-		myRef->refCount--;
-		if(myRef->refCount == 0) {
-			delete myRef;
-		}
-		myRef = NULL;
-	}
-}
-
-void MBString::linkRef(StringRef* ref)
-{
-	if(myRef != NULL) {
-		unlinkRef();
-	}
-	
-	myRef = ref;
-	if(myRef != NULL) {
-		ASSERT(myRef->refCount > 0);
-		myRef->refCount++;
-		
-		//this is an overflow check
-		ASSERT(myRef->refCount > 0);
-	}
-}
-
-void MBString::copyRef()
-{
-	if(myRef == NULL) {
-		myRef = new StringRef();
-		return;
-	}
-	
-	ASSERT(myRef->refCount > 0);
-	
-	if(myRef->refCount == 1) {
-		return;
-	}
-	
-	StringRef* temp = new StringRef(myRef->str);
-	
-	unlinkRef();
-	
-	myRef = temp;
+	delete [] myChars;
+	myChars = NULL;
 }
 
 const MBString&  MBString::operator = (const MBString & str)
 {
 	if (this != &str) {
-		linkRef(str.myRef);
+		if (myCapacity < str.myLength) {
+    		delete [] myChars;
+    		myCapacity = str.myLength+1;
+    		myChars = new char[myCapacity];    		
+  		}
+  		myLength = str.myLength;
+  		for (int x=0;x<myLength;x++) {
+  			myChars[x] = str.myChars[x];
+		}
+		myChars[myLength] = '\0';
     }
-    
-    return *this;
-}
-
-const MBString&  MBString::operator = (const BasicString & bstr)
-{
-	if(myRef->refCount == 1) {
-		//reuse buffer if we have our own
-		myRef->str = bstr;
-	} else {
-		unlinkRef();
-		myRef = new StringRef(bstr);
-	}
-    
     return *this;
 }
 
@@ -163,124 +107,203 @@ const MBString&  MBString::operator = (const BasicString & bstr)
 const MBString & MBString::operator = (const char* c)
 
 {
-	ASSERT(myRef != NULL);
-	
-	if(myRef->refCount > 1) {
-		unlinkRef();
-		myRef = new StringRef(c);
-	} else {
-		ASSERT(myRef->refCount == 1);
-		myRef->str = c;
+	if (c) {
+		myLength = 0;
+  		while (c[myLength++]);
+		myLength--;
+		if (myLength+1 > myCapacity) {
+			delete[] myChars;
+			myCapacity = myLength+1;
+			myChars = new char[myCapacity];
+   			
+		}		
+		
+		for (int x=0;x<myLength;x++) {
+			myChars[x] = c[x];
+		}
 	}
+	else {
+		myLength = 0;
+	}
+	myChars[myLength] = '\0';
 	
 	return *this;
 }
 const MBString & MBString::operator = (char c)
 {
-	ASSERT(myRef != NULL);
 	
-	if(myRef->refCount > 1) {
-		unlinkRef();
-		myRef = new StringRef(c);
-	} else {
-		ASSERT(myRef->refCount == 1);
-		myRef->str = c;
+	myLength = 1;
+	if ( myLength +1> myCapacity)
+	{
+		delete[] myChars;
+		myCapacity = myLength+1;
+  		myChars = new char[myCapacity];		
 	}
-	
+	myChars[0] = c;
+	myChars[myLength] = '\0';
 	return *this;
 }
 
 //Number of logical characters
 int MBString::length() const
 {
-	return myRef->str.length();	
+	return myLength;	
 }
 
 //return as C-String
 const char* MBString::cstr() const
 {
-	return myRef->str.cstr();
+	return myChars;
 }
 
 int MBString::find(char ta) const
 {
-	return myRef->str.find(ta);
+	for (int x=0;x<myLength;x++) {
+		if (myChars[x] == ta) {
+			return x;
+		}
+	}
+	return -1;
 }
 
-int MBString::find(const MBString & mbstr) const
+int MBString::find(const MBString & str) const
 {
-	return myRef->str.find(mbstr.myRef->str);
+	int x=0;
+	int found=0;
+	
+	if(myLength == 0) {
+		return -1;
+	}
+	
+	if(str.myLength == 0) {
+		return 0;
+	}
+	
+	while( x<=(myLength-str.myLength) && found<str.myLength ) {
+		if(myChars[x] == str.myChars[found]) {
+			found++;
+		}
+		x++;
+	}
+
+	if(found == str.myLength) {
+		return x-str.myLength;
+	} else {
+		return -1;
+	}
 }
 
 MBString MBString::substr(int pos,int len) const
 {
-	//you could get some extra mileage out of this
-	//  if you converted BasicString into a pos,len model
-	//  and shared substrs with a single StringRef
-	
-	ASSERT(len >= 0);
+	if (pos+len>myLength) {
+		PANIC("Substring out of range.");
+	}
+	if (pos < 0) {
+		PANIC("Invalid index specified.");
+	}
 	
 	MBString oup(len);
 	
-	oup.myRef->str = myRef->str.substr(pos,len);
+	for (int x=0;x<len;x++) {
+		oup += myChars[x+pos];
+	}
 	
 	return oup;
 }
 
 MBString MBString::toUpper() const
 {
-	MBString oup(length());
-	
-	oup.myRef->str = myRef->str.toUpper();
+	MBString oup(myLength);
+	for (int x=0;x<myLength;x++) {
+		oup += toupper(myChars[x]);
+	}
+	return oup;
 }
 
 MBString MBString::toLower() const
 {
-	MBString oup(length());
+	MBString oup(myLength);
+	for(int x=0;x<myLength;x++) {
+		oup+= tolower(myChars[x]);
+	}
+	return oup;
+}
+
+char MBString::getCharAt(int k) const
+{
+	if (k >= myLength || k < 0) {
+		PANIC("Index out of range.");
+	}
 	
-	oup.myRef->str = myRef->str.toLower();
+	return myChars[k];
 }
 
 char MBString::operator[ ]( int k ) const
 {
-	return myRef->str[k];
+	return getCharAt(k);
 }
 
 char& MBString::operator[ ]( int k )
 {
-	ASSERT(myRef->refCount > 0);
-	
-	if(myRef->refCount == 1) {
-		return myRef->str[k];
-	} else {
-		copyRef();
-		return myRef->str[k];
+	if (k >= myLength || k< 0) {
+		PANIC("Index out of range.");
 	}
+	return myChars[k];
 }
 
-//Append str
-const MBString& MBString::operator += ( const MBString & mbstr )
+
+void MBString::append(const MBString& str)
 {
-	//weird case
-	if(length() == 0) {
-		return ((*this) = mbstr);
+	if (myCapacity < myLength + str.myLength+1) {
+		char* temp = myChars;
+		while (myCapacity <myLength + str.myLength+1) {
+			ASSERT(myCapacity > 0);
+			myCapacity *= 2;
+		}
+		myChars = new char[myCapacity];
+		for (int x=0;x<myLength;x++) {
+			myChars[x] = temp[x];
+		}
+		delete[] temp;
 	}
 	
-	if(mbstr.length() > 0) {
-		copyRef();
+	int y=0;
+	int x=myLength;
+	myLength = myLength + str.myLength;
+	while(x<myLength) { 
+		myChars[x++] = str.myChars[y++];
 	}
-	
-	myRef->str.append(mbstr.myRef->str);
+	myChars[myLength] = '\0';
+}
+
+const MBString& MBString::operator += ( const MBString & str )
+{
+	append(str);
 	
 	return *this;
 }
-		
 
-//Append char
+
+void MBString::append(char ch)
+{
+	if (myCapacity < myLength + 2) {
+		char* temp = myChars;
+		ASSERT(myCapacity > 0);
+		myCapacity *= 2;
+		
+		myChars = new char[myCapacity];
+		for (int x=0;x<myLength;x++) {
+			myChars[x] = temp[x];
+		}
+		delete[] temp;
+	}
+	myChars[myLength++] = ch;
+	myChars[myLength] = '\0';
+}
+
 const MBString& MBString::operator += ( char ch )
 {
-	myRef->str.append(ch);
-	
+	append(ch);
 	return *this;
 }
 
@@ -289,41 +312,66 @@ ostream& operator << ( ostream& os, const MBString& str )
 	return os << str.cstr();
 }
 
+istream& operator >> ( istream& is, MBString& str )
 //precondition:  input stream is open for reading
 //postcondition: the next string from input stream is has been read
 //               and stored in str
-
-istream& operator >> ( istream& is, MBString& str )
 {
-	//This should really be done with a member function
-	// to avoid a string copy, but I was feeling lazy
-    BasicString bstr;
+    char ch;
+    str = "";    // empty string, will build one char at-a-time
+    is >> ch;    // whitespace skipped, first non-white char in ch
     
-    is >> bstr;
-    
-    str = bstr;
+    if (! is.fail()) {
+        do
+        {
+            str += ch;
+            is.get(ch);
+        } while (! is.fail() && ! isspace(ch));
+        
+		// put whitespace back on the stream
+        if (isspace(ch)) {
+            is.putback(ch);     
+        }
+    }
     
     return is;
 }
 	
+istream& getline( istream& is, MBString& str )
 //description:   reads a line from input stream is into the string str
 //precondition:  input stream is open for reading
 //postcondition: chars from input stream is up to '\n' have been read
-istream& getline( istream& is, MBString& str )
 {
 
-    BasicString bstr;
+    char ch;
+    str = "";     // empty string, will build one char at-a-time
     
-    getline(is, bstr);
-    
-    str = bstr;
+    while (is.get(ch) && ch != '\n') {
+        str += ch;
+    }
     
     return is;
 }
 
 int MBString::compareTo(const MBString& rhs) const
 {
-	return myRef->str.compareTo(rhs.myRef->str);
+	int maxx= (myLength < rhs.myLength)? myLength : rhs.myLength;
+	
+	for (int x=0;x<maxx;x++) {
+		if (getCharAt(x) < rhs[x]) {
+			return -1;
+		} else if (getCharAt(x) > rhs[x]) {
+			return 1;
+		}
+	}
+	
+	if (myLength < rhs.myLength) {
+		return -1;
+	} else if ( myLength > rhs.myLength ) {
+		return 1;
+	}
+	
+	return 0;
 }
 
 // comparison operators:
@@ -360,10 +408,8 @@ bool operator >= ( const MBString & lhs, const MBString & rhs )
 MBString operator + ( const MBString & lhs, const MBString & rhs )
 {
 	MBString oup(lhs.length() + rhs.length());
-	
-	oup += lhs;
+	oup = lhs;
 	oup += rhs;
-	
 	return oup;
 }
 
@@ -378,46 +424,9 @@ MBString operator + ( char ch, const MBString & str )
 MBString operator + ( const MBString & str, char ch )
 {
 	MBString oup (1+str.length());
-	oup += str;
+	oup = str;
 	oup += ch;
 	return oup;
 }
 
-//Not terribly efficient, but effective.
-MBString MBString::toString(int x)
-{
-	if( x == 0) {
-		return "0";
-	}
-	
-	MBString oup;
-	bool negative = false;
-	if(x <0) {
-		negative=true;
-		x = -x;
-	}
-	
-	int digit;
-	char c;
-	
-	while(x>0) {
-		digit = x%10;
-		c = '0' + digit;
-		oup += c;
-		x-= digit;
-		x/=10;
-	}
-	
-	int size = oup.length();
-	for(int x=0;x<size/2;x++) {
-		c = oup[x];
-		oup[x] = oup[size-x-1];
-		oup[size-x-1] = c;
-	}
-	
-	if(negative) {
-		oup = '-'+oup;
-	}
-	
-	return oup;
-}
+
