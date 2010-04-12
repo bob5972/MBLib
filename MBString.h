@@ -70,7 +70,9 @@ class MBString
         //  return  0 if this == rhs
         //  return <0 if this < rhs
         int compareTo(const MBString& rhs) const;
-
+        
+    //Utility Functions
+        static MBString toString(int x);
 
     private:
     	int myLength;

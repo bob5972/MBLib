@@ -77,10 +77,6 @@ class MBShareString
         //  return <0 if this < rhs
         int compareTo(const MBShareString& rhs) const;
 
-
-	//Utility Functions
-    	static MBShareString toString(int x);
-
     private:
     	class StringRef
     	{
