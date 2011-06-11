@@ -3,6 +3,7 @@
 #define MJBASSERT_H_201001091250
 
 #include "config.h"
+#include "mjbtypes.h"
 #include "mjbdebug.h"
 
 #ifdef MJB_DEBUG
@@ -16,25 +17,25 @@
 #endif
 
 #if MJB_ASSERT	
-	#define ASSERT(x) { AssertionHelper( (int)(x) , __FILE__, __LINE__); }
+
+	#define ASSERT(x) do { \
+		if (!(x)) { \
+			PanicHelper("ASSERT", __FILE__, __LINE__); \
+		} \
+	} while (FALSE)
+	
 #else
 	#define ASSERT(x)
 #endif
 
-#define NOT_REACHED() { PanicHelper( "NOT_REACHED", __FILE__, __LINE__); }
+#define NOT_REACHED() { PanicHelper( __FILE__, __LINE__, "NOT_REACHED"); }
 
-#define NOT_IMPLEMENTED() { PanicHelper( "NOT_IMPLEMENTED", __FILE__, __LINE__); }
+#define NOT_IMPLEMENTED() { PanicHelper( __FILE__, __LINE__, "NOT_IMPLEMENTED"); }
 
-#define PANIC(msg) { PanicHelper( (msg), __FILE__, __LINE__); }
+#define PANIC(msg) { PanicHelper( __FILE__, __LINE__, (msg)); }
 
-#define ERROR(msg) { ErrorHelper( (msg), __FILE__, __LINE__); }
+void Panic(const char *fmt, ...);
 
-inline void AssertionHelper( int x , const char* file, int line);
-
-inline void PanicHelper(const char* message, const char* file, int line);
-
-inline void ErrorHelper(const char* message, const char* file, int line);
-
-#include "mjbassert.cpp"
+void PanicHelper(const char *file, int line, const char *message);
 
 #endif //MJBASSERT_H_201001091250

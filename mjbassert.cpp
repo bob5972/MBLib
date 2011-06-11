@@ -1,29 +1,26 @@
-#ifndef MJBASSERT_CPP_201001091506
-#define MJBASSERT_CPP_201001091506
-
+/*
+ * mjbassert.cpp --
+ */
+ 
+#include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 
 #include "mjbassert.h"
 
-inline void AssertionHelper(int x, const char* file, int line)
+void Panic(const char *fmt, ...)
 {
-	if (!x) {
-		fprintf(stderr, "Assertion failure: %s:%d\n", file, line);
-		exit(1);
-	}
-}
-
-inline void PanicHelper(const char* message, const char* file, int line)
-{
-	fprintf(stderr, "Panic %s:%d: %s\n", file, line, message);
+	va_list args;
+	
+	va_start(args, fmt);
+	vfprintf(stderr, fmt, args);
+	va_end(args);
+	
 	exit(1);
 }
 
-inline void ErrorHelper(const char* message, const char* file, int line)
+void PanicHelper(const char *file, int line, const char *msg)
 {
-	fprintf(stderr, "Error %s:%d: %s\n", file, line, message);
+	DebugPrintHelper(file, line, msg);
 	exit(1);
 }
-
-#endif //MJBASSERT_CPP_201001091506

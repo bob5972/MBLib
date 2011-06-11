@@ -16,9 +16,15 @@ void Log(int level, const char *fmt, ...);
 
 #ifdef DEBUG
 	#define DebugPrint(msg) { DebugPrintHelper( __FILE__, __LINE__, msg); }
+	#define TRACE() { DebugPrintHelper( __FILE__, __LINE__, "TRACE"); }
+	#define NOT_TESTED() { DebugPrintHelper( __FILE__, __LINE__, "NOT_TESTED"); }
 #else
-	#define DebugPrint(msg)
+	#define DebugPrint(msg) ;
+	#define TRACE() ;
+	#define NOT_TESTED() ;
 #endif
+
+void DebugPrintHelper(const char *file, int line, const char *fmt, ...);
 
 
 #endif //MJBDEBUG_H_201001091239
