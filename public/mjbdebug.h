@@ -3,6 +3,11 @@
 
 #include "config.h"
 
+#ifdef __cplusplus
+	extern "C" {
+#endif 
+
+
 //backtraces and logfile not implemented
 
 #ifdef DEBUG
@@ -26,5 +31,9 @@ void Log(int level, const char *fmt, ...);
 
 void DebugPrintHelper(const char *file, int line, const char *fmt, ...);
 
+
+#ifdef __cplusplus
+	}
+#endif 
 
 #endif //MJBDEBUG_H_201001091239

@@ -1,11 +1,36 @@
 #!/bin/bash
+## configure -- MBLib
 
-CONFIG_H="build/config.h"
-CONFIG_MK="build/config.mk"
+if [ "$BUILDROOT" == "" ]; then
+	BUILDROOT="build";
+fi;
 
-mkdir -p build
-mkdir -p build/tmp
-mkdir -p build/deps
+if [ "$TMPDIR" == "" ]; then
+	TMPDIR="$BUILDROOT/tmp"
+fi;
+
+if [ "$DEPROOT" == "" ]; then
+	DEPROOT="$BUILDROOT/deps";
+fi;
+
+if [ "$MBLIB_BUILDDIR" == "" ]; then
+	MBLIB_BUILDDIR="$BUILDROOT";
+fi;
+
+if [ "$MBLIB_DEPDIR" == "" ]; then
+	MJBLIB_DEPDIR="$DEPROOT";
+fi;
+
+if [ "$MBLIB_SRCDIR" == "" ]; then
+	MJBLIB_SRCDIR=".";
+fi;
+
+mkdir -p "$MBLIB_BUILDDIR"
+mkdir -p "$TMPDIR"
+mkdir -p "$MBLIB_DEPDIR"
+
+CONFIG_MK="config.mk"
+CONFIG_H="$BUILDROOT/config.h"
 
 cat /dev/null > $CONFIG_H;
 cat /dev/null > $CONFIG_MK;
@@ -21,6 +46,6 @@ fi;
 echo '#define ARCH_AMD64 1' >> $CONFIG_H;
 echo 'ARCH_AMD64=1' >> $CONFIG_MK;
 
-echo '#define DEBUG 1' >> $CONFIG_H;
+echo '#define DEBUG 1' >> $CONFIG_H
 echo 'DEBUG=1' >> $CONFIG_MK;
 

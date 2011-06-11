@@ -6,6 +6,10 @@
 #include "mjbtypes.h"
 #include "mjbdebug.h"
 
+#ifdef __cplusplus
+	extern "C" {
+#endif 
+
 #ifdef MJB_DEBUG
 	#ifndef MJB_ASSERT
 		#define MJB_ASSERT 1
@@ -16,11 +20,10 @@
 	#define MJB_ASSERT 0
 #endif
 
-#if MJB_ASSERT	
-
+#if MJB_ASSERT
 	#define ASSERT(x) do { \
 		if (!(x)) { \
-			PanicHelper("ASSERT", __FILE__, __LINE__); \
+			PanicHelper(__FILE__, __LINE__, "ASSERT"); \
 		} \
 	} while (FALSE)
 	
@@ -37,5 +40,9 @@
 void Panic(const char *fmt, ...);
 
 void PanicHelper(const char *file, int line, const char *message);
+
+#ifdef __cplusplus
+	}
+#endif 
 
 #endif //MJBASSERT_H_201001091250
