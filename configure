@@ -21,3 +21,6 @@ fi;
 echo '#define ARCH_AMD64 1' >> $CONFIG_H;
 echo 'ARCH_AMD64=1' >> $CONFIG_MK;
 
+echo '#define DEBUG 1' >> $CONFIG_H;
+echo 'DEBUG=1' >> $CONFIG_MK;
+
