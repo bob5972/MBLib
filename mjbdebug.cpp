@@ -1,119 +1,46 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdarg.h>
 
 #include "mjbdebug.h"
 
-void DebugPrintHelper(const char* message, const char* file, int line)
+static int curLogLevel = 1;
+
+void Warning(const char *fmt, ...)
 {
-	if(MJB_DEBUG_STD_OUT_MESSAGES) {
-		DebugPrintStdOutHelper(message, file, line);
-	} else if (MJB_DEBUG_STD_ERR_MESSAGES) {
-		DebugPrintStdErrHelper(message,file,line);
-	}
+	va_list args;
 	
-	DebugPrintLogHelper(message,file,line);
+	va_start(args, fmt);
+	vfprintf(stderr, fmt, args);
+	va_end(args);
 }
 
-
-void DebugPrintStdOutHelper(const char* message, const char* file, int line)
+//TODO: Make this go to a file.
+void Log(int level, const char *fmt, ...)
 {
-	if(!MJB_DEBUG_MESSAGES) {
-		return;
-	}
-	
-	if(MJB_DEBUG_STD_OUT_MESSAGES) {
-		fprintf(stdout, "Debug: %s:%d: %s\n", file, line, message);
-	}
-}
-
-void DebugPrintStdErrHelper(const char* message, const char* file, int line)
-{
-	if(!MJB_DEBUG_MESSAGES) {
-		return;
-	}
-	
-	if(MJB_DEBUG_STD_ERR_MESSAGES) {
-		fprintf(stderr, "Debug: %s:%d: %s\n", file, line, message);
+	va_list args;
+   
+	if (level > curLogLevel) {
+		va_start(args, fmt);
+		vfprintf(stderr, fmt, args);
+		va_end(args);
 	}
 }
 
-void DebugPrintLogHelper(const char* message, const char* file, int line)
+void DebugPrintHelper(const char *file, int line, const char *fmt, ...)
 {
-	if(!MJB_DEBUG_MESSAGES) {
-		return;
-	}
+	const int bufSize = 1024;
+	char buffer[bufSize];
+	int len;
+	va_list args;
 	
-	if(MJB_DEBUG_LOG_MESSAGES) {
-		//NOT_IMPLEMENTED();
-	}
+	len = snprintf(buffer, bufSize, "%s:%d| ", file, line);
+	va_start(args, fmt);
+	len = vsnprintf(buffer + len, bufSize-len, fmt, args);
+	va_end(args);
+	
+	Warning(buffer);
 }
 
-void DebugVerboseHelper(const char* message, const char* file, int line)
-{
-	if(!MJB_DEBUG_MESSAGES) {
-		return;
-	}
-	
-	if(MJB_DEBUG_STD_OUT_MESSAGES_VERBOSE) {
-		DebugPrintStdOutHelper(message, file, line);
-	} else if(MJB_DEBUG_STD_ERR_MESSAGES_VERBOSE) {
-		DebugPrintStdErrHelper(message,file,line);
-	}
-	
-	if(MJB_DEBUG_LOG_MESSAGES_VERBOSE) {
-		DebugPrintLogHelper(message,file,line);
-	}
-}
-
-void DebugInfoHelper(const char* message, const char* file, int line)
-{
-	if(!MJB_DEBUG_MESSAGES) {
-		return;
-	}
-	
-	if(MJB_DEBUG_STD_OUT_MESSAGES_INFO) {
-		DebugPrintStdOutHelper(message, file, line);
-	} else if(MJB_DEBUG_STD_ERR_MESSAGES_INFO) {
-		DebugPrintStdErrHelper(message,file,line);
-	}
-	
-	if(MJB_DEBUG_LOG_MESSAGES_INFO) {
-		DebugPrintLogHelper(message,file,line);
-	}
-}
-
-void DebugWarnHelper(const char* message, const char* file, int line)
-{
-	if(!MJB_DEBUG_MESSAGES) {
-		return;
-	}
-	
-	if(MJB_DEBUG_STD_OUT_MESSAGES_WARN) {
-		DebugPrintStdOutHelper(message, file, line);
-	} else if(MJB_DEBUG_STD_ERR_MESSAGES_WARN) {
-		DebugPrintStdErrHelper(message,file,line);
-	}
-	
-	if(MJB_DEBUG_LOG_MESSAGES_WARN) {
-		DebugPrintLogHelper(message,file,line);
-	}
-}
-
-void DebugErrorHelper(const char* message, const char* file, int line)
-{
-	if(!MJB_DEBUG_MESSAGES) {
-		return;
-	}
-	
-	if(MJB_DEBUG_STD_OUT_MESSAGES_ERROR) {
-		DebugPrintStdOutHelper(message, file, line);
-	} else if(MJB_DEBUG_STD_ERR_MESSAGES_ERROR) {
-		DebugPrintStdErrHelper(message,file,line);
-	}
-	
-	if(MJB_DEBUG_LOG_MESSAGES_ERROR) {
-		DebugPrintLogHelper(message,file,line);
-	}
-}
 

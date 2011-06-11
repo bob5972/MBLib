@@ -5,23 +5,25 @@
 #include "config.h"
 #include "mjbdebug.h"
 
-#ifdef MJB_ENABLE_ASSERTIONS
-	#ifdef MJB_DISABLE_ASSERTIONS
-		#warning Conflicting assertion behavior specified.  Defaulting to enabled.
+#ifdef MJB_DEBUG
+	#ifndef MJB_ASSERT
+		#define MJB_ASSERT 1
 	#endif
-	
+#endif
+
+#ifndef MJB_ASSERT
+	#define MJB_ASSERT 0
+#endif
+
+#if MJB_ASSERT	
 	#define ASSERT(x) { AssertionHelper( (int)(x) , __FILE__, __LINE__); }
 #else
-	#ifndef MJB_DISABLE_ASSERTIONS
-		#warning No assertion behavior specified.  Defaulting to disabled.
-	#endif
-	
 	#define ASSERT(x)
 #endif
 
-#define NOT_REACHED() { PanicHelper( "Not Reached", __FILE__, __LINE__); }
+#define NOT_REACHED() { PanicHelper( "NOT_REACHED", __FILE__, __LINE__); }
 
-#define NOT_IMPLEMENTED() { PanicHelper( "Not Implemented", __FILE__, __LINE__); }
+#define NOT_IMPLEMENTED() { PanicHelper( "NOT_IMPLEMENTED", __FILE__, __LINE__); }
 
 #define PANIC(msg) { PanicHelper( (msg), __FILE__, __LINE__); }
 
