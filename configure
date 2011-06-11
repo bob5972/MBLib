@@ -1,0 +1,20 @@
+#!/bin/bash
+
+CONFIG_H="build/config.h"
+CONFIG_MK="build/config.mk"
+
+mkdir -p build
+mkdir -p build/tmp
+mkdir -p build/deps
+
+cat /dev/null > $CONFIG_H;
+cat /dev/null > $CONFIG_MK;
+
+if [ `uname -a | cut -c 1-5` == "Linux" ]; then
+	echo '#define LINUX 1' >> $CONFIG_H;
+	echo 'LINUX=1' >> $CONFIG_MK;
+else
+	echo '#define MACOS 1' >> $CONFIG_H;
+	echo 'MACOS=1' >> $CONFIG_MK;
+fi;
+

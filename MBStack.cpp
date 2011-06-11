@@ -49,7 +49,7 @@ const MBStack<itemType>& MBStack<itemType>::operator = (const MBStack<itemType> 
 		mySize = rhs.mySize;
 		myTop = rhs.myTop;
 		
-		if (mySize == NULL) {
+		if (mySize == 0) {
 			return *this;
 		}
 		myTop = new MBNode(*myTop);

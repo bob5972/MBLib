@@ -1,42 +1,73 @@
+# -*- mode: Makefile;-*-
+# Makefile --
+#    Q: Can anything be sadder than work left unfinished?
+#    A: Yes, work never begun.
+
+INCLUDEDIR=public
+SRCROOT=.
+BUILDROOT=build
+TMPDIR=$(BUILDROOT)/tmp
+DEPROOT=$(BUILDROOT)/deps
+
+include $(BUILDROOT)/config.mk
+
+OPTIMIZATION_FLAGS = -Wall -g 
+#OPTIMIZATION_FLAGS = -O3 -fomit-frame-pointer
+#OPTIMIZATION_FLAGS = -O3 -ftree-vectorizer-verbose=2
+
+CFLAGS = -I . -I ${INCLUDEDIR} -I $(BUILDROOT) ${OPTIMIZATION_FLAGS}
+
+CPPFLAGS= ${CFLAGS}
+
 CC=gcc
 CXX=g++
 
-CPPFLAGS = -Wall -g 
-#CPPFLAGS  = -O3 -fomit-frame-pointer
-#CPPFLAGS = -O3 -ftree-vectorizer-verbose=2
+$(BUILDROOT)/%.opp: $(SRCROOT)/%.cpp
+	${CXX} -c ${CPPFLAGS} -o $(BUILDROOT)/$*.opp $<;
+	
+#Autogenerate dependencies information
+#The generated makefiles get source into this file later
+$(DEPROOT)/%.dpp: $(SRCROOT)/%.cpp Makefile
+	$(CXX) -M -MM -MT "$(BUILDROOT)/$*.opp" -MT "$(DEPROOT)/$*.dpp" \
+	    -MF $@ ${CPPFLAGS} $<;
+	    
+SOURCES = mjbdebug.cpp \
+          mjbassert.cpp \
+          MBString.cpp \
+          MBVector.cpp \
+          MBStack.cpp \
+          MBQueue.cpp \
+          MBSet.cpp \
+          BitArray.cpp \
+          IntMap.cpp \
+          MBMap.cpp \
+          MBMatrix.cpp \
+          IntSet.cpp
+          
+OBJECTS=$(addprefix $(BUILDROOT)/, \
+            $(subst .cpp,.opp, $(SOURCES)))
 
-OBJECTS=mjbassert.o mjbdebug.o MBString.o MBVector.o MBStack.o \
-		MBQueue.o MBSet.o BitArray.o IntMap.o MBMap.o  MBMatrix.o \
-		IntSet.o MBShareString.o
+#The config check is to test if we've been configured
+all: $(BUILDROOT)/config.h MBLib.a
 
-all: MBLib.a
+.PHONY: all clean distclean
 
 test: test.bin
 	./test.bin
 
 test.bin: MBLib.a test.cpp
-	g++ -g test.cpp MBLib.a -o test.bin
+	g++ ${CPPFLAGS} -g test.cpp MBLib.a -o test.bin
 
 MBLib.a: ${OBJECTS}
 	ar cr MBLib.a ${OBJECTS}
 
-mjbdebug.o: mjbdebug.cpp mjbdebug.h
-mjbassert.o: mjbassert.cpp mjbassert.h
-MBString.o: MBString.cpp MBString.h
-MBVector.o: MBVector.cpp MBVector.h
-MBStack.o: MBStack.cpp MBStack.h
-MBQueue.o: MBQueue.cpp MBQueue.h
-MBSet.o: MBSet.cpp MBSet.h
-MBListNode.o: MBListNode.cpp MBListNode.h
-BitArray.o: BitArray.cpp BitArray.h
-IntMap.o: IntMap.cpp IntMap.h
-MBMap.o: MBMap.cpp MBMap.h
-MBMatrix.o: MBMatrix.cpp MBMatrix.h
-IntSet.o: IntSet.cpp IntSet.h
-BasicString.o: BasicString.cpp BasicString.h
-
 clean:
-	rm -f ${OBJECTS} MBLib.a test.bin
+	rm -f MBLib.a test.bin
+	rm -f $(BUILDROOT)/*.o $(BUILDROOT)/*.opp
 
-#test: all
-#	./runTests.sh
+distclean:
+	rm -rf $(BUILDROOT)/
+
+#include the generated dependency files
+-include $(addprefix $(DEPROOT)/,$(subst .cpp,.dpp,$(SOURCES)))
+
