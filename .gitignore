@@ -2,3 +2,5 @@
 *.a
 test.bin
 build/
+config.mk
+local.mk

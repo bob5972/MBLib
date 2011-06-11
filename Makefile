@@ -1,73 +1,87 @@
 # -*- mode: Makefile;-*-
-# Makefile --
+# Makefile -- MBLib
 #    Q: Can anything be sadder than work left unfinished?
 #    A: Yes, work never begun.
 
-INCLUDEDIR=public
-SRCROOT=.
-BUILDROOT=build
-TMPDIR=$(BUILDROOT)/tmp
-DEPROOT=$(BUILDROOT)/deps
+include config.mk
+-include local.mk
 
-include $(BUILDROOT)/config.mk
+INCLUDE_FLAGS=-I $(MBLIB_SRCDIR)/ -I $(MBLIB_SRCDIR)/public
 
 OPTIMIZATION_FLAGS = -Wall -g 
 #OPTIMIZATION_FLAGS = -O3 -fomit-frame-pointer
 #OPTIMIZATION_FLAGS = -O3 -ftree-vectorizer-verbose=2
 
-CFLAGS = -I . -I ${INCLUDEDIR} -I $(BUILDROOT) ${OPTIMIZATION_FLAGS}
+#The BUILDROOT folder is included for config.h
+CFLAGS = ${INCLUDE_FLAGS} -I $(BUILDROOT) ${OPTIMIZATION_FLAGS}
 
 CPPFLAGS= ${CFLAGS}
 
 CC=gcc
 CXX=g++
 
-$(BUILDROOT)/%.opp: $(SRCROOT)/%.cpp
-	${CXX} -c ${CPPFLAGS} -o $(BUILDROOT)/$*.opp $<;
+$(MBLIB_BUILDDIR)/%.opp: $(MBLIB_SRCDIR)/%.cpp
+	${CXX} -c ${CPPFLAGS} -o $(MBLIB_BUILDDIR)/$*.opp $<;
+
+$(MBLIB_BUILDDIR)/%.o: $(MBLIB_SRCDIR)/%.c
+	${CC} -c ${CPPFLAGS} -o $(MBLIB_BUILDDIR)/$*.o $<;
+	
 	
 #Autogenerate dependencies information
 #The generated makefiles get source into this file later
-$(DEPROOT)/%.dpp: $(SRCROOT)/%.cpp Makefile
-	$(CXX) -M -MM -MT "$(BUILDROOT)/$*.opp" -MT "$(DEPROOT)/$*.dpp" \
+$(DEPROOT)/%.dpp: $(MBLIB_SRCDIR)/%.cpp Makefile
+	$(CXX) -M -MM -MT "$(MBLIB_BUILDDIR)/$*.opp" \
+	    -MT "$(MBLIB_DEPDIR)/$*.dpp" \
+	    -MF $@ ${CPPFLAGS} $<;
+$(DEPROOT)/%.d: $(MBLIB_SRCDIR)/%.c Makefile
+	$(CC) -M -MM -MT "$(MBLIB_BUILDDIR)/$*.o" \
+	    -MT "$(MBLIB_DEPDIR)/$*.d" \
 	    -MF $@ ${CPPFLAGS} $<;
 	    
-SOURCES = mjbdebug.cpp \
-          mjbassert.cpp \
-          MBString.cpp \
-          MBVector.cpp \
-          MBStack.cpp \
-          MBQueue.cpp \
-          MBSet.cpp \
-          BitArray.cpp \
-          IntMap.cpp \
-          MBMap.cpp \
-          MBMatrix.cpp \
-          IntSet.cpp
+CPP_SOURCES = MBString.cpp \
+              MBVector.cpp \
+              MBStack.cpp \
+              MBQueue.cpp \
+              MBSet.cpp \
+              BitArray.cpp \
+              IntMap.cpp \
+              MBMap.cpp \
+              MBMatrix.cpp \
+              IntSet.cpp
+
+C_SOURCES = mjbassert.c \
+            mjbdebug.c
+
+SOURCES = $(CPP_SOURCES) $(C_SOURCES)
           
-OBJECTS=$(addprefix $(BUILDROOT)/, \
-            $(subst .cpp,.opp, $(SOURCES)))
+OBJECTS=$(addprefix $(MBLIB_BUILDDIR)/, \
+            $(subst .cpp,.opp, $(CPP_SOURCES))) \
+        $(addprefix $(MBLIB_BUILDDIR)/, \
+            $(subst .c,.o, $(C_SOURCES)))
 
 #The config check is to test if we've been configured
-all: $(BUILDROOT)/config.h MBLib.a
+all: $(BUILDROOT)/config.h $(MBLIB_BUILDDIR)/MBLib.a
 
 .PHONY: all clean distclean
 
-test: test.bin
-	./test.bin
+test: $(MBLIB_BUILDDIR)/test.bin
+	$(MBLIB_BUILDDIR)/test.bin
 
-test.bin: MBLib.a test.cpp
-	g++ ${CPPFLAGS} -g test.cpp MBLib.a -o test.bin
+$(MBLIB_BUILDDIR)/test.bin: $(MBLIB_BUILDDIR)/MBLib.a $(MBLIB_SRCDIR)/test.cpp
+	g++ ${CPPFLAGS} -g $(MBLIB_SRCDIR)/test.cpp $(MBLIB_BUILDDIR)/MBLib.a -o $(MBLIB_BUILDDIR)/test.bin
 
-MBLib.a: ${OBJECTS}
-	ar cr MBLib.a ${OBJECTS}
+$(MBLIB_BUILDDIR)/MBLib.a: ${OBJECTS}
+	ar cr $(MBLIB_BUILDDIR)/MBLib.a ${OBJECTS}
 
 clean:
-	rm -f MBLib.a test.bin
-	rm -f $(BUILDROOT)/*.o $(BUILDROOT)/*.opp
+	rm -f $(MBLIB_BUILDDIR)/MBLib.a
+	rm -f $(MBLIB_BUILDDIR)/test.bin
+	rm -f $(MBLIB_BUILDDIR)/*.o $(MBLIB_BUILDDIR)/*.opp
 
 distclean:
-	rm -rf $(BUILDROOT)/
+	rm -rf $(MBLIB_BUILDDIR)/
+	rm -rf $(MBLIB_DEPDIR)/
 
 #include the generated dependency files
--include $(addprefix $(DEPROOT)/,$(subst .cpp,.dpp,$(SOURCES)))
-
+-include $(addprefix $(MBLIB_DEPDIR)/,$(subst .cpp,.dpp,$(CPP_SOURCES)))
+-include $(addprefix $(MBLIB_DEPDIR)/,$(subst .c,.d,$(C_SOURCES)))
