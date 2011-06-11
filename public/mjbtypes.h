@@ -1,5 +1,5 @@
-#ifndef TYPES_H_200910301741
-#define TYPES_H_200910301741
+#ifndef _MJBTYPES_H_200910301741
+#define _MJBTYPES_H_200910301741
 
 #include <limits.h>
 
@@ -85,5 +85,5 @@ typedef unsigned long ulong;
 	}
 #endif 
 
-#endif //TYPES_H_200910301741
+#endif //_MJBTYPES_H_200910301741
 
