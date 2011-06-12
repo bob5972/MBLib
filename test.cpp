@@ -3,11 +3,14 @@
 
 #include <iostream>
 #include <stdio.h>
+#include <time.h>
 
 #include "MBMap.h"
 #include "IntMap.h"
 #include "MBString.h"
+#include "random.h"
 
+#include "mbutil.h"
 #include "mbtypes.h"
 #include "mbdebug.h"
 
@@ -16,12 +19,14 @@ using namespace std;
 void testIntMap();
 void testMBMap();
 void testTypes();
+void testRandom();
 
 int main()
 {
 	testTypes();
 	testIntMap();
-	testMBMap();	
+	testMBMap();
+	//testRandom();
 
 	cout << "Finished!"<<endl;	
 }
@@ -130,6 +135,48 @@ void testIntMap()
 		if( n.containsKey(x)) {
 			cerr << "Error on insertAll, x = " << x << endl;
 		}
-	}
-	
+	}	
 }
+
+void testRandom(void)
+{
+	Random_Init();
+
+	int x, y;
+	int printUint32 = 0;
+	int printBits = 1;
+	int count = 1000*1000*10;
+	uint64 seed;
+	
+	seed = time(0);
+	Random_Seed(seed);
+	
+	//Header for dieharder
+	printf("#================================\n");
+	printf("# randGen: seed = %llu\n", seed);
+	printf("#================================\n");
+	printf("type: d\n");
+	printf("count: %d\n", count);
+	printf("numbit: 32\n");	
+	
+	if (printUint32) {
+		for (x = 0;x < count; x++) {
+			printf("%u\n", Random_Uint32());
+		}
+	} else if (printBits) {
+		uint32 num;
+		for (x = 0;x<count; x++) {
+			num = 0;
+			for (y = 0; y < 32; y++) {
+				num <<= 1;
+				if (Random_Bit()) {
+					num |= 1;
+				}
+			}
+			printf("%u\n", num);
+		}
+	}
+
+	Random_Exit();
+}
+
