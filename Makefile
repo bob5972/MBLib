@@ -50,7 +50,8 @@ CPP_SOURCES = MBString.cpp \
               IntSet.cpp
 
 C_SOURCES = mbassert.c \
-            mbdebug.c
+            mbdebug.c \
+            random.c
 
 SOURCES = $(CPP_SOURCES) $(C_SOURCES)
 
