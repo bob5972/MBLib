@@ -34,11 +34,11 @@
 	#define ASSERT(x)
 #endif
 
-#define NOT_REACHED() { PanicWithMessage( __FILE__, __LINE__, "NOT_REACHED"); }
+#define NOT_REACHED() PanicWithMessage( __FILE__, __LINE__, "NOT_REACHED")
 
-#define NOT_IMPLEMENTED() { PanicWithMessage( __FILE__, __LINE__, "NOT_IMPLEMENTED"); }
+#define NOT_IMPLEMENTED() PanicWithMessage( __FILE__, __LINE__, "NOT_IMPLEMENTED")
 
-#define PANIC(...) { PanicWithMessage( __FILE__, __LINE__, __VA_ARGS__); }
+#define PANIC(...) PanicWithMessage( __FILE__, __LINE__, __VA_ARGS__)
 
 void AssertFail(const char *file, int line, const char *cond);
 void PanicWithMessage(const char *file, int line, const char *fmt, ...);
