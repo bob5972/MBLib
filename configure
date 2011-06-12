@@ -18,11 +18,11 @@ if [ "$MBLIB_BUILDDIR" == "" ]; then
 fi;
 
 if [ "$MBLIB_DEPDIR" == "" ]; then
-	MJBLIB_DEPDIR="$DEPROOT";
+	MBLIB_DEPDIR="$DEPROOT";
 fi;
 
 if [ "$MBLIB_SRCDIR" == "" ]; then
-	MJBLIB_SRCDIR=".";
+	MBLIB_SRCDIR=".";
 fi;
 
 mkdir -p "$MBLIB_BUILDDIR"
@@ -34,6 +34,13 @@ CONFIG_H="$BUILDROOT/config.h"
 
 cat /dev/null > $CONFIG_H;
 cat /dev/null > $CONFIG_MK;
+
+echo "BUILDROOT=$BUILDROOT" >> $CONFIG_MK;
+echo "TMPDIR=$TMPDIR" >> $CONFIG_MK;
+echo "DEPROOT=$DEPROOT" >> $CONFIG_MK;
+echo "MBLIB_BUILDDIR=$MBLIB_BUILDDIR" >> $CONFIG_MK;
+echo "MBLIB_DEPDIR=$MBLIB_DEPDIR" >> $CONFIG_MK;
+echo "MBLIB_SRCDIR=$MBLIB_SRCDIR" >> $CONFIG_MK;
 
 if [ `uname -a | cut -c 1-5` == "Linux" ]; then
 	echo '#define LINUX 1' >> $CONFIG_H;
