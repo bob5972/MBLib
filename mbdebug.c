@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <stdarg.h>
 
-#include "mjbdebug.h"
+#include "mbdebug.h"
 
 static int curLogLevel = 1;
 

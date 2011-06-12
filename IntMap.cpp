@@ -1,6 +1,6 @@
 #include "IntMap.h"
 
-#include "mjbassert.h"
+#include "mbassert.h"
 
 IntMap::IntMap()
 :myKeys(DEFAULT_SPACE),

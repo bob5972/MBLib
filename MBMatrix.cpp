@@ -2,9 +2,9 @@
 #define MBMatrix_CPP_201002052320
 
 #include "MBMatrix.h"
-#include "mjbtypes.h"
-#include "mjbdebug.h"
-#include "mjbassert.h"
+#include "mbtypes.h"
+#include "mbdebug.h"
+#include "mbassert.h"
 
 template<class itemType>
 MBMatrix<itemType>::MBMatrix()

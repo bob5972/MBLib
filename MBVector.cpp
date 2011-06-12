@@ -3,8 +3,8 @@
 
 #include <stdlib.h>
 #include "MBVector.h"
-#include "mjbdebug.h"
-#include "mjbassert.h"
+#include "mbdebug.h"
+#include "mbassert.h"
 
 template<class itemType>
 MBVector<itemType>::MBVector()

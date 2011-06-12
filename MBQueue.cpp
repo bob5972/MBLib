@@ -2,8 +2,8 @@
 #define MBQueue_CPP_201001091433
 
 #include "MBQueue.h"
-#include "mjbdebug.h"
-#include "mjbassert.h"
+#include "mbdebug.h"
+#include "mbassert.h"
 
 template<class itemType>
 MBQueue<itemType>::MBQueue()

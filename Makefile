@@ -25,8 +25,8 @@ $(MBLIB_BUILDDIR)/%.opp: $(MBLIB_SRCDIR)/%.cpp
 
 $(MBLIB_BUILDDIR)/%.o: $(MBLIB_SRCDIR)/%.c
 	${CC} -c ${CPPFLAGS} -o $(MBLIB_BUILDDIR)/$*.o $<;
-	
-	
+
+
 #Autogenerate dependencies information
 #The generated makefiles get source into this file later
 $(DEPROOT)/%.dpp: $(MBLIB_SRCDIR)/%.cpp Makefile
@@ -37,7 +37,7 @@ $(DEPROOT)/%.d: $(MBLIB_SRCDIR)/%.c Makefile
 	$(CC) -M -MM -MT "$(MBLIB_BUILDDIR)/$*.o" \
 	    -MT "$(MBLIB_DEPDIR)/$*.d" \
 	    -MF $@ ${CPPFLAGS} $<;
-	    
+
 CPP_SOURCES = MBString.cpp \
               MBVector.cpp \
               MBStack.cpp \
@@ -49,11 +49,11 @@ CPP_SOURCES = MBString.cpp \
               MBMatrix.cpp \
               IntSet.cpp
 
-C_SOURCES = mjbassert.c \
-            mjbdebug.c
+C_SOURCES = mbassert.c \
+            mbdebug.c
 
 SOURCES = $(CPP_SOURCES) $(C_SOURCES)
-          
+
 OBJECTS=$(addprefix $(MBLIB_BUILDDIR)/, \
             $(subst .cpp,.opp, $(CPP_SOURCES))) \
         $(addprefix $(MBLIB_BUILDDIR)/, \
@@ -79,8 +79,9 @@ clean:
 	rm -f $(MBLIB_BUILDDIR)/*.o $(MBLIB_BUILDDIR)/*.opp
 
 distclean:
-	rm -rf $(MBLIB_BUILDDIR)/
+	rm config.mk
 	rm -rf $(MBLIB_DEPDIR)/
+	rm -rf $(MBLIB_BUILDDIR)/
 
 #include the generated dependency files
 -include $(addprefix $(MBLIB_DEPDIR)/,$(subst .cpp,.dpp,$(CPP_SOURCES)))

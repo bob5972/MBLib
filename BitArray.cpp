@@ -1,6 +1,6 @@
 #include "BitArray.h"
 
-#include "mjbassert.h"
+#include "mbassert.h"
 
 
 BitArray::BitArray()

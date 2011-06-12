@@ -2,8 +2,8 @@
 #define MBStack_CPP
 
 #include "MBStack.h"
-#include "mjbdebug.h"
-#include "mjbassert.h"
+#include "mbdebug.h"
+#include "mbassert.h"
 
 template<class itemType>
 MBStack<itemType>::MBStack()

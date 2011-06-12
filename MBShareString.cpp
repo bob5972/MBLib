@@ -3,9 +3,9 @@
 #include <stdlib.h>
 #include <ctype.h>
 
-#include "mjbtypes.h"
-#include "mjbdebug.h"
-#include "mjbassert.h"
+#include "mbtypes.h"
+#include "mbdebug.h"
+#include "mbassert.h"
 
 MBShareString::StringRef::StringRef()
 :refCount(1),

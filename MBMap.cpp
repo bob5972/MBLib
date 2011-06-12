@@ -3,7 +3,7 @@
 
 
 #include "MBMap.h"
-#include "mjbassert.h"
+#include "mbassert.h"
 
 template<class keyType, class valueType>
 MBMap<keyType,valueType>::MBMap()

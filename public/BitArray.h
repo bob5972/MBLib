@@ -1,9 +1,7 @@
 #ifndef BitArray_H_201001192326
 #define BitArray_H_201001192326
 
-#include "mjbtypes.h"
-
-
+#include "mbtypes.h"
 
 class BitArray
 {

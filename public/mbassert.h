@@ -3,8 +3,8 @@
 #define MJBASSERT_H_201001091250
 
 #include "config.h"
-#include "mjbtypes.h"
-#include "mjbdebug.h"
+#include "mbtypes.h"
+#include "mbdebug.h"
 
 #ifdef __cplusplus
 	extern "C" {

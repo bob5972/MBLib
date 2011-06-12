@@ -1,7 +1,7 @@
 #ifndef MBQueue_H_201001091433
 #define MBQueue_H_201001091433
 
-#include "mjbtypes.h"
+#include "mbtypes.h"
 
 template<class itemType>
 class MBQueue

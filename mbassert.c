@@ -1,12 +1,12 @@
 /*
- * mjbassert.cpp --
+ * mbassert.c --
  */
  
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "mjbassert.h"
+#include "mbassert.h"
 
 void Panic(const char *fmt, ...)
 {

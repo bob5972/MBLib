@@ -1,6 +1,6 @@
 #include "IntSet.h"
 
-#include "mjbassert.h"
+#include "mbassert.h"
 
 IntSet::IntSet()
 {   }

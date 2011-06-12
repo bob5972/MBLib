@@ -8,8 +8,8 @@
 #include "IntMap.h"
 #include "MBString.h"
 
-#include "mjbtypes.h"
-#include "mjbdebug.h"
+#include "mbtypes.h"
+#include "mbdebug.h"
 
 using namespace std;
 
