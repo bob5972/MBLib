@@ -63,7 +63,7 @@ OBJECTS=$(addprefix $(MBLIB_BUILDDIR)/, \
 #The config check is to test if we've been configured
 all: $(BUILDROOT)/config.h $(MBLIB_BUILDDIR)/MBLib.a
 
-.PHONY: all clean distclean
+.PHONY: all clean distclean dist
 
 test: $(MBLIB_BUILDDIR)/test.bin
 	$(MBLIB_BUILDDIR)/test.bin
@@ -78,6 +78,15 @@ clean:
 	rm -f $(MBLIB_BUILDDIR)/MBLib.a
 	rm -f $(MBLIB_BUILDDIR)/test.bin
 	rm -f $(MBLIB_BUILDDIR)/*.o $(MBLIB_BUILDDIR)/*.opp
+	
+dist:
+	rm -f $(MBLIB_BUILDDIR)/MBLib.tar.bz2
+	rm -rf $(TMPDIR)/MBLib
+	mkdir $(TMPDIR)/MBLib
+	cp -r $(MBLIB_SRCDIR)/*.c $(MBLIB_SRCDIR)/*.cpp Makefile configure public \
+	      $(TMPDIR)/MBLib
+	cd $(TMPDIR); tar -cjf MBLib.tar.bz2 MBLib
+	mv $(TMPDIR)/MBLib.tar.bz2 $(MBLIB_BUILDDIR)/MBLib.tar.bz2
 
 distclean:
 	rm config.mk
