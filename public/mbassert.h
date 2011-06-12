@@ -1,6 +1,9 @@
-
-#ifndef MJBASSERT_H_201001091250
-#define MJBASSERT_H_201001091250
+/*
+ * mbassert.h --
+ */
+ 
+#ifndef MBASSERT_H_201001091250
+#define MBASSERT_H_201001091250
 
 #include "config.h"
 #include "mbtypes.h"
@@ -10,20 +13,20 @@
 	extern "C" {
 #endif 
 
-#ifdef MJB_DEBUG
-	#ifndef MJB_ASSERT
-		#define MJB_ASSERT 1
+#ifdef MB_DEBUG
+	#ifndef MB_ASSERT
+		#define MB_ASSERT 1
 	#endif
 #endif
 
-#ifndef MJB_ASSERT
-	#define MJB_ASSERT 0
+#ifndef MB_ASSERT
+	#define MB_ASSERT 0
 #endif
 
-#if MJB_ASSERT
+#if MB_ASSERT
 	#define ASSERT(x) do { \
 		if (!(x)) { \
-			PanicHelper(__FILE__, __LINE__, "ASSERT"); \
+			AssertFail(__FILE__, __LINE__, #x); \
 		} \
 	} while (FALSE)
 	
@@ -31,18 +34,18 @@
 	#define ASSERT(x)
 #endif
 
-#define NOT_REACHED() { PanicHelper( __FILE__, __LINE__, "NOT_REACHED"); }
+#define NOT_REACHED() { PanicWithMessage( __FILE__, __LINE__, "NOT_REACHED"); }
 
-#define NOT_IMPLEMENTED() { PanicHelper( __FILE__, __LINE__, "NOT_IMPLEMENTED"); }
+#define NOT_IMPLEMENTED() { PanicWithMessage( __FILE__, __LINE__, "NOT_IMPLEMENTED"); }
 
-#define PANIC(msg) { PanicHelper( __FILE__, __LINE__, (msg)); }
+#define PANIC(...) { PanicWithMessage( __FILE__, __LINE__, __VA_ARGS__); }
 
-void Panic(const char *fmt, ...);
-
-void PanicHelper(const char *file, int line, const char *message);
+void AssertFail(const char *file, int line, const char *cond);
+void PanicWithMessage(const char *file, int line, const char *fmt, ...);
+void Panic();
 
 #ifdef __cplusplus
 	}
 #endif 
 
-#endif //MJBASSERT_H_201001091250
+#endif //MBASSERT_H_201001091250

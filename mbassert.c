@@ -7,22 +7,32 @@
 #include <stdlib.h>
 
 #include "mbassert.h"
+#include "mbdebug.h"
 
-void Panic(const char *fmt, ...)
+void PanicWithMessage(const char *file, int line, const char *fmt, ...)
 {
 	va_list args;
 	
 	va_start(args, fmt);
+	fprintf(stderr, "%s:%d| ", file, line);
 	fprintf(stderr, "PANIC: ");
 	vfprintf(stderr, fmt, args);
+	fprintf(stderr, "\n");
 	va_end(args);
 	
-	exit(1);
+	Panic();
 }
 
-void PanicHelper(const char *file, int line, const char *msg)
+void AssertFail(const char *file, int line, const char *cond)
 {
-	DebugPrintHelper(file, line, msg);
+	fprintf(stderr, "%s:%d| ", file, line);
+	fprintf(stderr, "ASSERT: %s\n", cond);
+	
+	Panic();
+}
+
+void Panic()
+{
 	exit(1);
 }
 

@@ -30,17 +30,12 @@ void Log(int level, const char *fmt, ...)
 
 void DebugPrintHelper(const char *file, int line, const char *fmt, ...)
 {
-	const int bufSize = 1024;
-	char buffer[bufSize];
-	int len;
 	va_list args;
 	
-	len = snprintf(buffer, bufSize, "%s:%d| ", file, line);
 	va_start(args, fmt);
-	len = vsnprintf(buffer + len, bufSize-len, fmt, args);
+	fprintf(stderr, "%s:%d| ", file, line);
+	vfprintf(stderr, fmt, args);
 	va_end(args);
-	
-	Warning(buffer);
 }
 
 

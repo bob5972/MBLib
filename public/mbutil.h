@@ -1,9 +1,9 @@
 /*
- * mjbutil.h --
+ * mbutil.h --
  */
  
-#ifndef _MJBUTIL_H_201106111445
-#define _MJBUTIL_H_201106111445
+#ifndef _MBUTIL_H_201106111445
+#define _MBUTIL_H_201106111445
 
 #ifdef __cplusplus
 	extern "C" {
@@ -19,4 +19,4 @@
 	}
 #endif 
 
-#endif //_MJBUTIL_H_201106111445
+#endif //_MBUTIL_H_201106111445
