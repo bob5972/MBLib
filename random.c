@@ -1,9 +1,11 @@
 /*
- * random.cpp --
+ * random.c --
  */
 
 #include <stdlib.h>
 #include <time.h>
+#include <unistd.h>
+#include <fcntl.h>
 
 #include "mbutil.h"
 #include "random.h"
@@ -20,15 +22,44 @@ typedef struct RandomGlobalData {
 
 static RandomGlobalData randomData;
 
-void Random_Init(void)
+uint64 Random_Init(void)
 {	
+	uint64 seed;
+	bool haveSeed = FALSE;
+	
 	ASSERT(!randomData.initialized);
 	
 	randomData.initialized = TRUE;
-	Random_Seed(time(0));
 	
+	int fd;
+	
+	fd = open ("/dev/urandom", O_RDONLY);
+	
+	if (fd != -1) {
+		int count;
+		count = read(fd, &seed, sizeof(seed));
+		if (count == sizeof(seed)) {
+			haveSeed = TRUE;
+		}
+	    close (fd);
+	}
+    
+    if (!haveSeed) {
+    	pid_t pid = getpid();
+	    seed = time(0) * pid + pid;
+    	Random_Seed(seed);
+    	
+    	seed = Random_Uint64();
+	    haveSeed = TRUE;
+    }
+    	
 	randomData.bitBucket = 0;
 	randomData.bitBucketSize = 0;
+	
+	ASSERT(haveSeed);
+	Random_Seed(seed);
+	
+	return seed;
 }
 
 void Random_Exit(void)
@@ -164,6 +195,17 @@ uint32 Random_Uint32(void)
 	ASSERT(randomData.initialized);
 	randomData.seed = constA * randomData.seed + constB;
 	return randomData.seed >> 32;
+}
+
+uint64 Random_Uint64(void)
+{
+	uint64 a;
+	uint32 b;
+	
+	a = Random_Uint32();
+	b = Random_Uint32();
+	
+	return (a << 32) | b;
 }
 
 //XXX: Not verified for negative values or ranges near max int.

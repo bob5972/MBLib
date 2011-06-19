@@ -17,7 +17,7 @@ typedef struct EnumDistribution {
 	float probability;
 } EnumDistribution;
 
-void Random_Init(void);
+uint64 Random_Init(void);
 void Random_Exit(void);
 
 void Random_Seed(uint64 seed);
@@ -39,6 +39,7 @@ int Random_Int(int min, int max);
 float Random_Float(float min, float max);
 
 uint32 Random_Uint32(void);
+uint64 Random_Uint64(void);
 float Random_UnitFloat(void);
 
 int Random_Enum(EnumDistribution *dist, int numValues);

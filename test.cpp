@@ -26,7 +26,7 @@ int main()
 	testTypes();
 	testIntMap();
 	testMBMap();
-	//testRandom();
+	testRandom();
 
 	cout << "Finished!"<<endl;	
 }
@@ -140,30 +140,55 @@ void testIntMap()
 
 void testRandom(void)
 {
-	Random_Init();
+	uint64 seed;
+	seed = Random_Init();
+	
+	printf("Testing Random\n");
+	
+	printf("\tSeed = %llu\n", seed);
 
 	int x, y;
-	int printUint32 = 0;
+	
+	int printUint64 = 1;
+	int printUint32 = 1;
 	int printBits = 1;
-	int count = 1000*1000*10;
-	uint64 seed;
+	int count = 3;
+	bool prefix = TRUE;
 	
-	seed = time(0);
-	Random_Seed(seed);
-	
-	//Header for dieharder
-	printf("#================================\n");
-	printf("# randGen: seed = %llu\n", seed);
-	printf("#================================\n");
-	printf("type: d\n");
-	printf("count: %d\n", count);
-	printf("numbit: 32\n");	
+//	//Header for dieharder
+//	printf("#================================\n");
+//	printf("# randGen: seed = %llu\n", seed);
+//	printf("#================================\n");
+//	printf("type: d\n");
+//	printf("count: %d\n", count);
+//	printf("numbit: 32\n");
+
+	if (printUint64) {
+		uint64 num;
+		for (x = 0;x < count; x++) {
+			num = Random_Uint64();
+			if (prefix) {
+				printf("\t");
+			}
+			printf("%u\n", (num >> 32));
+			
+			if (prefix) {
+				printf("\t");
+			}
+			printf("%u\n", (uint32) num);
+		}
+	}	
 	
 	if (printUint32) {
 		for (x = 0;x < count; x++) {
+			if (prefix) {
+				printf("\t");
+			}
 			printf("%u\n", Random_Uint32());
 		}
-	} else if (printBits) {
+	}
+	
+	if (printBits) {
 		uint32 num;
 		for (x = 0;x<count; x++) {
 			num = 0;
@@ -172,6 +197,9 @@ void testRandom(void)
 				if (Random_Bit()) {
 					num |= 1;
 				}
+			}
+			if (prefix) {
+				printf("\t");
 			}
 			printf("%u\n", num);
 		}
