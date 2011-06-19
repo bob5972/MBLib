@@ -24,7 +24,7 @@ $(MBLIB_BUILDDIR)/%.opp: $(MBLIB_SRCDIR)/%.cpp
 	${CXX} -c ${CPPFLAGS} -o $(MBLIB_BUILDDIR)/$*.opp $<;
 
 $(MBLIB_BUILDDIR)/%.o: $(MBLIB_SRCDIR)/%.c
-	${CC} -c ${CPPFLAGS} -o $(MBLIB_BUILDDIR)/$*.o $<;
+	${CC} -c ${CFLAGS} -o $(MBLIB_BUILDDIR)/$*.o $<;
 
 
 #Autogenerate dependencies information
