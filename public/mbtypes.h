@@ -1,3 +1,7 @@
+/*
+ * mbtypes.h --
+ */
+
 #ifndef _MBTYPES_H_200910301741
 #define _MBTYPES_H_200910301741
 

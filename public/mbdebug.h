@@ -23,7 +23,7 @@ void Log(int level, const char *fmt, ...);
 
 #ifdef DEBUG
 	#define DebugPrint(msg) { DebugPrintHelper( __FILE__, __LINE__, msg); }
-	#define TRACE() { DebugPrintHelper( __FILE__, __LINE__, "TRACE"); }
+	#define TRACE() { DebugPrintHelper( __FILE__, __LINE__, "TRACE: %s", __FUNCTION__); }
 	#define NOT_TESTED() { DebugPrintHelper( __FILE__, __LINE__, "NOT_TESTED"); }
 #else
 	#define DebugPrint(msg) ;
