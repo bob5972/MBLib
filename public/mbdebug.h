@@ -21,14 +21,14 @@
 void Warning(const char *fmt, ...);
 void Log(int level, const char *fmt, ...);
 
+#define NOT_TESTED() { DebugPrintHelper( __FILE__, __LINE__, "NOT_TESTED\n"); }
+
 #ifdef DEBUG
-	#define DebugPrint(msg) { DebugPrintHelper( __FILE__, __LINE__, msg); }
+	#define DebugPrint(...) { DebugPrintHelper( __FILE__, __LINE__, __VA_ARGS__); }
 	#define TRACE() { DebugPrintHelper( __FILE__, __LINE__, "TRACE: %s", __FUNCTION__); }
-	#define NOT_TESTED() { DebugPrintHelper( __FILE__, __LINE__, "NOT_TESTED"); }
 #else
 	#define DebugPrint(msg) ;
 	#define TRACE() ;
-	#define NOT_TESTED() ;
 #endif
 
 void DebugPrintHelper(const char *file, int line, const char *fmt, ...);
