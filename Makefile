@@ -8,12 +8,8 @@ include config.mk
 
 INCLUDE_FLAGS=-I $(MBLIB_SRCDIR)/ -I $(MBLIB_SRCDIR)/public
 
-OPTIMIZATION_FLAGS = -Wall -g 
-#OPTIMIZATION_FLAGS = -O3 -fomit-frame-pointer
-#OPTIMIZATION_FLAGS = -O3 -ftree-vectorizer-verbose=2
-
 #The BUILDROOT folder is included for config.h
-CFLAGS = ${INCLUDE_FLAGS} -I $(BUILDROOT) ${OPTIMIZATION_FLAGS}
+CFLAGS = ${DEFAULT_CFLAGS} ${INCLUDE_FLAGS} -I $(BUILDROOT)
 
 CPPFLAGS= ${CFLAGS}
 
