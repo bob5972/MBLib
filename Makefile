@@ -65,7 +65,7 @@ test: $(MBLIB_BUILDDIR)/test.bin
 	$(MBLIB_BUILDDIR)/test.bin
 
 $(MBLIB_BUILDDIR)/test.bin: $(MBLIB_BUILDDIR)/MBLib.a $(MBLIB_SRCDIR)/test.cpp
-	g++ ${CPPFLAGS} -g $(MBLIB_SRCDIR)/test.cpp $(MBLIB_BUILDDIR)/MBLib.a -o $(MBLIB_BUILDDIR)/test.bin
+	${CXX} ${CPPFLAGS} -g $(MBLIB_SRCDIR)/test.cpp $(MBLIB_BUILDDIR)/MBLib.a -o $(MBLIB_BUILDDIR)/test.bin
 
 $(MBLIB_BUILDDIR)/MBLib.a: ${OBJECTS}
 	ar cr $(MBLIB_BUILDDIR)/MBLib.a ${OBJECTS}
