@@ -208,7 +208,11 @@ uint64 Random_Uint64(void)
 	return (a << 32) | b;
 }
 
-//XXX: Not verified for negative values or ranges near max int.
+/*
+ * Random_Int --
+ *   Returns a uniformly distributed int in the range [min, max].
+ *   XXX: Not verified for negative values or ranges near max int.
+ */
 int Random_Int(int min, int max)
 {
 	int range;
@@ -220,7 +224,7 @@ int Random_Int(int min, int max)
 		return min;
 	}
 
-	range = (max - min);
+	range = (max - min) + 1;
 	rval = Random_Uint32();
 	if (rval < 0) {
 		rval *= -1;
