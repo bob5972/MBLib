@@ -220,16 +220,11 @@ int Random_Int(int min, int max)
 
 	ASSERT(max >= min);
 
-	if (min == max) {
-		return min;
-	}
-
 	range = (max - min) + 1;
 	rval = Random_Uint32();
-	if (rval < 0) {
-		rval *= -1;
-	}
+	rval &= ~(1 << 31);
 
+	ASSERT(rval >= 0);
 	rval = (rval % range) + min;
 
 	ASSERT(rval <= max);
