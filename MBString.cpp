@@ -2,6 +2,7 @@
 
 #include <stdlib.h>
 #include <ctype.h>
+#include <string.h>
 
 #include "mbtypes.h"
 #include "mbdebug.h"
@@ -21,10 +22,7 @@ MBString::MBString(int size, char fill)
  myCapacity(size+1),
  myChars(new char[myCapacity])
 {
-	for (int x=0;x<myLength;x++)
-	{
-		myChars[x] = fill;
-	}
+	memset(myChars, fill, myLength);
 	myChars[myLength] = '\0';
 }
 
@@ -52,13 +50,11 @@ MBString::MBString(const char * c)
  myChars(null)
 {	
 	if (c) {
-		while (c[myLength++]);
+		myLength = strlen(c);
 		myLength--;
 		myCapacity = myLength+1;
 		myChars = new char[myCapacity];
-		for (int x=0;x<myLength;x++) {
-			myChars[x] = c[x];
-		}
+		strncpy(myChars, c, myLength);
 	} else {
 		myLength = 0;
 		myCapacity = 1;
@@ -74,9 +70,7 @@ MBString::MBString(const MBString & str)
  myCapacity(myLength+1),
  myChars(new char[myCapacity])
 {
-	for (int x=0;x<myLength;x++) {
-		myChars[x] = str.myChars[x];
-	}
+	strncpy(myChars, str.myChars, str.myLength);
 	myChars[myLength] = '\0';
 }
 
@@ -95,9 +89,7 @@ const MBString&  MBString::operator = (const MBString & str)
     		myChars = new char[myCapacity];    		
   		}
   		myLength = str.myLength;
-  		for (int x=0;x<myLength;x++) {
-  			myChars[x] = str.myChars[x];
-		}
+  		strncpy(myChars, str.myChars, myLength);
 		myChars[myLength] = '\0';
     }
     return *this;
@@ -108,8 +100,7 @@ const MBString & MBString::operator = (const char* c)
 
 {
 	if (c) {
-		myLength = 0;
-  		while (c[myLength++]);
+		myLength = strlen(c);
 		myLength--;
 		if (myLength+1 > myCapacity) {
 			delete[] myChars;
@@ -118,9 +109,7 @@ const MBString & MBString::operator = (const char* c)
    			
 		}		
 		
-		for (int x=0;x<myLength;x++) {
-			myChars[x] = c[x];
-		}
+		strncpy(myChars, c, myLength);
 	}
 	else {
 		myLength = 0;
@@ -170,6 +159,7 @@ int MBString::find(const MBString & str) const
 {
 	int x=0;
 	int found=0;
+	char *instance;
 	
 	if(myLength == 0) {
 		return -1;
@@ -178,6 +168,7 @@ int MBString::find(const MBString & str) const
 	if(str.myLength == 0) {
 		return 0;
 	}
+	
 	
 	while( x<=(myLength-str.myLength) && found<str.myLength ) {
 		if(myChars[x] == str.myChars[found]) {
