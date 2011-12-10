@@ -10,7 +10,7 @@
 
 MBString::MBString()
 :myLength(0),
- myCapacity(1),
+ myCapacity(8),
  myChars(new char[myCapacity])
 {
 	myChars[myLength] = '\0';
@@ -36,7 +36,7 @@ MBString::MBString(int size)
 
 MBString::MBString(char x)
 :myLength(1),
- myCapacity(2),
+ myCapacity(8),
  myChars(new char[myCapacity])
 {
 	myChars[0]=x;
@@ -54,10 +54,10 @@ MBString::MBString(const char * c)
 		myLength--;
 		myCapacity = myLength+1;
 		myChars = new char[myCapacity];
-		strncpy(myChars, c, myLength);
+		memcpy(myChars, c, myLength);
 	} else {
 		myLength = 0;
-		myCapacity = 1;
+		myCapacity = 8;
 		myChars = new char[myCapacity];
 	}
 	
@@ -70,7 +70,7 @@ MBString::MBString(const MBString & str)
  myCapacity(myLength+1),
  myChars(new char[myCapacity])
 {
-	strncpy(myChars, str.myChars, str.myLength);
+	memcpy(myChars, str.myChars, str.myLength);
 	myChars[myLength] = '\0';
 }
 
@@ -83,13 +83,10 @@ MBString::~MBString()
 const MBString&  MBString::operator = (const MBString & str)
 {
 	if (this != &str) {
-		if (myCapacity < str.myLength) {
-    		delete [] myChars;
-    		myCapacity = str.myLength+1;
-    		myChars = new char[myCapacity];    		
-  		}
+		myLength = 0;
+		ensureCapacity(str.myLength + 1);
   		myLength = str.myLength;
-  		strncpy(myChars, str.myChars, myLength);
+  		memcpy(myChars, str.myChars, myLength);
 		myChars[myLength] = '\0';
     }
     return *this;
@@ -97,21 +94,16 @@ const MBString&  MBString::operator = (const MBString & str)
 
 //Precondition: c points to a null terminated string or c = NULL
 const MBString & MBString::operator = (const char* c)
-
 {
+	int newLength;
 	if (c) {
-		myLength = strlen(c);
-		myLength--;
-		if (myLength+1 > myCapacity) {
-			delete[] myChars;
-			myCapacity = myLength+1;
-			myChars = new char[myCapacity];
-   			
-		}		
-		
-		strncpy(myChars, c, myLength);
-	}
-	else {
+		newLength = strlen(c);
+		newLength--;
+		myLength = 0;
+		ensureCapacity(newLength + 1);
+		myLength = newLength;		
+		memcpy(myChars, c, myLength);
+	} else {
 		myLength = 0;
 	}
 	myChars[myLength] = '\0';
@@ -120,14 +112,9 @@ const MBString & MBString::operator = (const char* c)
 }
 const MBString & MBString::operator = (char c)
 {
-	
+	myLength = 0;
+	ensureCapacity(2);
 	myLength = 1;
-	if ( myLength +1> myCapacity)
-	{
-		delete[] myChars;
-		myCapacity = myLength+1;
-  		myChars = new char[myCapacity];		
-	}
 	myChars[0] = c;
 	myChars[myLength] = '\0';
 	return *this;
@@ -159,18 +146,19 @@ int MBString::find(const MBString & str) const
 {
 	int x = 0;
 	
-	if(myLength == 0) {
+	if (myLength == 0) {
 		return -1;
 	}
 	
-	if(str.myLength == 0) {
+	if (str.myLength == 0) {
 		return 0;
 	}
 	
 	x = 0;
 	while (x + str.myLength - 1 < myLength) {
 		const char *start = &myChars[x];
-		if (strncmp(start, str.myChars, str.myLength) == 0) {
+		
+		if (memcmp(start, str.myChars, str.myLength) == 0) {
 			return x;
 		}
 		
@@ -182,7 +170,7 @@ int MBString::find(const MBString & str) const
 
 MBString MBString::substr(int pos,int len) const
 {
-	if (pos+len>myLength) {
+	if (pos + len > myLength) {
 		PANIC("Substring out of range.");
 	}
 	if (pos < 0) {
@@ -191,7 +179,7 @@ MBString MBString::substr(int pos,int len) const
 	
 	MBString oup(len);
 	
-	for (int x=0;x<len;x++) {
+	for (int x = 0; x < len; x++) {
 		oup += myChars[x+pos];
 	}
 	
@@ -232,34 +220,52 @@ char MBString::operator[ ]( int k ) const
 
 char& MBString::operator[ ]( int k )
 {
-	if (k >= myLength || k< 0) {
+	if (k >= myLength || k < 0) {
 		PANIC("Index out of range.");
 	}
 	return myChars[k];
 }
 
 
-void MBString::append(const MBString& str)
+/*
+ * Ensure the string has at least the specified capacity.
+ * Can only ever enlarge the buffer.
+ */
+ 
+void MBString::ensureCapacity(int cap)
 {
-	if (myCapacity < myLength + str.myLength+1) {
-		char* temp = myChars;
-		while (myCapacity <myLength + str.myLength+1) {
+	ASSERT(myCapacity >= myLength + 1);
+	ASSERT(cap > 0);
+	
+	if (myCapacity < cap) {
+		char *temp = myChars;
+		while (myCapacity < cap) {
 			ASSERT(myCapacity > 0);
 			myCapacity *= 2;
 		}
+		ASSERT(myCapacity >= myLength + 1);
+		
 		myChars = new char[myCapacity];
-		for (int x=0;x<myLength;x++) {
-			myChars[x] = temp[x];
-		}
+		ASSERT(myChars != NULL);
+		memcpy(myChars, temp, myLength + 1);
+		ASSERT(myChars[myLength] == '\0');
+		
 		delete[] temp;
 	}
 	
-	int y=0;
-	int x=myLength;
+	ASSERT(myCapacity >= cap);
+}
+
+
+void MBString::append(const MBString& str)
+{
+	int x;
+	int y;
+	
+	ensureCapacity(myLength + str.myLength + 1);
+	
+	memcpy(&myChars[myLength], str.myChars, str.myLength);
 	myLength = myLength + str.myLength;
-	while(x<myLength) { 
-		myChars[x++] = str.myChars[y++];
-	}
 	myChars[myLength] = '\0';
 }
 
@@ -273,18 +279,9 @@ const MBString& MBString::operator += ( const MBString & str )
 
 void MBString::append(char ch)
 {
-	if (myCapacity < myLength + 2) {
-		char* temp = myChars;
-		ASSERT(myCapacity > 0);
-		myCapacity *= 2;
-		
-		myChars = new char[myCapacity];
-		for (int x=0;x<myLength;x++) {
-			myChars[x] = temp[x];
-		}
-		delete[] temp;
-	}
-	myChars[myLength++] = ch;
+	ensureCapacity(myLength + 2);
+	myChars[myLength] = ch;
+	myLength++;
 	myChars[myLength] = '\0';
 }
 
@@ -342,12 +339,18 @@ istream& getline( istream& is, MBString& str )
 
 int MBString::compareTo(const MBString& rhs) const
 {
-	int maxx= (myLength < rhs.myLength)? myLength : rhs.myLength;
+	int maxx;
 	
-	for (int x=0;x<maxx;x++) {
-		if (getCharAt(x) < rhs[x]) {
+	if (myLength < rhs.myLength) {
+		maxx = myLength;
+	} else {
+		maxx = rhs.myLength;
+	}
+	
+	for (int x = 0;x < maxx; x++) {
+		if (myChars[x] < rhs.myChars[x]) {
 			return -1;
-		} else if (getCharAt(x) > rhs[x]) {
+		} else if (myChars[x] > rhs.myChars[x]) {
 			return 1;
 		}
 	}

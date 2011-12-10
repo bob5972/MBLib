@@ -78,6 +78,8 @@ class MBString
     	int myLength;
     	int myCapacity;
     	char * myChars;
+    	
+    	void ensureCapacity(int cap);
 };
 
 
