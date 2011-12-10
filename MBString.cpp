@@ -158,7 +158,6 @@ int MBString::find(char ta) const
 int MBString::find(const MBString & str) const
 {
 	int x = 0;
-	int found = 0;
 	
 	if(myLength == 0) {
 		return -1;
@@ -168,25 +167,16 @@ int MBString::find(const MBString & str) const
 		return 0;
 	}
 	
-	for (x = 0; x < myLength; x++) {
-		int cur;
-		int y;
-		
-		cur = x;
-		y = 0;
-		found = 0;
-		while (cur < myLength && y < str.myLength &&
-		       myChars[cur] == str.myChars[y]) {
-			y++;
-			cur++;
-			found++;
-		}
-		
-		if (found == str.myLength) {
+	x = 0;
+	while (x + str.myLength - 1 < myLength) {
+		const char *start = &myChars[x];
+		if (strncmp(start, str.myChars, str.myLength) == 0) {
 			return x;
 		}
+		
+		x++;
 	}
-	
+		
 	return -1;
 }
 
