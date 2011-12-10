@@ -2,6 +2,7 @@
 #define MBStack_H_201001091426
 
 #include "mbtypes.h"
+#include "MBVector.h"
 
 template<class itemType>
 class MBStack
@@ -28,29 +29,10 @@ class MBStack
     const itemType& pop( );                // remove top element
     void pop (itemType& item);
     void makeEmpty( );                     // make queue empty
+    void trim();  // reduce memory usage
     
 	private:
-		struct MBNode
-		{
-			MBNode(const itemType&val)
-			:nextNode(NULL),
-			 value(val) {}
-			MBNode(const itemType&val, MBNode*target)
-			:nextNode(target),
-			 value(val) {}
-			MBNode(const MBNode&old)
-			:nextNode(old.nextNode),
-			 value(old.value) {}
-			MBNode()
-			:nextNode(NULL) {}
-	
-			MBNode* nextNode;
-			itemType value;
-		};
-
-		int mySize;        // # of elts currently in stack
-		MBNode* myTop;
-		MBNode * myLast;  //Used to store the reference from a call to pop
+		MBVector<itemType> myVector;
 };
 
 #include "../MBStack.cpp"

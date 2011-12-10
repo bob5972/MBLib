@@ -26,7 +26,7 @@ MBVector<itemType>::MBVector(const MBVector<itemType>& vec)
  myCapacity(mySize),
  myItems(new itemType[mySize])
 {
-	for (int x=0;x<vec.mySize;x++)
+	for (int x=0;x < vec.mySize;x++)
 	{
 		myItems[x] = vec.myItems[x];
 	}
@@ -144,6 +144,34 @@ const itemType & MBVector<itemType>::operator [] (int x) const
 		PANIC("Illegal vector index.");
 	}
 	return myItems[x];
+}
+
+template <class itemType>
+itemType & MBVector<itemType>::last ()
+{
+	ASSERT(mySize > 0);
+	return myItems[mySize - 1];
+}
+
+template <class itemType>
+const itemType & MBVector<itemType>::last () const
+{
+	ASSERT(mySize > 0);
+	return myItems[mySize - 1];
+}
+
+template <class itemType>
+itemType & MBVector<itemType>::first ()
+{
+	ASSERT(mySize > 0);
+	return myItems[0];
+}
+
+template <class itemType>
+const itemType & MBVector<itemType>::first () const
+{
+	ASSERT(mySize > 0);
+	return myItems[0];
 }
 
 template<class itemType>

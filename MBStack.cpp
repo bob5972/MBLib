@@ -7,38 +7,19 @@
 
 template<class itemType>
 MBStack<itemType>::MBStack()
-:	mySize(0),
-	myTop(NULL),
-	myLast(NULL)
+:myVector(0)
 {
 }
 
 template<class itemType>
 MBStack<itemType>::MBStack(const MBStack &q)
-:	mySize(q.mySize),
-	myTop(q.myTop),
-	myLast(NULL)
+:myVector(q.myVector)
 {
-	if (mySize == 0) {
-		return;
-	}
-	
-	myTop = new MBNode(*myTop);
-	MBNode* currentNode(myTop);
-	while (currentNode->nextNode != NULL) {
-		currentNode->nextNode = new MBNode(*(myTop->nextNode));
-		currentNode = currentNode->nextNode;
-	}
 }
 
 template<class itemType>
 MBStack<itemType>::~MBStack()
 {
-	makeEmpty();
-	if (myLast) {
-		delete myLast;
-	}
-	myLast = NULL;
 }
 
 template<class itemType>
@@ -46,22 +27,7 @@ const MBStack<itemType>&
 MBStack<itemType>::operator = (const MBStack<itemType> & rhs)
 {
 	if (this != &rhs) {
-		makeEmpty();
-		mySize = rhs.mySize;
-		myTop = rhs.myTop;
-		
-		if (mySize == 0) {
-			return *this;
-		}
-		myTop = new MBNode(*myTop);
-		MBNode* currentNode(myTop);
-		MBNode* newNode;
-		for (int x=1;x<mySize;x++) {
-	
-			newNode = new MBNode(*(currentNode->nextNode));
-			currentNode->nextNode = newNode;
-			currentNode = newNode;
-		}
+		myVector = rhs.myVector;
 	}
 	return *this;
 }
@@ -70,78 +36,50 @@ MBStack<itemType>::operator = (const MBStack<itemType> & rhs)
 template<class itemType>
 const itemType& MBStack<itemType>::top() const
 {
-	ASSERT(mySize > 0);
-	
-	return myTop->value;
+	return myVector.last();
 }
 
 template<class itemType>
 bool MBStack<itemType>::isEmpty() const
 {
-	return (mySize == 0);
+	return myVector.isEmpty();
 }
 
 template<class itemType>
 int MBStack<itemType>::size() const
 {
-	return mySize;
+	return myVector.length();
 }
 
 template<class itemType>
 void MBStack<itemType>::push( const itemType &item)
 {
-	if (mySize > 0) {
-		myTop = new MBNode(item, myTop);
-		mySize++;
-	} else {
-		myTop = new MBNode(item, NULL);
-		mySize=1;
-	}
+	myVector.push(item);
 }
 
 // remove top element
 template<class itemType>
 const itemType& MBStack<itemType>::pop()
 {
-	ASSERT(mySize > 0);
-
-	if (myLast) {
-		delete myLast;
-	}
-
-	myLast = myTop;
-	myTop = myTop->nextNode;
-	mySize--;
-	return myLast->value;
+	return myVector.pop();
 }
 
 template<class itemType>
 void MBStack<itemType>::pop (itemType &item)
 {
-	ASSERT(mySize > 0);
-	item = myTop->value;
-	pop();
+	item = myVector.pop();
 }
 
 template<class itemType>
 void MBStack<itemType>::makeEmpty( )
 {
-	if (mySize != 0) {
-		MBNode *currentNode(myTop);
-		MBNode *tempNode;
-		
-		while(currentNode->nextNode != NULL) {
-			tempNode = currentNode;
-			currentNode = tempNode->nextNode;
-			delete tempNode;	
-		}
-		delete currentNode;
-			
-		mySize = 0;
-		myTop = NULL;
-	} else {
-		ASSERT(myTop == NULL);
-	}
+	myVector.makeEmpty();
+}
+
+template<class itemType>
+void MBStack<itemType>::trim( )
+{
+	myVector.trim();
 }
 
 

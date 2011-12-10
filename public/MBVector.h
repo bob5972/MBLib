@@ -36,6 +36,11 @@ class MBVector
 		itemType & operator [ ] (int index);
 		const itemType & operator [ ] (int index) const;
 		
+		const itemType &last() const;
+		itemType &last();
+		const itemType &first() const;
+		itemType &first();
+		
     //Modifiers
 		//Resizes vector to length newSize
 		void resize (int newSize);
