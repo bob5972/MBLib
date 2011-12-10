@@ -187,6 +187,9 @@ int Random_Enum(EnumDistribution *dist, int numValues)
 	return dist[numValues - 1].value;
 }
 
+/*
+ * The Workhorse of the entire module.
+ */
 uint32 Random_Uint32(void)
 {
 	static const uint64 constA = 2862933555777941757ULL;

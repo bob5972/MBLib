@@ -232,7 +232,7 @@ void MBVector<itemType>::grow()
 	}
 	
 	int oldSize = mySize;
-	resize(myCapacity>0?myCapacity*2:2);
+	resize(myCapacity>0?myCapacity*2:4);
 	mySize = oldSize+1;
 }
 
