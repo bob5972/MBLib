@@ -2,6 +2,7 @@
 #define MBSET_CPP_201001091441
 
 #include "MBSet.h"
+#include "mbdebug.h"
 
 template<class itemType>
 MBSet<itemType>::MBSet()
@@ -56,8 +57,12 @@ int MBSet<itemType>::size() const
 template<class itemType>
 bool MBSet<itemType>::contains(const itemType&t) const
 {
-	int x(0),seen(0);
-	while (x<myItems.length() && seen<mySize) {
+	int x = 0;
+	int seen = 0;
+	
+	ASSERT(myItems.length() == isUsed.length());
+	
+	while (x < myItems.length() && seen < mySize) {
 		if (isUsed[x]) {
 			if(myItems[x] == t) {
 				return true;
@@ -70,15 +75,22 @@ bool MBSet<itemType>::contains(const itemType&t) const
 }
 
 template<class itemType>
-bool MBSet<itemType>::insert(const itemType&t)
+bool MBSet<itemType>::insert(const itemType & t)
 {
 	if (!contains(t)) {
-		if (mySize == myItems.length()) {
-			myItems.resize(mySize*2);
-			isUsed.resize(mySize*2);
+		int length = myItems.length();
+		ASSERT(length == isUsed.length());
+		ASSERT(length > 0);
+		
+		if (mySize + 1 >= length) {
+			myItems.resize(length * 2);
+			isUsed.resize(length * 2, false);
 		}
-		int x(0);
-		while (x<myItems.length()) {
+		
+		int x = 0;
+		length = myItems.length();
+		ASSERT(mySize + 1 < length);
+		while (x < length) {
 			if(!isUsed[x]) 	{
 				isUsed[x] = true;
 				myItems[x] = t;
@@ -87,6 +99,7 @@ bool MBSet<itemType>::insert(const itemType&t)
 			}
 			x++;
 		}
+		NOT_REACHED();
 	}
 	return true;
 }
@@ -101,7 +114,7 @@ template<class itemType>
 bool MBSet<itemType>::remove(const itemType &t)
 {
 	int x(0),seen(0);
-	while (x<myItems.length() && seen<mySize) {
+	while (x < myItems.length() && seen < mySize) {
 		if (isUsed[x]) 	{
 			if(myItems[x] == t) 		{
 				isUsed[x] = false;

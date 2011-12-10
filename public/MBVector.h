@@ -45,6 +45,9 @@ class MBVector
 		//Resizes vector to length newSize
 		void resize (int newSize);
 		
+		//Resize with new items initialized to fill value
+		void resize (int newSize, const itemType &fill);
+		
 		//Increases the vector size by 1
 		void grow();
 

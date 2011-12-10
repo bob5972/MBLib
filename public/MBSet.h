@@ -1,9 +1,9 @@
 #ifndef MBSET_H_201001091440
 #define MBSET_H_201001091440
 
-// NOT TESTED
-
 #include "MBVector.h"
+
+// This class is embarasssingly slow.
 
 template <class itemType>
 class MBSet
@@ -36,5 +36,5 @@ class MBSet
 
 
 
-#include "MBSet.cpp"
+#include "../MBSet.cpp"
 #endif //MBSET_H_201001091440

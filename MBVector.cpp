@@ -211,6 +211,19 @@ void MBVector<itemType>::resize(int newSize)
 }
 
 template<class itemType>
+void MBVector<itemType>::resize(int newSize,
+                                const itemType &fill)
+{
+	int oldSize = mySize;
+	resize(newSize);
+	
+	while (oldSize < mySize) {
+		myItems[oldSize] = fill;
+		oldSize++;
+	}	
+}
+
+template<class itemType>
 void MBVector<itemType>::grow()
 {
 	if (mySize < myCapacity) {
