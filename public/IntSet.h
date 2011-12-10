@@ -20,6 +20,7 @@ class IntSet
 		
 		//returns true iff the set was modified
 		bool insert(int x);
+		bool add(int x);
 		
 		//returns true iff the set was modified
 		// Linear time on the size of the set

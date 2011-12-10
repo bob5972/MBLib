@@ -48,6 +48,11 @@ bool IntSet::insert(int x)
 	return oup;
 }
 
+bool IntSet::add(int x)
+{
+	return insert(x);
+}
+
 bool IntSet::checkInvariants() const
 {
 	for(int x=0;x<values.length();x++) {
