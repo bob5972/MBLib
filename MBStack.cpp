@@ -42,7 +42,8 @@ MBStack<itemType>::~MBStack()
 }
 
 template<class itemType>
-const MBStack<itemType>& MBStack<itemType>::operator = (const MBStack<itemType> & rhs)
+const MBStack<itemType>&
+MBStack<itemType>::operator = (const MBStack<itemType> & rhs)
 {
 	if (this != &rhs) {
 		makeEmpty();
@@ -69,9 +70,7 @@ const MBStack<itemType>& MBStack<itemType>::operator = (const MBStack<itemType> 
 template<class itemType>
 const itemType& MBStack<itemType>::top() const
 {
-	if (mySize <=0) {	
-		PANIC("Attempted to read from empty stack");
-	}
+	ASSERT(mySize > 0);
 	
 	return myTop->value;
 }
@@ -91,11 +90,11 @@ int MBStack<itemType>::size() const
 template<class itemType>
 void MBStack<itemType>::push( const itemType &item)
 {
-	if (mySize>0) {
-		myTop = new MBNode(item,myTop);
+	if (mySize > 0) {
+		myTop = new MBNode(item, myTop);
 		mySize++;
 	} else {
-		myTop = new MBNode(item,NULL);
+		myTop = new MBNode(item, NULL);
 		mySize=1;
 	}
 }
@@ -104,9 +103,8 @@ void MBStack<itemType>::push( const itemType &item)
 template<class itemType>
 const itemType& MBStack<itemType>::pop()
 {
-	if (mySize <=0) {	
-		PANIC("Attempted to pop an empty stack");
-	}
+	ASSERT(mySize > 0);
+
 	if (myLast) {
 		delete myLast;
 	}
@@ -120,29 +118,30 @@ const itemType& MBStack<itemType>::pop()
 template<class itemType>
 void MBStack<itemType>::pop (itemType &item)
 {
-	if (mySize <=0) {	
-		PANIC("Attempted to pop an empty stack");
-	}
-	item = top();
+	ASSERT(mySize > 0);
+	item = myTop->value;
 	pop();
 }
 
 template<class itemType>
 void MBStack<itemType>::makeEmpty( )
 {
-	if (!isEmpty()) {
-		MBNode* currentNode(myTop);
-		MBNode* tempNode;
+	if (mySize != 0) {
+		MBNode *currentNode(myTop);
+		MBNode *tempNode;
+		
 		while(currentNode->nextNode != NULL) {
 			tempNode = currentNode;
 			currentNode = tempNode->nextNode;
 			delete tempNode;	
 		}
 		delete currentNode;
+			
+		mySize = 0;
+		myTop = NULL;
+	} else {
+		ASSERT(myTop == NULL);
 	}
-	
-	mySize = 0;
-	myTop = NULL;
 }
 
 

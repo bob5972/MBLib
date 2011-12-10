@@ -53,6 +53,6 @@ class MBStack
 		MBNode * myLast;  //Used to store the reference from a call to pop
 };
 
-#include "MBStack.cpp"
+#include "../MBStack.cpp"
 
 #endif //MBStack_H_201001091426
