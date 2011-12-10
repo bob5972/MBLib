@@ -79,13 +79,10 @@ BitVector::BitVector(int size, bool initial)
 	
 	myBits = new uint32[myArrSize];
 	
-	int bFill = 0;
 	if(myFill) {
-		bFill = ALL_ON;
-	}
-	
-	for(int x = 0;x < myArrSize; x++) {
-		myBits[x] = bFill;
+		setAll();
+	} else {
+		resetAll();
 	}
 }
 
@@ -204,8 +201,9 @@ void BitVector::setRange(int first, int last)
 	
 	int numBytes;
 	int x;
+	uint8 *myBytes;
 	
-	if (last - first + 1 < UNIT_SIZE * 2) {
+	if (last - first + 1 < 8 * 2) {
 		for (x = first; x <= last; x++) {
 			setRaw(x, myBits);
 		}
@@ -213,13 +211,16 @@ void BitVector::setRange(int first, int last)
 	}
 	
 	x = first;
-	while (x % UNIT_SIZE != 0) {
+	while (x % 8 != 0) {
 		setRaw(x, myBits);
 		x++;
 	}
 	
 	numBytes = (last - x) / 8;
-	memset(&myBits[x/UNIT_SIZE], 0xFF, numBytes);
+	myBytes = (uint8 *) myBits;
+	myBytes += (x/8);
+	memset(myBytes, 0xFF, numBytes);
+	x+= 8 * numBytes;
 	
 	while (x <= last) {
 		setRaw(x, myBits);
@@ -237,8 +238,9 @@ void BitVector::resetRange(int first, int last)
 	
 	int numBytes;
 	int x;
+	uint8 *myBytes;
 	
-	if (last - first + 1 < UNIT_SIZE * 2) {
+	if (last - first + 1 < 8 * 2) {
 		for (x = first; x <= last; x++) {
 			resetRaw(x, myBits);
 		}
@@ -246,13 +248,16 @@ void BitVector::resetRange(int first, int last)
 	}
 	
 	x = first;
-	while (x % UNIT_SIZE != 0) {
+	while (x % 8 != 0) {
 		resetRaw(x, myBits);
 		x++;
 	}
 	
 	numBytes = (last - x) / 8;
-	memset(&myBits[x/UNIT_SIZE], 0x00, numBytes);
+	myBytes = (uint8 *) myBits;
+	myBytes += (x/8);
+	memset(myBytes, 0x00, numBytes);
+	x+= 8 * numBytes;
 	
 	while (x <= last) {
 		resetRaw(x, myBits);
@@ -287,7 +292,7 @@ int BitVector::size() const
 
 void BitVector::resize(int length)
 {
-	ASSERT(length>=0);
+	ASSERT(length >= 0);
 	
 	int oldSize = mySize;
 	mySize = length;
@@ -299,13 +304,13 @@ void BitVector::resize(int length)
 	int newValidCellCount = length/UNIT_SIZE+((length%UNIT_SIZE>0)?1:0);
 	
 	if(oldValidCellCount < newValidCellCount) {
+		int byteLength;
 		uint32 *temp = myBits;
 		myBits = new uint32[newValidCellCount];
 		
-		for(int x=0;x < oldValidCellCount;x++) {
-			myBits[x] = temp[x];
-		}
-		
+		byteLength = oldValidCellCount * sizeof(*myBits);
+		memcpy(&myBits[0], temp, byteLength);
+
 		delete temp;
 		myArrSize = newValidCellCount;
 	}

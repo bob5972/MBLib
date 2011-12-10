@@ -47,7 +47,6 @@ class BitVector
 		int myArrSize;
 		bool myFill;
 		
-		static const int ALL_ON = 0xFFFFFFFF;
 		static const int UNIT_SIZE = 32;
 		static const int DEFAULT_SPACE = 1;	
 };
