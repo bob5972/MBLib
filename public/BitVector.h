@@ -16,10 +16,9 @@ class BitVector
 		void setFillValue(bool f);
 		bool get(int x) const;
 		
-		//returns the old value
-		bool put(int x, bool v);
-		bool set(int x);
-		bool reset(int x);
+		void put(int x, bool v);
+		void set(int x);
+		void reset(int x);
 		
 		void flip(int x);
 		

@@ -126,9 +126,12 @@ void BitVector::makeEmpty()
 	mySize = 0;
 }	
 
-bool BitVector::operator [] (int x) const
+bool BitVector::operator [] (int i) const
 {
-	return get(x);
+	ASSERT(i >= 0);
+	ASSERT(i < mySize);
+	
+	return getRaw(i, myBits);
 }
 
 bool BitVector::getFillValue() const
@@ -149,47 +152,32 @@ bool BitVector::get(int i) const
 	return getRaw(i, myBits);
 }
 
-bool BitVector::put(int i, bool b)
+void BitVector::put(int i, bool b)
 {
 	ASSERT(i >= 0);
 	ASSERT(i < mySize);
-	
-	bool oup = getRaw(i, myBits);
 	
 	if(b) {
 		setRaw(i, myBits);
 	} else {
 		resetRaw(i, myBits);
 	}
-	
-	return oup;
 }
 
-bool BitVector::set(int i)
+void BitVector::set(int i)
+{
+	ASSERT(i >= 0);
+	ASSERT(i < mySize);
+
+	setRaw(i, myBits);
+}
+
+void BitVector::reset(int i)
 {
 	ASSERT(i >= 0);
 	ASSERT(i < mySize);
 	
-	bool oup = getRaw(i, myBits);
-	
-	if(!oup) {
-		setRaw(i, myBits);
-	}
-	
-	return oup;
-}
-
-bool BitVector::reset(int i)
-{
-	ASSERT(i >= 0);
-	ASSERT(i < mySize);
-	
-	bool oup = getRaw(i, myBits);
-	
-	if(oup) {
-		resetRaw(i, myBits);
-	}
-	return oup;
+	resetRaw(i, myBits);
 }
 
 void BitVector::flip(int i)
@@ -197,13 +185,12 @@ void BitVector::flip(int i)
 	ASSERT(i >= 0);
 	ASSERT(i < mySize);
 	
-	int cell = i/UNIT_SIZE;
-	uint32 mask = 1<<(i%UNIT_SIZE);
+	bool value = getRaw(i, myBits);
 	
-	if((myBits[cell] & mask ) == 0) {
-		myBits[cell] |= mask;
+	if (value) {
+		resetRaw(i, myBits);
 	} else {
-		myBits[cell] &= ~mask;
+		setRaw(i, myBits);
 	}
 }
 
@@ -215,31 +202,28 @@ void BitVector::setRange(int first, int last)
 	ASSERT(last < mySize);
 	ASSERT(first <= last);
 	
-	//UNIT_SIZE*2 guarantees we have a whole byte
-	// you could make it work with just UNIT_SIZE
-	// but it's probably faster to fill in small cases in one loop anyway...?
-	if(last - first < UNIT_SIZE*2) {
-		for(int x=first; x<=last;x++) {
+	int numBytes;
+	int x;
+	
+	if (last - first + 1 < UNIT_SIZE * 2) {
+		for (x = first; x <= last; x++) {
 			setRaw(x, myBits);
 		}
 		return;
 	}
 	
-	int minUnit, maxUnit;
-	
-	minUnit = first/UNIT_SIZE+((first%UNIT_SIZE==0)?0:1);
-	maxUnit= last/UNIT_SIZE-((last%UNIT_SIZE==0)?0:1);
-	
-	for(int x=first; x < minUnit*UNIT_SIZE;x++) {
+	x = first;
+	while (x % UNIT_SIZE != 0) {
 		setRaw(x, myBits);
+		x++;
 	}
 	
-	for(int x=maxUnit*UNIT_SIZE+1;x<=last;x++) {
-		setRaw(x, myBits);
-	}
+	numBytes = (last - x) / 8;
+	memset(&myBits[x/UNIT_SIZE], 0xFF, numBytes);
 	
-	for(int x=minUnit;x<=maxUnit;x++) {
-		myBits[x] = ALL_ON;
+	while (x <= last) {
+		setRaw(x, myBits);
+		x++;
 	}
 }
 
@@ -251,42 +235,49 @@ void BitVector::resetRange(int first, int last)
 	ASSERT(last < mySize);
 	ASSERT(first <= last);
 	
-	//UNIT_SIZE*2 guarantees we have a whole byte
-	// you could make it work with just UNIT_SIZE
-	// but it's probably faster to fill in small cases in one loop anyway...?
-	if(last - first < UNIT_SIZE*2) {
-		for(int x=first; x<=last;x++) {
+	int numBytes;
+	int x;
+	
+	if (last - first + 1 < UNIT_SIZE * 2) {
+		for (x = first; x <= last; x++) {
 			resetRaw(x, myBits);
 		}
 		return;
 	}
 	
-	int minUnit, maxUnit;
-	
-	minUnit = first/UNIT_SIZE+((first%UNIT_SIZE==0)?0:1);
-	maxUnit= last/UNIT_SIZE-((last%UNIT_SIZE==0)?0:1);
-	
-	for(int x=first; x < minUnit*UNIT_SIZE;x++) {
+	x = first;
+	while (x % UNIT_SIZE != 0) {
 		resetRaw(x, myBits);
+		x++;
 	}
 	
-	for(int x=maxUnit*UNIT_SIZE+1;x<=last;x++) {
-		resetRaw(x, myBits);
-	}
+	numBytes = (last - x) / 8;
+	memset(&myBits[x/UNIT_SIZE], 0x00, numBytes);
 	
-	for(int x=minUnit;x<=maxUnit;x++) {
-		myBits[x] = 0;
+	while (x <= last) {
+		resetRaw(x, myBits);
+		x++;
 	}
 }
 
 void BitVector::setAll()
 {
-	memset(myBits, 0xFF, myArrSize * sizeof(*myBits));
+	int byteLength;
+	
+	byteLength = (mySize + 7) / 8;
+	ASSERT(byteLength / sizeof(*myBits) <= myArrSize);
+	
+	memset(myBits, 0xFF, byteLength);
 }
 
 void BitVector::resetAll()
 {
-	memset(myBits, 0x00, myArrSize * sizeof(*myBits));
+	int byteLength;
+	
+	byteLength = (mySize + 7) / 8;
+	ASSERT(byteLength / sizeof(*myBits) <= myArrSize);
+	
+	memset(myBits, 0x00, byteLength);
 }
 
 int BitVector::size() const
@@ -311,7 +302,7 @@ void BitVector::resize(int length)
 		uint32 *temp = myBits;
 		myBits = new uint32[newValidCellCount];
 		
-		for(int x=0;x<oldValidCellCount;x++) {
+		for(int x=0;x < oldValidCellCount;x++) {
 			myBits[x] = temp[x];
 		}
 		
@@ -321,9 +312,9 @@ void BitVector::resize(int length)
 	
 	if(oldSize < mySize) {
 		if(myFill) {
-			setRange(oldSize,mySize-1);
+			setRange(oldSize, mySize-1);
 		} else {
-			resetRange(oldSize,mySize-1);
+			resetRange(oldSize, mySize-1);
 		}
 	}
 }
