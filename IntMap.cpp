@@ -299,8 +299,8 @@ void IntMap::rehash()
 	ASSERT(newSpace > mySpace);
 	ASSERT(newSpace % SEARCH_INCR == 1);
 	
-	BitArray oldFull;
-	BitArray oldActive;
+	BitVector oldFull;
+	BitVector oldActive;
 	MBVector<int> oldKeys;
 	MBVector<int> oldValues;
 	

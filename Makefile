@@ -39,7 +39,7 @@ CPP_SOURCES = MBString.cpp \
               MBStack.cpp \
               MBQueue.cpp \
               MBSet.cpp \
-              BitArray.cpp \
+              BitVector.cpp \
               IntMap.cpp \
               MBMap.cpp \
               MBMatrix.cpp \

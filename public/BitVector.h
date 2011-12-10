@@ -1,16 +1,16 @@
-#ifndef BitArray_H_201001192326
-#define BitArray_H_201001192326
+#ifndef BitVector_H_201001192326
+#define BitVector_H_201001192326
 
 #include "mbtypes.h"
 
-class BitArray
+class BitVector
 {
 	public:
-		BitArray();
-		BitArray(const BitArray &a);
-		explicit BitArray(int size);
-		BitArray(int size, bool initial);
-		~BitArray();
+		BitVector();
+		BitVector(const BitVector &a);
+		explicit BitVector(int size);
+		BitVector(int size, bool initial);
+		~BitVector();
 		
 		bool getFillValue() const;
 		void setFillValue(bool f);
@@ -41,7 +41,7 @@ class BitArray
 		//It empties this array, copies over everything from a,
 		//  and then leaves a empty.
 		//Fill is left unchanged
-		void consume(BitArray & a);
+		void consume(BitVector & a);
 	
 	
 	
@@ -53,11 +53,9 @@ class BitArray
 		
 		static const int ALL_ON = 0xFFFFFFFF;
 		static const int UNIT_SIZE = 32;
-		static const int DEFAULT_SPACE = 1;
-	
-	
+		static const int DEFAULT_SPACE = 1;	
 };
 
 
 
-#endif //BitArray_H_201001192326
+#endif //BitVector_H_201001192326

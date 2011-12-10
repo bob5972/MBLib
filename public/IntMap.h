@@ -2,7 +2,7 @@
 #define IntMap_H_201001201109
 
 #include "MBVector.h"
-#include "BitArray.h"
+#include "BitVector.h"
 
 class IntMap
 {
@@ -75,9 +75,9 @@ class IntMap
 		MBVector<int> myValues;
 		
 		//is the entry "active"
-		BitArray myActiveFlags;
+		BitVector myActiveFlags;
 		//is the entry "full" (for hashing purposes)
-		BitArray myFullFlags;
+		BitVector myFullFlags;
 		
 		int mySize;
 		int mySpace;

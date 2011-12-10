@@ -1,9 +1,9 @@
-#include "BitArray.h"
+#include "BitVector.h"
 
 #include "mbassert.h"
 
 
-BitArray::BitArray()
+BitVector::BitVector()
 {
 	mySize = 0;
 	myArrSize = DEFAULT_SPACE;
@@ -18,7 +18,7 @@ BitArray::BitArray()
 }
 	
 
-BitArray::BitArray(int size)
+BitVector::BitVector(int size)
 {
 	ASSERT(size >= 0);
 	
@@ -40,7 +40,7 @@ BitArray::BitArray(int size)
 	}
 }
 
-BitArray::BitArray(int size, bool initial)
+BitVector::BitVector(int size, bool initial)
 {
 	ASSERT(size >= 0);
 	
@@ -65,7 +65,7 @@ BitArray::BitArray(int size, bool initial)
 	}
 }
 
-BitArray::BitArray(const BitArray &a)
+BitVector::BitVector(const BitVector &a)
 {
 	myFill = a.myFill;
 	mySize = a.mySize;
@@ -78,13 +78,13 @@ BitArray::BitArray(const BitArray &a)
 	}
 }
 
-BitArray::~BitArray()
+BitVector::~BitVector()
 {
 	delete myBits;
 	myBits = NULL;
 }
 
-void BitArray::consume(BitArray& a)
+void BitVector::consume(BitVector& a)
 {
 	delete myBits;
 	myBits = a.myBits;
@@ -97,27 +97,27 @@ void BitArray::consume(BitArray& a)
 }
 
 
-void BitArray::makeEmpty()
+void BitVector::makeEmpty()
 {
 	mySize = 0;
 }	
 
-bool BitArray::operator [] (int x) const
+bool BitVector::operator [] (int x) const
 {
 	return get(x);
 }
 
-bool BitArray::getFillValue() const
+bool BitVector::getFillValue() const
 {
 	return myFill;
 }
 
-void BitArray::setFillValue(bool f)
+void BitVector::setFillValue(bool f)
 {
 	myFill = f;
 }
 
-bool BitArray::get(int i) const
+bool BitVector::get(int i) const
 {
 	ASSERT(i >= 0);
 	ASSERT(i< mySize);
@@ -125,7 +125,7 @@ bool BitArray::get(int i) const
 	return (myBits[i/UNIT_SIZE] & (1<<(i%UNIT_SIZE))) != 0;
 }
 
-bool BitArray::put(int i, bool b)
+bool BitVector::put(int i, bool b)
 {
 	if(b) {
 		return set(i);
@@ -134,7 +134,7 @@ bool BitArray::put(int i, bool b)
 	}
 }
 
-bool BitArray::set(int i)
+bool BitVector::set(int i)
 {
 	ASSERT(i>= 0);
 	ASSERT(i < mySize);
@@ -148,7 +148,7 @@ bool BitArray::set(int i)
 	return oup;
 }
 
-bool BitArray::reset(int i)
+bool BitVector::reset(int i)
 {
 	ASSERT(i>=0);
 	ASSERT(i<mySize);
@@ -161,7 +161,7 @@ bool BitArray::reset(int i)
 	return oup;
 }
 
-void BitArray::flip(int i)
+void BitVector::flip(int i)
 {
 	ASSERT(i>=0);
 	ASSERT(i<mySize);
@@ -176,7 +176,7 @@ void BitArray::flip(int i)
 	}
 }
 
-void BitArray::setRange(int first, int last)
+void BitVector::setRange(int first, int last)
 {
 	ASSERT(first >= 0);
 	ASSERT(first < mySize);
@@ -212,7 +212,7 @@ void BitArray::setRange(int first, int last)
 	}
 }
 
-void BitArray::resetRange(int first, int last)
+void BitVector::resetRange(int first, int last)
 {
 	ASSERT(first >= 0);
 	ASSERT(first < mySize);
@@ -248,26 +248,26 @@ void BitArray::resetRange(int first, int last)
 	}
 }
 
-void BitArray::setAll()
+void BitVector::setAll()
 {
 	for(int x=0;x<myArrSize;x++) {
 		myBits[x] = ALL_ON;
 	}
 }
 
-void BitArray::resetAll()
+void BitVector::resetAll()
 {
 	for(int x=0;x<myArrSize;x++) {
 		myBits[x] = 0;
 	}
 }
 
-int BitArray::size() const
+int BitVector::size() const
 {
 	return mySize;
 }
 
-void BitArray::resize(int length)
+void BitVector::resize(int length)
 {
 	ASSERT(length>=0);
 	
