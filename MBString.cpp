@@ -170,12 +170,8 @@ int MBString::find(const MBString & str) const
 
 MBString MBString::substr(int pos,int len) const
 {
-	if (pos + len > myLength) {
-		PANIC("Substring out of range.");
-	}
-	if (pos < 0) {
-		PANIC("Invalid index specified.");
-	}
+	ASSERT(pos + len <= myLength);
+	ASSERT(pos >= 0);
 	
 	MBString oup(len);
 	
@@ -206,9 +202,8 @@ MBString MBString::toLower() const
 
 char MBString::getCharAt(int k) const
 {
-	if (k >= myLength || k < 0) {
-		PANIC("Index out of range.");
-	}
+	ASSERT(k < myLength);
+	ASSERT(k >= 0);
 	
 	return myChars[k];
 }
@@ -220,9 +215,9 @@ char MBString::operator[ ]( int k ) const
 
 char& MBString::operator[ ]( int k )
 {
-	if (k >= myLength || k < 0) {
-		PANIC("Index out of range.");
-	}
+	ASSERT(k < myLength);
+	ASSERT(k >= 0);
+	
 	return myChars[k];
 }
 
