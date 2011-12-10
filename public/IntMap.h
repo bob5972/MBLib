@@ -82,14 +82,8 @@ class IntMap
 		int mySize;
 		int mySpace;
 		int myFreeSpace;
-		double myLoad;
-	
-	
+		double myLoad;	
 };
-
-
-
-
 
 
 
