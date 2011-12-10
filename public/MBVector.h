@@ -86,9 +86,10 @@ class MBVector
 		void ensureCapacity(int c);	
 	
 	private:
-		int mySize,myCapacity;
+		int mySize;
+		int myCapacity;
 		itemType * myItems;
 };
 
-#include "MBVector.cpp"
+#include "../MBVector.cpp"
 #endif //MBVECTOR_H_201001091353
