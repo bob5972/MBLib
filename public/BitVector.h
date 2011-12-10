@@ -28,8 +28,7 @@ class BitVector
 		void resetRange(int first, int last);
 		
 		void setAll();
-		void resetAll();
-		
+		void resetAll();		
 		
 		int size() const;
 		void resize(int length);
@@ -41,9 +40,7 @@ class BitVector
 		//It empties this array, copies over everything from a,
 		//  and then leaves a empty.
 		//Fill is left unchanged
-		void consume(BitVector & a);
-	
-	
+		void consume(BitVector & a);	
 	
 	private:
 		uint32 *myBits;

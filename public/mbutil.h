@@ -17,6 +17,8 @@
 
 #define OFFSETOF(TYPE, MEMBER) ((size_t) &((TYPE *)0)->MEMBER)
 
+#define INLINE inline
+
 #ifdef __cplusplus
 	}
 #endif 

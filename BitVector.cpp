@@ -1,6 +1,30 @@
 #include "BitVector.h"
 
+#include <string.h>
+
 #include "mbassert.h"
+#include "mbutil.h"
+
+static INLINE bool getRaw(int i, const uint32 *bits)
+{
+	const int UNIT_SIZE = sizeof(*bits)*8;
+	
+	return (bits[i/UNIT_SIZE] & (1<<(i%UNIT_SIZE))) != 0;
+}
+
+static INLINE void setRaw(int i, uint32 *bits)
+{
+	const int UNIT_SIZE = sizeof(*bits)*8;
+	
+	bits[i/UNIT_SIZE] |= (1<<(i%UNIT_SIZE));
+}
+
+static INLINE void resetRaw(int i, uint32 *bits)
+{
+	const int UNIT_SIZE = sizeof(*bits)*8;
+	
+	bits[i/UNIT_SIZE] &= ~(1<<(i%UNIT_SIZE));
+}
 
 
 BitVector::BitVector()
@@ -25,9 +49,9 @@ BitVector::BitVector(int size)
 	myFill = FALSE;
 	mySize = size;
 
-	myArrSize = mySize/UNIT_SIZE+((mySize%UNIT_SIZE>0)?1:0);
+	myArrSize = (mySize/UNIT_SIZE)+1;
 	
-	if(myArrSize < DEFAULT_SPACE) {
+	if (myArrSize < DEFAULT_SPACE) {
 		myArrSize = DEFAULT_SPACE;
 	}
 	
@@ -47,9 +71,9 @@ BitVector::BitVector(int size, bool initial)
 	myFill = initial;
 	mySize = size;
 	
-	myArrSize = mySize/UNIT_SIZE+((mySize%UNIT_SIZE>0)?1:0);
+	myArrSize = (mySize/UNIT_SIZE)+1;
 	
-	if(myArrSize < DEFAULT_SPACE) {
+	if (myArrSize < DEFAULT_SPACE) {
 		myArrSize = DEFAULT_SPACE;
 	}
 	
@@ -60,7 +84,7 @@ BitVector::BitVector(int size, bool initial)
 		bFill = ALL_ON;
 	}
 	
-	for(int x=0;x<myArrSize;x++) {
+	for(int x = 0;x < myArrSize; x++) {
 		myBits[x] = bFill;
 	}
 }
@@ -69,11 +93,11 @@ BitVector::BitVector(const BitVector &a)
 {
 	myFill = a.myFill;
 	mySize = a.mySize;
-	myArrSize = mySize/UNIT_SIZE+((mySize%UNIT_SIZE>0)?1:0);
+	myArrSize = (mySize/UNIT_SIZE) + 1;
 	
 	myBits = new uint32[myArrSize];
 		
-	for(int x=0;x<myArrSize;x++) {
+	for(int x = 0;x < myArrSize;x++) {
 		myBits[x] = a.myBits[x];
 	}
 }
@@ -120,29 +144,36 @@ void BitVector::setFillValue(bool f)
 bool BitVector::get(int i) const
 {
 	ASSERT(i >= 0);
-	ASSERT(i< mySize);
+	ASSERT(i < mySize);
 	
-	return (myBits[i/UNIT_SIZE] & (1<<(i%UNIT_SIZE))) != 0;
+	return getRaw(i, myBits);
 }
 
 bool BitVector::put(int i, bool b)
 {
+	ASSERT(i >= 0);
+	ASSERT(i < mySize);
+	
+	bool oup = getRaw(i, myBits);
+	
 	if(b) {
-		return set(i);
+		setRaw(i, myBits);
 	} else {
-		return reset(i);
+		resetRaw(i, myBits);
 	}
+	
+	return oup;
 }
 
 bool BitVector::set(int i)
 {
-	ASSERT(i>= 0);
+	ASSERT(i >= 0);
 	ASSERT(i < mySize);
 	
-	bool oup = get(i);
+	bool oup = getRaw(i, myBits);
 	
 	if(!oup) {
-		myBits[i/UNIT_SIZE] |= (1<<(i%UNIT_SIZE));
+		setRaw(i, myBits);
 	}
 	
 	return oup;
@@ -150,24 +181,24 @@ bool BitVector::set(int i)
 
 bool BitVector::reset(int i)
 {
-	ASSERT(i>=0);
-	ASSERT(i<mySize);
+	ASSERT(i >= 0);
+	ASSERT(i < mySize);
 	
-	bool oup = get(i);
+	bool oup = getRaw(i, myBits);
 	
 	if(oup) {
-		myBits[i/UNIT_SIZE] &= ~(1<<(i%UNIT_SIZE));
+		resetRaw(i, myBits);
 	}
 	return oup;
 }
 
 void BitVector::flip(int i)
 {
-	ASSERT(i>=0);
-	ASSERT(i<mySize);
+	ASSERT(i >= 0);
+	ASSERT(i < mySize);
 	
 	int cell = i/UNIT_SIZE;
-	int mask = 1<<(i%UNIT_SIZE);
+	uint32 mask = 1<<(i%UNIT_SIZE);
 	
 	if((myBits[cell] & mask ) == 0) {
 		myBits[cell] |= mask;
@@ -189,7 +220,7 @@ void BitVector::setRange(int first, int last)
 	// but it's probably faster to fill in small cases in one loop anyway...?
 	if(last - first < UNIT_SIZE*2) {
 		for(int x=first; x<=last;x++) {
-			set(x);
+			setRaw(x, myBits);
 		}
 		return;
 	}
@@ -200,11 +231,11 @@ void BitVector::setRange(int first, int last)
 	maxUnit= last/UNIT_SIZE-((last%UNIT_SIZE==0)?0:1);
 	
 	for(int x=first; x < minUnit*UNIT_SIZE;x++) {
-		set(x);
+		setRaw(x, myBits);
 	}
 	
 	for(int x=maxUnit*UNIT_SIZE+1;x<=last;x++) {
-		set(x);
+		setRaw(x, myBits);
 	}
 	
 	for(int x=minUnit;x<=maxUnit;x++) {
@@ -225,7 +256,7 @@ void BitVector::resetRange(int first, int last)
 	// but it's probably faster to fill in small cases in one loop anyway...?
 	if(last - first < UNIT_SIZE*2) {
 		for(int x=first; x<=last;x++) {
-			reset(x);
+			resetRaw(x, myBits);
 		}
 		return;
 	}
@@ -236,11 +267,11 @@ void BitVector::resetRange(int first, int last)
 	maxUnit= last/UNIT_SIZE-((last%UNIT_SIZE==0)?0:1);
 	
 	for(int x=first; x < minUnit*UNIT_SIZE;x++) {
-		reset(x);
+		resetRaw(x, myBits);
 	}
 	
 	for(int x=maxUnit*UNIT_SIZE+1;x<=last;x++) {
-		reset(x);
+		resetRaw(x, myBits);
 	}
 	
 	for(int x=minUnit;x<=maxUnit;x++) {
@@ -250,16 +281,12 @@ void BitVector::resetRange(int first, int last)
 
 void BitVector::setAll()
 {
-	for(int x=0;x<myArrSize;x++) {
-		myBits[x] = ALL_ON;
-	}
+	memset(myBits, 0xFF, myArrSize * sizeof(*myBits));
 }
 
 void BitVector::resetAll()
 {
-	for(int x=0;x<myArrSize;x++) {
-		myBits[x] = 0;
-	}
+	memset(myBits, 0x00, myArrSize * sizeof(*myBits));
 }
 
 int BitVector::size() const
@@ -302,12 +329,3 @@ void BitVector::resize(int length)
 }
 
 
-
-	
-	
-
-
-	
-	
-	
-	
