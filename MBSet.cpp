@@ -60,7 +60,7 @@ bool MBSet<itemType>::contains(const itemType&t) const
 	int x = 0;
 	int seen = 0;
 	
-	ASSERT(myItems.length() == isUsed.length());
+	ASSERT(myItems.length() == isUsed.size());
 	
 	while (x < myItems.length() && seen < mySize) {
 		if (isUsed[x]) {
@@ -79,12 +79,13 @@ bool MBSet<itemType>::insert(const itemType & t)
 {
 	if (!contains(t)) {
 		int length = myItems.length();
-		ASSERT(length == isUsed.length());
+		ASSERT(length == isUsed.size());
 		ASSERT(length > 0);
 		
 		if (mySize + 1 >= length) {
 			myItems.resize(length * 2);
-			isUsed.resize(length * 2, false);
+			isUsed.setFillValue(FALSE);
+			isUsed.resize(length * 2);
 		}
 		
 		int x = 0;
@@ -92,7 +93,7 @@ bool MBSet<itemType>::insert(const itemType & t)
 		ASSERT(mySize + 1 < length);
 		while (x < length) {
 			if(!isUsed[x]) 	{
-				isUsed[x] = true;
+				isUsed.set(x);
 				myItems[x] = t;
 				mySize++;
 				return false;

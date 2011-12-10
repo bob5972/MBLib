@@ -2,6 +2,7 @@
 #define MBSET_H_201001091440
 
 #include "MBVector.h"
+#include "BitVector.h"
 
 // This class is embarasssingly slow.
 
@@ -28,7 +29,7 @@ class MBSet
 		
 	private:
 		MBVector<itemType> myItems;
-		MBVector<bool> isUsed;
+		BitVector isUsed;
 		
 		int mySize;
 };
