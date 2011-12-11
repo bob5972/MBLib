@@ -17,6 +17,47 @@ void BitVector_Create(BitVector *b)
 	b->bits = malloc(b->arrSize * sizeof(*b->bits));
 }
 
+void BitVector_Destroy(BitVector *b)
+{
+	ASSERT(b != NULL);
+	free(b->bits);
+	b->bits = NULL;
+}
+
+void BitVector_Copy(BitVector *dest, const BitVector *src)
+{
+	int numBytes;
+	ASSERT(dest != NULL);
+	ASSERT(src != NULL);
+	
+	dest->fill = src->fill;
+	dest->size = src->size;
+	dest->arrSize = (dest->size/BVUNITBITS) + 1;
+	
+	dest->bits = malloc(sizeof(*dest->bits) * dest->arrSize);
+	
+	numBytes = dest->arrSize * sizeof(*dest->bits);
+	memcpy(dest->bits, src->bits, numBytes);
+}
+
+void BitVector_Consume(BitVector *dest, BitVector *src)
+{
+	ASSERT(dest != NULL);
+	ASSERT(src != NULL);
+	bool oldFill;
+	
+	free(dest->bits);
+	dest->bits = src->bits;
+	dest->size = src->size;
+	dest->arrSize = src->arrSize;
+	
+	oldFill = src->fill;
+	BitVector_Create(src);
+	src->fill = oldFill;
+}
+
+
+
 void BitVector_Resize(BitVector *b, int size)
 {
 	int oldSize;
@@ -137,45 +178,6 @@ void BitVector_ResetRange(BitVector *b, int first, int last)
 		BitVector_ResetRaw(x, b->bits);
 		x++;
 	}
-}
-
-void BitVector_Copy(BitVector *dest, const BitVector *src)
-{
-	int numBytes;
-	ASSERT(dest != NULL);
-	ASSERT(src != NULL);
-	
-	dest->fill = src->fill;
-	dest->size = src->size;
-	dest->arrSize = (dest->size/BVUNITBITS) + 1;
-	
-	dest->bits = malloc(sizeof(*dest->bits) * dest->arrSize);
-	
-	numBytes = dest->arrSize * sizeof(*dest->bits);
-	memcpy(dest->bits, src->bits, numBytes);
-}
-
-void BitVector_Destroy(BitVector *b)
-{
-	ASSERT(b != NULL);
-	free(b->bits);
-	b->bits = NULL;
-}
-
-void BitVector_Consume(BitVector *dest, BitVector *src)
-{
-	ASSERT(dest != NULL);
-	ASSERT(src != NULL);
-	bool oldFill;
-	
-	free(dest->bits);
-	dest->bits = src->bits;
-	dest->size = src->size;
-	dest->arrSize = src->arrSize;
-	
-	oldFill = src->fill;
-	BitVector_Create(src);
-	src->fill = oldFill;
 }
 
 
