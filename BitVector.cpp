@@ -267,20 +267,20 @@ void BitVector::resetRange(int first, int last)
 
 void BitVector::setAll()
 {
-	int byteLength;
+	uint32 byteLength;
 	
 	byteLength = (mySize + 7) / 8;
-	ASSERT(byteLength / sizeof(*myBits) <= myArrSize);
+	ASSERT(byteLength / sizeof(*myBits) <= (uint32) myArrSize);
 	
 	memset(myBits, 0xFF, byteLength);
 }
 
 void BitVector::resetAll()
 {
-	int byteLength;
+	uint32 byteLength;
 	
 	byteLength = (mySize + 7) / 8;
-	ASSERT(byteLength / sizeof(*myBits) <= myArrSize);
+	ASSERT(byteLength / sizeof(*myBits) <= (uint32) myArrSize);
 	
 	memset(myBits, 0x00, byteLength);
 }

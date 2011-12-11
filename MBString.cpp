@@ -254,9 +254,6 @@ void MBString::ensureCapacity(int cap)
 
 void MBString::append(const MBString& str)
 {
-	int x;
-	int y;
-	
 	ensureCapacity(myLength + str.myLength + 1);
 	
 	memcpy(&myChars[myLength], str.myChars, str.myLength);
