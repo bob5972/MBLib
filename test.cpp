@@ -69,6 +69,19 @@ void testMBString(void)
 	ASSERT(result == '!');
 	
 	str = "Goodbye World!";
+	str2 = str.substr(0, 1);
+	result = str2.length();
+	ASSERT(result == 1);
+	result = str2[0];
+	ASSERT(result == 'G');
+	
+	str2 = str.substr(1,3);
+	result = str2.compareTo("ood");
+	ASSERT(result == 0);
+	str2 = str.substr(4, 4);
+	result = str2.compareTo("bye ");
+	ASSERT(result == 0);
+	
 	str = "Hello World!";
 	
 	str2 = str;
@@ -398,7 +411,7 @@ int main(int argc, char *argv[])
 	
 	BenchmarkTest tests[] = {
 		// enabled, weight, function
-		{ 1, 120000, testMBString  },
+		{ 1, 60000,  testMBString  },
 		{ 1, 10000,  testMBVector  },
 		{ 1, 5000,   testMBStack   },
 		{ 1, 20,     testMBSet     },
