@@ -78,6 +78,7 @@ $(MBLIB_BUILDDIR)/MBLib.a: ${OBJECTS}
 clean:
 	rm -f $(MBLIB_BUILDDIR)/MBLib.a
 	rm -f $(MBLIB_BUILDDIR)/test.bin
+	rm -f $(MBLIB_BUILDDIR)/benchmark
 	rm -f $(MBLIB_BUILDDIR)/*.o $(MBLIB_BUILDDIR)/*.opp
 	
 dist:
