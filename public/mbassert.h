@@ -13,7 +13,7 @@
 	extern "C" {
 #endif 
 
-#ifdef MB_DEBUG
+#if MB_DEBUG
 	#ifndef MB_ASSERT
 		#define MB_ASSERT 1
 	#endif

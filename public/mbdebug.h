@@ -15,7 +15,13 @@
 //backtraces and logfile not implemented
 
 #ifdef DEBUG
-	#define MB_DEBUG 1
+	#if DEBUG
+		#define MB_DEBUG 1
+	#endif
+#endif
+
+#ifndef MB_DEBUG
+	#define MB_DEBUG 0
 #endif
 
 void Warning(const char *fmt, ...);
@@ -23,7 +29,7 @@ void Log(int level, const char *fmt, ...);
 
 #define NOT_TESTED() { DebugPrintHelper( __FILE__, __LINE__, "NOT_TESTED\n"); }
 
-#ifdef DEBUG
+#if MB_DEBUG
 	#define DebugPrint(...) { DebugPrintHelper( __FILE__, __LINE__, __VA_ARGS__); }
 	#define TRACE() { DebugPrintHelper( __FILE__, __LINE__, "TRACE: %s", __FUNCTION__); }
 #else
