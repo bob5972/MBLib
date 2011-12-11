@@ -30,12 +30,6 @@ void BitVector_Consume(BitVector *dest, BitVector *src);
 
 void BitVector_Resize(BitVector *b, int size);
 
-bool BitVector_Get(const BitVector *b, int x);
-void BitVector_Put(BitVector *b, int x, bool v);
-void BitVector_Set(BitVector *b, int x);
-void BitVector_Reset(BitVector *b, int x);
-void BitVector_Flip(BitVector *b, int x);
-
 //affects the bits from [first..last] inclusive
 void BitVector_SetRange(BitVector *b, int first, int last);
 void BitVector_ResetRange(BitVector *b, int first, int last);
@@ -44,6 +38,97 @@ void BitVector_ResetAll(BitVector *b);
 
 bool BitVector_GetFillValue(const BitVector *b);
 void BitVector_SetFillValue(BitVector *b, bool fill);
+
+/*
+ * Inline Functions
+ */
+ 
+static INLINE bool
+BitVector_GetRaw(int i, const uint32 *bits)
+{
+	const int UNIT_SIZE = sizeof(*bits)*8;
+	
+	return (bits[i/UNIT_SIZE] & (1<<(i%UNIT_SIZE))) != 0;
+}
+
+static INLINE void
+BitVector_SetRaw(int i, uint32 *bits)
+{
+	const int UNIT_SIZE = sizeof(*bits)*8;
+	
+	bits[i/UNIT_SIZE] |= (1<<(i%UNIT_SIZE));
+}
+
+static INLINE void
+BitVector_ResetRaw(int i, uint32 *bits)
+{
+	const int UNIT_SIZE = sizeof(*bits)*8;
+	
+	bits[i/UNIT_SIZE] &= ~(1<<(i%UNIT_SIZE));
+}
+
+
+static INLINE bool
+BitVector_Get(const BitVector *b, int x)
+{
+	ASSERT(b != NULL);
+	ASSERT(x >= 0);
+	ASSERT(x < b->size);
+	
+	return BitVector_GetRaw(x, b->bits);
+}
+
+
+static INLINE void
+BitVector_Put(BitVector *b, int i, bool v)
+{
+	ASSERT(b != NULL);
+	ASSERT(i >= 0);
+	ASSERT(i < b->size);
+	
+	if(v) {
+		BitVector_SetRaw(i, b->bits);
+	} else {
+		BitVector_ResetRaw(i, b->bits);
+	}
+}
+
+static INLINE void
+BitVector_Set(BitVector *b, int i)
+{
+	ASSERT(b != NULL);
+	ASSERT(i >= 0);
+	ASSERT(i < b->size);
+
+	BitVector_SetRaw(i, b->bits);
+}
+
+static INLINE void
+BitVector_Reset(BitVector *b, int i)
+{
+	ASSERT(b != NULL);
+	ASSERT(i >= 0);
+	ASSERT(i < b->size);
+	
+	BitVector_ResetRaw(i, b->bits);
+}
+
+
+static INLINE void
+BitVector_Flip(BitVector *b, int i)
+{
+	ASSERT(b != NULL);
+	ASSERT(i >= 0);
+	ASSERT(i < b->size);
+	
+	bool value = BitVector_GetRaw(i, b->bits);
+	
+	if (value) {
+		BitVector_ResetRaw(i, b->bits);
+	} else {
+		BitVector_SetRaw(i, b->bits);
+	}
+}
 
 static INLINE void
 BitVector_MakeEmpty(BitVector *b)

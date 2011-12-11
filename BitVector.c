@@ -8,27 +8,6 @@
 
 #define BITVECTOR_DEFAULT_SPACE 1
 
-static INLINE bool getRaw(int i, const uint32 *bits)
-{
-	const int UNIT_SIZE = sizeof(*bits)*8;
-	
-	return (bits[i/UNIT_SIZE] & (1<<(i%UNIT_SIZE))) != 0;
-}
-
-static INLINE void setRaw(int i, uint32 *bits)
-{
-	const int UNIT_SIZE = sizeof(*bits)*8;
-	
-	bits[i/UNIT_SIZE] |= (1<<(i%UNIT_SIZE));
-}
-
-static INLINE void resetRaw(int i, uint32 *bits)
-{
-	const int UNIT_SIZE = sizeof(*bits)*8;
-	
-	bits[i/UNIT_SIZE] &= ~(1<<(i%UNIT_SIZE));
-}
-
 void BitVector_Create(BitVector *b)
 {
 	ASSERT(b != NULL);
@@ -85,65 +64,6 @@ void BitVector_Resize(BitVector *b, int size)
 	}
 }
 
-
-bool BitVector_Get(const BitVector *b, int x)
-{
-	ASSERT(b != NULL);
-	ASSERT(x >= 0);
-	ASSERT(x < b->size);
-	
-	return getRaw(x, b->bits);
-}
-
-
-void BitVector_Put(BitVector *b, int i, bool v)
-{
-	ASSERT(b != NULL);
-	ASSERT(i >= 0);
-	ASSERT(i < b->size);
-	
-	if(v) {
-		setRaw(i, b->bits);
-	} else {
-		resetRaw(i, b->bits);
-	}
-}
-
-void BitVector_Set(BitVector *b, int i)
-{
-	ASSERT(b != NULL);
-	ASSERT(i >= 0);
-	ASSERT(i < b->size);
-
-	setRaw(i, b->bits);
-}
-
-void BitVector_Reset(BitVector *b, int i)
-{
-	ASSERT(b != NULL);
-	ASSERT(i >= 0);
-	ASSERT(i < b->size);
-	
-	resetRaw(i, b->bits);
-}
-
-
-void BitVector_Flip(BitVector *b, int i)
-{
-	ASSERT(b != NULL);
-	ASSERT(i >= 0);
-	ASSERT(i < b->size);
-	
-	bool value = getRaw(i, b->bits);
-	
-	if (value) {
-		resetRaw(i, b->bits);
-	} else {
-		setRaw(i, b->bits);
-	}
-}
-
-
 void BitVector_SetRange(BitVector *b, int first, int last)
 {
 	ASSERT(b != NULL);
@@ -159,14 +79,14 @@ void BitVector_SetRange(BitVector *b, int first, int last)
 	
 	if (last - first + 1 < 8 * 2) {
 		for (x = first; x <= last; x++) {
-			setRaw(x, b->bits);
+			BitVector_SetRaw(x, b->bits);
 		}
 		return;
 	}
 	
 	x = first;
 	while (x % 8 != 0) {
-		setRaw(x, b->bits);
+		BitVector_SetRaw(x, b->bits);
 		x++;
 	}
 	
@@ -177,7 +97,7 @@ void BitVector_SetRange(BitVector *b, int first, int last)
 	x+= 8 * numBytes;
 	
 	while (x <= last) {
-		setRaw(x, b->bits);
+		BitVector_SetRaw(x, b->bits);
 		x++;
 	}
 }
@@ -197,14 +117,14 @@ void BitVector_ResetRange(BitVector *b, int first, int last)
 	
 	if (last - first + 1 < 8 * 2) {
 		for (x = first; x <= last; x++) {
-			resetRaw(x, b->bits);
+			BitVector_ResetRaw(x, b->bits);
 		}
 		return;
 	}
 	
 	x = first;
 	while (x % 8 != 0) {
-		resetRaw(x, b->bits);
+		BitVector_ResetRaw(x, b->bits);
 		x++;
 	}
 	
@@ -215,7 +135,7 @@ void BitVector_ResetRange(BitVector *b, int first, int last)
 	x+= 8 * numBytes;
 	
 	while (x <= last) {
-		resetRaw(x, b->bits);
+		BitVector_ResetRaw(x, b->bits);
 		x++;
 	}
 }
