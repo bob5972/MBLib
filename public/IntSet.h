@@ -31,7 +31,7 @@ class IntSet
 		bool insert(int x);
 		
 		bool add(int x) {
-			insert(x);
+			return insert(x);
 		}
 		
 		//returns true iff the set was modified

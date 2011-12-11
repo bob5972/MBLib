@@ -158,6 +158,19 @@ BitVector_Flip(BitVector *b, int i)
 	BitVector_FlipRaw(i, b->bits);
 }
 
+static INLINE bool
+BitVector_TestAndSet(BitVector *b, int i)
+{
+	bool oup;
+	ASSERT(b != NULL);
+	ASSERT(i >= 0);
+	ASSERT(i < b->size);
+
+	oup = BitVector_GetRaw(i, b->bits);
+	BitVector_SetRaw(i, b->bits);
+	return oup;
+}
+
 static INLINE void
 BitVector_MakeEmpty(BitVector *b)
 {
@@ -269,6 +282,10 @@ class BitVector
 		
 		void flip(int x) {
 			BitVector_Flip(&b, x);
+		}
+		
+		bool testAndSet(int x) {
+			return BitVector_TestAndSet(&b, x);
 		}
 		
 		void setRange(int first, int last) {
