@@ -122,7 +122,7 @@ void testMBString(void)
 
 void testMBStack(void)
 {
-	int count = 1000;
+	int count = 1200;
 	int result;
 	MBStack<int> s;
 	MBStack<int> r;
@@ -215,7 +215,7 @@ void testIntSet(void)
 
 void testBitVector(void)
 {
-	int count = 1000;
+	int count = 10000;
 	int result;
 	BitVector b;
 	
@@ -268,6 +268,9 @@ void testBitVector(void)
 	for (int x = 0; x <= count; x++) {
 		result = b.get(x);
 		ASSERT(result == (x % 2) ? TRUE : FALSE);
+		b.flip(x);
+		result = b.get(x);
+		ASSERT(result == (x % 2) ? FALSE : TRUE);
 	}
 }
 
@@ -395,19 +398,21 @@ int main(int argc, char *argv[])
 	
 	BenchmarkTest tests[] = {
 		// enabled, weight, function
-		{ 0, 70000,  testMBString  },
-		{ 0, 7500,   testMBVector  },
-		{ 0, 4500,   testMBStack   },
-		{ 0, 8,      testMBSet     },
-		{ 0, 400,    testIntSet    },
-		{ 1, 2500,   testBitVector },
-		{ 0, 5000,   testMBMap     },
-		{ 0, 1700,   testIntMap    },
+		{ 1, 120000, testMBString  },
+		{ 1, 10000,  testMBVector  },
+		{ 1, 5000,   testMBStack   },
+		{ 1, 20,     testMBSet     },
+		{ 1, 800,    testIntSet    },
+		{ 1, 1300,   testBitVector },
+		{ 1, 8000,   testMBMap     },
+		{ 1, 2700,   testIntMap    },
 	};
 	
 	//Functional tests
-	testTypes();
-	testRandom();
+	if (!benchmark) {
+		testTypes();
+		testRandom();
+	}
 	
 	for (uint32 x = 0; x < ARRAYSIZE(tests); x++) {		
 		if (tests[x].enabled) {
@@ -442,7 +447,10 @@ int main(int argc, char *argv[])
 		}
 	}
 	
-	printf("Done.\n");
+	if (!benchmark) {
+		printf("Done.\n");
+	}
+	
 	return 0;
 }
 
