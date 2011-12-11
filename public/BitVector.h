@@ -2,55 +2,165 @@
 #define BitVector_H_201001192326
 
 #include "mbtypes.h"
+#include "mbutil.h"
+#include "mbassert.h"
+
+#ifdef __cplusplus
+	#define BitVector BitVectorData
+
+	extern "C" {
+#endif
+
+typedef struct {
+	uint32 *bits;
+	int size;
+	int arrSize;
+	bool fill;
+} BitVector;
+
+void BitVector_Create(BitVector *b);
+void BitVector_Destroy(BitVector *b);
+void BitVector_Copy(BitVector *dest, const BitVector *src);
+
+//This is a weird function.
+//It empties dest, copies over everything from src,
+//  and then leaves src empty.
+//Fill is left unchanged in both.
+void BitVector_Consume(BitVector *dest, BitVector *src);
+
+void BitVector_Resize(BitVector *b, int size);
+
+bool BitVector_Get(const BitVector *b, int x);
+void BitVector_Put(BitVector *b, int x, bool v);
+void BitVector_Set(BitVector *b, int x);
+void BitVector_Reset(BitVector *b, int x);
+void BitVector_Flip(BitVector *b, int x);
+
+//affects the bits from [first..last] inclusive
+void BitVector_SetRange(BitVector *b, int first, int last);
+void BitVector_ResetRange(BitVector *b, int first, int last);
+void BitVector_SetAll(BitVector *b);
+void BitVector_ResetAll(BitVector *b);
+
+bool BitVector_GetFillValue(const BitVector *b);
+void BitVector_SetFillValue(BitVector *b, bool fill);
+
+static INLINE void
+BitVector_MakeEmpty(BitVector *b)
+{
+	ASSERT(b != NULL);
+	b->size = 0;
+}
+
+static INLINE int
+BitVector_Size(const BitVector *b)
+{
+	ASSERT(b != NULL);
+	return b->size;
+}
+
+#ifdef __cplusplus
+	}
+	
+	#undef BitVector
 
 class BitVector
 {
 	public:
-		BitVector();
-		BitVector(const BitVector &a);
-		explicit BitVector(int size);
-		BitVector(int size, bool initial);
-		~BitVector();
+		BitVector() {
+			BitVector_Create(&b);
+		}
 		
-		bool getFillValue() const;
-		void setFillValue(bool f);
-		bool get(int x) const;
+		BitVector(const BitVector &a) {
+			BitVector_Create(&b);
+			BitVector_Copy(&b, &a.b);
+		}
 		
-		void put(int x, bool v);
-		void set(int x);
-		void reset(int x);
+		explicit BitVector(int size) {
+			BitVector_Create(&b);
+			BitVector_Resize(&b, size);
+		}
 		
-		void flip(int x);
+		BitVector(int size, bool initial) {
+			BitVector_Create(&b);
+			BitVector_SetFillValue(&b, initial);
+			BitVector_Resize(&b, size);
+		}
 		
-		//affects the bits from [first..last] inclusive
-		void setRange(int first, int last);
-		void resetRange(int first, int last);
+		~BitVector() {
+			BitVector_Destroy(&b);
+		}
 		
-		void setAll();
-		void resetAll();		
+		bool getFillValue() const {
+			return BitVector_GetFillValue(&b);
+		}
 		
-		int size() const;
-		void resize(int length);
-		void makeEmpty();
+		void setFillValue(bool f) {
+			BitVector_SetFillValue(&b, f);
+		}
 		
-		bool operator [] (int x) const;
+		bool get(int x) const {
+			return BitVector_Get(&b, x);
+		}
 		
-		//This is a weird function.
-		//It empties this array, copies over everything from a,
-		//  and then leaves a empty.
-		//Fill is left unchanged
-		void consume(BitVector & a);	
+		void put(int x, bool v) {
+			BitVector_Put(&b, x, v);
+		}
+		
+		void set(int x) {
+			BitVector_Set(&b, x);
+		}
+		
+		void reset(int x) {
+			BitVector_Reset(&b, x);
+		}
+		
+		void flip(int x) {
+			BitVector_Flip(&b, x);
+		}
+		
+		void setRange(int first, int last) {
+			BitVector_SetRange(&b, first, last);
+		}
+		
+		void resetRange(int first, int last) {
+			BitVector_ResetRange(&b, first, last);
+		}
+		
+		void setAll() {
+			BitVector_SetAll(&b);
+		}
+		
+		void resetAll() {
+			BitVector_ResetAll(&b);
+		}
+		
+		int size() const {
+			return BitVector_Size(&b);
+		}
+		
+		void resize(int size) {
+			BitVector_Resize(&b, size);
+		}
+		
+		void makeEmpty() {
+			BitVector_MakeEmpty(&b);
+		}
+		
+		bool operator [] (int x) const {
+			return BitVector_Get(&b, x);
+		}
+		
+
+		void consume(BitVector &src) {
+			BitVector_Consume(&b, &src.b);
+		}
 	
 	private:
-		uint32 *myBits;
-		int mySize;
-		int myArrSize;
-		bool myFill;
-		
-		static const int UNIT_SIZE = 32;
-		static const int DEFAULT_SPACE = 1;	
+		BitVectorData b;
 };
 
+#endif //__cplusplus
 
 
 #endif //BitVector_H_201001192326

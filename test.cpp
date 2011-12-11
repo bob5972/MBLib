@@ -395,19 +395,27 @@ int main(int argc, char *argv[])
 	
 	BenchmarkTest tests[] = {
 		// enabled, weight, function
-		{ 1, 30000,  testMBString  },
-		{ 1, 4200,   testMBVector  },
-		{ 1, 2400,   testMBStack   },
-		{ 1, 4,      testMBSet     },
-		{ 1, 250,    testIntSet    },
+		{ 0, 30000,  testMBString  },
+		{ 0, 4200,   testMBVector  },
+		{ 0, 2400,   testMBStack   },
+		{ 0, 4,      testMBSet     },
+		{ 0, 250,    testIntSet    },
 		{ 1, 1500,   testBitVector },
-		{ 1, 2500,   testMBMap     },
-		{ 1, 1000,   testIntMap    },
+		{ 0, 2500,   testMBMap     },
+		{ 0, 1000,   testIntMap    },
 	};
 	
 	//Functional tests
 	testTypes();
 	testRandom();
+	
+	for (uint32 x = 0; x < ARRAYSIZE(tests); x++) {		
+		if (tests[x].enabled) {
+			numTests++;
+		} else {
+			tests[x].weight = 0;
+		}
+	}
 	
 	for (uint32 x = 0; x < ARRAYSIZE(tests); x++) {
 		if (tests[x].enabled) {

@@ -39,7 +39,6 @@ CPP_SOURCES = MBString.cpp \
               MBStack.cpp \
               MBQueue.cpp \
               MBSet.cpp \
-              BitVector.cpp \
               IntMap.cpp \
               MBMap.cpp \
               MBMatrix.cpp \
@@ -47,7 +46,8 @@ CPP_SOURCES = MBString.cpp \
 
 C_SOURCES = mbassert.c \
             mbdebug.c \
-            random.c
+            random.c \
+            BitVector.c
 
 SOURCES = $(CPP_SOURCES) $(C_SOURCES)
 
