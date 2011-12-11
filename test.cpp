@@ -410,6 +410,9 @@ int main(int argc, char *argv[])
 	
 	//Functional tests
 	if (!benchmark) {
+		#if !MB_DEBUG
+			printf("Warning: Running tests with assertions disabled.\n");
+		#endif
 		testTypes();
 		testRandom();
 	}
