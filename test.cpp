@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <iostream>
 
 #include "MBString.h"
 #include "MBStack.h"
@@ -51,19 +52,61 @@ void testMBString(void)
 	int result;
 	MBString str(30, 'd');
 	MBString str2(str);
+	MBString cstr("Hello World!");
 	
-	str = "Hello World!";
+	cstr = "Hello World!";
+	result = cstr.length();
+	ASSERT(result == 12);
+	result = cstr[0];
+	ASSERT(result == 'H');
+	result = cstr[1];
+	ASSERT(result == 'e');
+	result = cstr[6];
+	ASSERT(result == 'W');
+	result = cstr[10];
+	ASSERT(result == 'd');
+	result = cstr[11];
+	ASSERT(result == '!');
+	
 	str = "Goodbye World!";
+	str = "Hello World!";
 	
 	str2 = str;
 	
+	str2 = "Hello World!";
+	result = str2.length();
+	ASSERT(result == 12);
+	result = str2[0];
+	ASSERT(result == 'H');
+	result = str2[1];
+	ASSERT(result == 'e');
+	result = str2[6];
+	ASSERT(result == 'W');
+	result = str2[10];
+	ASSERT(result == 'd');
+	result = str2[11];
+	ASSERT(result == '!');
+	
 	str = "Hello World!";
+	result = str.find('H');
+	ASSERT(result == 0);
+	result = str.find('W');
+	ASSERT(result == 6);
+	result = str.find("W");
+	ASSERT(result == 6);
+	
+	result = str.find("Hello World!");
+	ASSERT(result == 0);
+	
+	result = str.find(str);
+	ASSERT(result == 0);
+	
 	result = str.find("rld");
 	ASSERT(result == 8);
 	
 	result = str.find("Hello");
-	ASSERT(result == 0);
-	
+	ASSERT(result == 0);	
+
 	result = str.find("ld!");
 	ASSERT(result == 9);
 	
@@ -71,6 +114,9 @@ void testMBString(void)
 	ASSERT(result == -1);
 	
 	result = str.find("elxxW");
+	ASSERT(result == -1);
+	
+	result = str.find("elW");
 	ASSERT(result == -1);
 }
 
@@ -288,8 +334,7 @@ void testIntMap()
 
 void testRandom(void)
 {
-	uint64 seed;
-	seed = Random_Init();
+    Random_Init();
 
 	int x, y;
 	int count = 100;
@@ -329,10 +374,28 @@ int main(int argc, char *argv[])
 	const double seconds = 10.0;
 	int numTests = 0;
 	int calibration;
+	MBString arg;
+	bool benchmark;
+	int runs;
+	
+	benchmark = FALSE;
+	#ifdef BENCHMARK
+		benchmark = TRUE;
+	#endif
+	
+	if (argc > 1) {
+		arg = argv[1];
+	
+		if (arg == "-b") {
+			benchmark = TRUE;
+		} else if (arg == "-f") {
+			benchmark = FALSE;
+		}
+	}
 	
 	BenchmarkTest tests[] = {
 		// enabled, weight, function
-		{ 1, 59000,  testMBString  },
+		{ 1, 30000,  testMBString  },
 		{ 1, 4200,   testMBVector  },
 		{ 1, 2400,   testMBStack   },
 		{ 1, 4,      testMBSet     },
@@ -346,7 +409,7 @@ int main(int argc, char *argv[])
 	testTypes();
 	testRandom();
 	
-	for (int x = 0; x < ARRAYSIZE(tests); x++) {
+	for (uint32 x = 0; x < ARRAYSIZE(tests); x++) {
 		if (tests[x].enabled) {
 			numTests++;
 		} else {
@@ -360,8 +423,12 @@ int main(int argc, char *argv[])
 		calibration = 1;
 	}
 	
-	for (int x = 0; x < ARRAYSIZE(tests); x++) {
-		int runs = tests[x].weight * calibration;
+	runs = 1;
+	for (uint32 x = 0; x < ARRAYSIZE(tests); x++) {
+		if (benchmark) {
+			runs = tests[x].weight * calibration;
+		}
+		
 		for (int y = 0; y < runs; y++) {
 			tests[x].function();
 		}

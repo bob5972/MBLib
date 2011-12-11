@@ -51,7 +51,6 @@ MBString::MBString(const char * c)
 {	
 	if (c) {
 		myLength = strlen(c);
-		myLength--;
 		myCapacity = myLength+1;
 		myChars = new char[myCapacity];
 		memcpy(myChars, c, myLength);
@@ -98,7 +97,6 @@ const MBString & MBString::operator = (const char* c)
 	int newLength;
 	if (c) {
 		newLength = strlen(c);
-		newLength--;
 		myLength = 0;
 		ensureCapacity(newLength + 1);
 		myLength = newLength;		
@@ -447,6 +445,7 @@ MBString MBString::toString(int x)
 		oup = '-'+oup;
 	}
 	
+
 	return oup;
 }
 
