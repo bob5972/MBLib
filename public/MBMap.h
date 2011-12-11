@@ -41,7 +41,7 @@ class MBMap
 		std::map<keyType, valueType> myMap;
 };
 
-#include "MBMap.cpp"
+#include "../MBMap.cpp"
 
 #endif //MBMAP_H_201001091450
 
