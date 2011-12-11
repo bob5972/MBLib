@@ -5,20 +5,36 @@
 #include "MBVector.h"
 #include "mbdebug.h"
 #include "mbassert.h"
+#include "mbutil.h"
 
 template<class itemType>
 MBVector<itemType>::MBVector()
 :mySize(0),
- myCapacity(0),
- myItems(NULL)
-{}
+ myCapacity(1),
+ myItems(new itemType[1])
+{
+	ASSERT(myCapacity > 0);
+}
 
 template<class itemType>
 MBVector<itemType>::MBVector(int size)
 :mySize(size),
  myCapacity(size),
  myItems(new itemType[size])
-{}
+{
+	mySize = size;
+	ASSERT(mySize >= 0);
+	
+	if (mySize > 0) {
+		myCapacity = mySize;
+	} else {
+		myCapacity = 1;
+	}
+	
+	myItems = new itemType[myCapacity];
+	
+	ASSERT(myCapacity > 0);
+}
 
 template<class itemType>
 MBVector<itemType>::MBVector(const MBVector<itemType>& vec)
@@ -30,6 +46,8 @@ MBVector<itemType>::MBVector(const MBVector<itemType>& vec)
 	{
 		myItems[x] = vec.myItems[x];
 	}
+	
+	ASSERT(myCapacity > 0);
 }
 
 template<class itemType>
@@ -42,6 +60,8 @@ MBVector<itemType>::MBVector(int size, const itemType & fillValue)
 	{
 		myItems[x] = fillValue;
 	}
+	
+	ASSERT(myCapacity > 0);
 }
 
 template<class itemType>
@@ -54,6 +74,7 @@ template <class itemType>
 void MBVector<itemType>::makeEmpty()
 {
 	resize(0);
+	ASSERT(myCapacity > 0);
 }
 
 template <class itemType>
@@ -65,9 +86,12 @@ void MBVector<itemType>::consume(MBVector<itemType> &v)
 	mySize = v.mySize;
 	myCapacity = v.mySize;
 	
-	v.myItems = NULL;
+	v.myItems = new itemType[1];
 	v.mySize = 0;
-	v.myCapacity = 0;
+	v.myCapacity = 1;
+	
+	ASSERT(myCapacity > 0);
+	ASSERT(v.myCapacity > 0);
 }
 
 template <class itemType>
@@ -76,10 +100,13 @@ const MBVector<itemType> &
 {
 	if (this != &rhs) {
 		resize(rhs.mySize);
-		for (int x=0;x<mySize;x++) {
+		for (int x = 0;x < mySize;x++) {
 			myItems[x] = rhs.myItems[x];
 		}
 	}
+	
+	ASSERT(myCapacity > 0);
+	
 	return *this;
 }
 
@@ -174,6 +201,40 @@ const itemType & MBVector<itemType>::first () const
 	return myItems[0];
 }
 
+
+template<class itemType>
+void MBVector<itemType>::ensureCapacity(int c)
+{
+	int newCap;
+	int minCap;
+	
+	ASSERT(myCapacity > 0);
+	
+	if (myCapacity >= c) {
+		return;
+	}
+	
+	minCap = myCapacity + c;
+	
+	newCap = myCapacity;
+	while (newCap < minCap) {
+		newCap = 2 * newCap + 1;
+	}
+	ASSERT(newCap > myCapacity);
+	
+	itemType *t = new itemType[newCap];
+	for(int x = 0; x < mySize;x++) {
+		t[x] = myItems[x];
+	}
+
+	ASSERT(myItems != NULL);
+	delete [] myItems;
+	
+	myCapacity = newCap;
+	ASSERT(myCapacity > 0);
+	myItems = t;
+}
+
 template<class itemType>
 void MBVector<itemType>::resize(int newSize)
 {
@@ -181,33 +242,13 @@ void MBVector<itemType>::resize(int newSize)
 		PANIC("Illegal vector size.");
 	}	
 
-	if (newSize < myCapacity) {
+	if (newSize <= myCapacity) {
 		mySize = newSize;
 		return;
 	}
-
-	if (newSize == 0) {
-		if (myCapacity > 0) {
-			delete[] myItems;
-		}
-		myItems = NULL;
-		mySize = myCapacity = newSize;//=0
-		return;
-	}
 	
-	itemType *t = new itemType[newSize];
-
-	for(int x=0;x<mySize;x++) {
-		t[x] = myItems[x];
-	}
-
-	if (myCapacity > 0) {
-		delete [] myItems;
-	}
-	
-	myCapacity = mySize = newSize;
-	myItems = t;
-	return;
+	ensureCapacity(newSize);
+	mySize = newSize;
 }
 
 template<class itemType>
@@ -224,45 +265,36 @@ void MBVector<itemType>::resize(int newSize,
 }
 
 template<class itemType>
-void MBVector<itemType>::grow()
+INLINE void MBVector<itemType>::grow()
 {
-	if (mySize < myCapacity) {
-		mySize++;
-		return;
+	grow(1);
+}
+
+template<class itemType>
+INLINE void MBVector<itemType>::grow(int howMuch)
+{
+	ASSERT(howMuch >= 0);
+	if (mySize + howMuch > myCapacity) {
+		ensureCapacity(mySize + howMuch);
 	}
 	
-	int oldSize = mySize;
-	resize(myCapacity>0?myCapacity*2:4);
-	mySize = oldSize+1;
+	mySize += howMuch;
+	ASSERT(mySize >= 0);
+	ASSERT(mySize <= myCapacity);
 }
 
 template<class itemType>
-void MBVector<itemType>::grow(int howMuch)
+INLINE void MBVector<itemType>::shrink()
 {
-	while (howMuch > 0) {
-		grow();
-		howMuch--;
-	}
-	
-	while (howMuch < 0) {
-		shrink();
-		howMuch++;
-	}
+	shrink(1);
 }
 
 template<class itemType>
-void MBVector<itemType>::shrink()
+INLINE void MBVector<itemType>::shrink(int howMuch)
 {
-	mySize--;
-	if (mySize < 0) {
-		PANIC("Vector cannot shrink smaller than size 0.");
-	}
-}
-
-template<class itemType>
-void MBVector<itemType>::shrink(int howMuch)
-{
-	grow(-howMuch);
+	ASSERT(howMuch >= 0);
+	ASSERT(mySize - howMuch >= 0);
+	mySize -= howMuch;
 }
 
 template<class itemType>
@@ -276,9 +308,8 @@ int MBVector<itemType>::push(const itemType & item)
 template<class itemType>
 const itemType & MBVector<itemType>::pop()
 {
-	if (mySize <= 0) {
-		PANIC("Cannot pop an empty vector.");
-	}	
+	ASSERT(mySize >= 0);
+	
 	shrink();
 	return myItems[mySize];
 }
@@ -292,28 +323,34 @@ bool MBVector<itemType>::isEmpty() const
 template<class itemType>
 int MBVector<itemType>::trim()
 {
-	if (mySize == myCapacity) {
+	if (mySize == myCapacity || myCapacity == 1) {
 		return 0;
 	}
 	
 	int oup = myCapacity - mySize;
-	itemType *t = new itemType[mySize];
+	int newCap = mySize;
+	if (newCap == 0) {
+		newCap = 1;
+	}
 	
-	for(int x=0;x<mySize;x++) {
+	itemType *t = new itemType[newCap];
+	
+	for(int x = 0;x < mySize;x++) {
 		t[x] = myItems[x];
 	}
 	
-	myCapacity = mySize;
+	myCapacity = newCap;
 	delete [] myItems;
 	myItems = t;
+	
 	return oup;
 }
 
 template<class itemType>
 void MBVector<itemType>::pushAllTo(MBVector<itemType> &v) const
 {
-	v.ensureCapacity(v.length()+length());
-	for(int x=0;x<length();x++) {
+	v.ensureCapacity(v.mySize+mySize);
+	for(int x=0;x<mySize;x++) {
 		v.push(get(x));
 	}
 }
@@ -321,20 +358,11 @@ void MBVector<itemType>::pushAllTo(MBVector<itemType> &v) const
 template<class itemType>
 void MBVector<itemType>::pushAllFrom(const MBVector<itemType> &v)
 {
-	ensureCapacity(v.length()+length());
+	ensureCapacity(v.mySize+mySize);
 	for(int x=0;x<v.length();x++) {
 		push(v[x]);
 	}
 }
 
-template<class itemType>
-void MBVector<itemType>::ensureCapacity(int c)
-{
-	if(myCapacity < c) {
-		int oldSize = mySize;
-		resize(c);
-		mySize = oldSize;
-	}	
-}
 
 #endif //MBVector_CPP_201002052320
