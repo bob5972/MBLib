@@ -44,6 +44,11 @@ float Random_UnitFloat(void);
 
 int Random_Enum(EnumDistribution *dist, int numValues);
 
+/*
+ * Sum numDice random die, between 1 and diceMax, inclusive.
+ */
+int Random_DiceSum(int numDice, int diceMax);
+
 #ifdef __cplusplus
 	}
 #endif 

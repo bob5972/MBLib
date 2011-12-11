@@ -213,7 +213,7 @@ uint64 Random_Uint64(void)
 
 /*
  * Random_Int --
- *   Returns a uniformly distributed int in the range [min, max].
+ *   Returns a uniformly distributed int in the range [min, max] (inclusive).
  *   XXX: Not verified for negative values or ranges near max int.
  */
 int Random_Int(int min, int max)
@@ -247,5 +247,22 @@ float Random_UnitFloat(void)
 	rval = ((float) Random_Uint32()) / (float) ((uint32) -1);
 	
 	return rval;
+}
+
+/*
+ * Sum numDice random die, between 1 and diceMax, inclusive.
+ */
+int Random_DiceSum(int numDice, int diceMax)
+{
+	int x;
+	int oup = 0;
+	
+	ASSERT(numDice >= 0 );
+	
+	for (x = 0; x < numDice; x++) {
+		oup += Random_Int(1, diceMax);
+	}
+	
+	return oup;
 }
 
