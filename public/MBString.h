@@ -54,6 +54,10 @@ class MBString
    	    int find(const MBString & str) const;
 
 		//These return new strings
+		
+		/*
+		 * return len chars starting at pos
+		 */
    	    MBString substr(int pos, int len) const;
    	    MBString toUpper() const;
    	    MBString toLower() const;

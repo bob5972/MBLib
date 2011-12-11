@@ -149,17 +149,22 @@ int MBString::find(const MBString & str) const
 	return -1;
 }
 
-MBString MBString::substr(int pos,int len) const
+/*
+ * return len chars starting at pos
+ */
+MBString MBString::substr(int pos, int len) const
 {
 	ASSERT(pos + len <= myLength);
 	ASSERT(pos >= 0);
 	
-	MBString oup(len);
+	MBString oup;
 	
 	for (int x = 0; x < len; x++) {
 		oup += myChars[x+pos];
 	}
 	
+	ASSERT(oup.myLength == len);
+	ASSERT(oup.myChars[len] == '\0');
 	return oup;
 }
 
@@ -222,8 +227,7 @@ void MBString::append(const MBString& str)
 
 const MBString& MBString::operator += ( const MBString & str )
 {
-	append(str);
-	
+	append(str);	
 	return *this;
 }
 
