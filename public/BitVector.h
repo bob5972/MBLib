@@ -4,6 +4,7 @@
 #include "mbtypes.h"
 #include "mbutil.h"
 #include "mbassert.h"
+#include <string.h>
 
 #ifdef __cplusplus
 	#define BitVector BitVectorData
@@ -33,38 +34,71 @@ void BitVector_Resize(BitVector *b, int size);
 //affects the bits from [first..last] inclusive
 void BitVector_SetRange(BitVector *b, int first, int last);
 void BitVector_ResetRange(BitVector *b, int first, int last);
-void BitVector_SetAll(BitVector *b);
-void BitVector_ResetAll(BitVector *b);
-
-bool BitVector_GetFillValue(const BitVector *b);
-void BitVector_SetFillValue(BitVector *b, bool fill);
 
 /*
  * Inline Functions
  */
+#define BVUNITBITS 32
+#define BVINDEX(x) (x / BVUNITBITS)
+#define BVMASK(x)  (1 << (x % BVUNITBITS))
  
 static INLINE bool
 BitVector_GetRaw(int i, const uint32 *bits)
-{
-	const int UNIT_SIZE = sizeof(*bits)*8;
-	
-	return (bits[i/UNIT_SIZE] & (1<<(i%UNIT_SIZE))) != 0;
+{	
+#if defined(__GNUC__) && defined(ARCH_AMD64)
+	{
+		uint32 tmp;
+
+		asm("btl  %2, (%1); "
+		    "sbbl %0, %0"
+		    : "=r" (tmp)
+		    : "r" (bits), "r" (i)
+		    : "cc");
+		return tmp;
+	}
+#else
+	return (bits[BVINDEX(i)] & BVMASK(i)) != 0;
+#endif	
 }
 
 static INLINE void
 BitVector_SetRaw(int i, uint32 *bits)
-{
-	const int UNIT_SIZE = sizeof(*bits)*8;
-	
-	bits[i/UNIT_SIZE] |= (1<<(i%UNIT_SIZE));
+{	
+#if defined(__GNUC__) && defined(ARCH_AMD64)
+	asm volatile("btsl %1, (%0)"
+                 :: "r" (bits), "r" (i)
+                 : "cc", "memory");
+#else
+	bits[BVINDEX(i)] |= BVMASK(i);
+#endif	
 }
 
 static INLINE void
 BitVector_ResetRaw(int i, uint32 *bits)
 {
-	const int UNIT_SIZE = sizeof(*bits)*8;
-	
-	bits[i/UNIT_SIZE] &= ~(1<<(i%UNIT_SIZE));
+#if defined(__GNUC__) && defined(ARCH_AMD64)
+	asm volatile("btrl %1, (%0)"
+                 :: "r" (bits), "r" (i)
+                 : "cc", "memory");
+#else
+	bits[BVINDEX(i)] &= ~BVMASK(i);
+#endif	
+}
+
+static INLINE void
+BitVector_FlipRaw(int i, uint32 *bits)
+{	
+#if defined(__GNUC__) && defined(ARCH_AMD64)
+	asm volatile("btcl %1, (%0)"
+                 :: "r" (bits), "r" (i)
+                 : "cc", "memory");
+#else
+	if (BitVector_GetRaw(i, bits)) {
+		BitVector_ResetRaw(i, bits);
+	} else {
+		BitVector_SetRaw(i, bits);
+	}
+#endif	
 }
 
 
@@ -121,13 +155,7 @@ BitVector_Flip(BitVector *b, int i)
 	ASSERT(i >= 0);
 	ASSERT(i < b->size);
 	
-	bool value = BitVector_GetRaw(i, b->bits);
-	
-	if (value) {
-		BitVector_ResetRaw(i, b->bits);
-	} else {
-		BitVector_SetRaw(i, b->bits);
-	}
+	BitVector_FlipRaw(i, b->bits);
 }
 
 static INLINE void
@@ -142,6 +170,45 @@ BitVector_Size(const BitVector *b)
 {
 	ASSERT(b != NULL);
 	return b->size;
+}
+
+
+static INLINE void
+BitVector_SetAll(BitVector *b)
+{
+	ASSERT(b != NULL);
+	uint32 byteLength;
+	
+	byteLength = (b->size + 7) / 8;
+	ASSERT(byteLength / sizeof(*b->bits) <= (uint32) b->arrSize);
+	
+	memset(b->bits, 0xFF, byteLength);
+}
+
+static INLINE void
+BitVector_ResetAll(BitVector *b)
+{
+	ASSERT(b != NULL);
+	uint32 byteLength;
+	
+	byteLength = (b->size + 7) / 8;
+	ASSERT(byteLength / sizeof(*b->bits) <= (uint32) b->arrSize);
+	
+	memset(b->bits, 0x00, byteLength);
+}
+
+static INLINE bool 
+BitVector_GetFillValue(const BitVector *b)
+{
+	ASSERT(b != NULL);
+	return b->fill;
+}
+
+static INLINE void
+BitVector_SetFillValue(BitVector *b, bool f)
+{
+	ASSERT(b != NULL);
+	b->fill = f;
 }
 
 #ifdef __cplusplus

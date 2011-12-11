@@ -39,6 +39,12 @@
 	#define false FALSE
 #endif
 
+#if defined(__x86_64__)
+	#define ARCH_AMD64
+#elif defined(__i386__)
+	#define ARCH_x86
+#endif
+
 //There has to be some way to get these from the compiler
 #ifdef ARCH_AMD64
 	#define SHORT_BIT 16

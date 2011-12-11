@@ -373,7 +373,7 @@ typedef struct {
 
 int main(int argc, char *argv[])
 {
-	// Rough calibration on time of benchmark (debug off)
+	// Rough calibration on run time of the benchmark (debug off)
 	const double seconds = 10.0;
 	int numTests = 0;
 	int calibration;

@@ -19,7 +19,6 @@ void BitVector_Create(BitVector *b)
 
 void BitVector_Resize(BitVector *b, int size)
 {
-	const int UNIT_SIZE = sizeof(*b->bits)*8;
 	int oldSize;
 	int oldValidCellCount;
 	int newValidCellCount;
@@ -33,13 +32,13 @@ void BitVector_Resize(BitVector *b, int size)
 		return;
 	}
 	
-	oldValidCellCount = oldSize / UNIT_SIZE;
-	if (oldSize % UNIT_SIZE > 0) {
+	oldValidCellCount = oldSize / BVUNITBITS;
+	if (oldSize % BVUNITBITS > 0) {
 		oldValidCellCount++;
 	}
 	
-	newValidCellCount = size / UNIT_SIZE;
-	if (size % UNIT_SIZE > 0) {
+	newValidCellCount = size / BVUNITBITS;
+	if (size % BVUNITBITS > 0) {
 		newValidCellCount++;
 	}
 	
@@ -140,50 +139,15 @@ void BitVector_ResetRange(BitVector *b, int first, int last)
 	}
 }
 
-void BitVector_SetAll(BitVector *b)
-{
-	ASSERT(b != NULL);
-	uint32 byteLength;
-	
-	byteLength = (b->size + 7) / 8;
-	ASSERT(byteLength / sizeof(*b->bits) <= (uint32) b->arrSize);
-	
-	memset(b->bits, 0xFF, byteLength);
-}
-
-void BitVector_ResetAll(BitVector *b)
-{
-	ASSERT(b != NULL);
-	uint32 byteLength;
-	
-	byteLength = (b->size + 7) / 8;
-	ASSERT(byteLength / sizeof(*b->bits) <= (uint32) b->arrSize);
-	
-	memset(b->bits, 0x00, byteLength);
-}
-
-bool BitVector_GetFillValue(const BitVector *b)
-{
-	ASSERT(b != NULL);
-	return b->fill;
-}
-
-void BitVector_SetFillValue(BitVector *b, bool f)
-{
-	ASSERT(b != NULL);
-	b->fill = f;
-}
-
 void BitVector_Copy(BitVector *dest, const BitVector *src)
 {
-	const int UNIT_SIZE = sizeof(*dest->bits)*8;
 	int numBytes;
 	ASSERT(dest != NULL);
 	ASSERT(src != NULL);
 	
 	dest->fill = src->fill;
 	dest->size = src->size;
-	dest->arrSize = (dest->size/UNIT_SIZE) + 1;
+	dest->arrSize = (dest->size/BVUNITBITS) + 1;
 	
 	dest->bits = malloc(sizeof(*dest->bits) * dest->arrSize);
 	
