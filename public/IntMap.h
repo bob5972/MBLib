@@ -15,16 +15,26 @@ class IntMap
 		void makeEmpty();
 		
 		bool containsKey(int key) const;
-		bool isEmpty() const;
-		int size() const;
+		bool isEmpty() const {
+			return mySize == 0;
+		}
+		
+		int size() const {
+			return mySize;
+		}
 		
 		//defaults to a value of 0 for missing keys
 		int get(int key) const;
 		
 		//returns the new value
-		int increment(int key);
+		int increment(int key) {
+			return increment(key, 1);
+		}
+		
 		//returns the new value
-		int decrement(int key);
+		int decrement(int key) {
+			return decrement(key, 1);
+		}
 		
 		//returns the new value
 		int increment(int key, int amount);

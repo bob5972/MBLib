@@ -73,12 +73,6 @@ MBString::MBString(const MBString & str)
 	myChars[myLength] = '\0';
 }
 
-MBString::~MBString()
-{
-	delete [] myChars;
-	myChars = NULL;
-}
-
 const MBString&  MBString::operator = (const MBString & str)
 {
 	if (this != &str) {
@@ -118,17 +112,6 @@ const MBString & MBString::operator = (char c)
 	return *this;
 }
 
-//Number of logical characters
-int MBString::length() const
-{
-	return myLength;	
-}
-
-//return as C-String
-const char* MBString::cstr() const
-{
-	return myChars;
-}
 
 int MBString::find(char ta) const
 {
@@ -197,28 +180,6 @@ MBString MBString::toLower() const
 	}
 	return oup;
 }
-
-char MBString::getCharAt(int k) const
-{
-	ASSERT(k < myLength);
-	ASSERT(k >= 0);
-	
-	return myChars[k];
-}
-
-char MBString::operator[ ]( int k ) const
-{
-	return getCharAt(k);
-}
-
-char& MBString::operator[ ]( int k )
-{
-	ASSERT(k < myLength);
-	ASSERT(k >= 0);
-	
-	return myChars[k];
-}
-
 
 /*
  * Ensure the string has at least the specified capacity.

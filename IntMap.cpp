@@ -206,11 +206,6 @@ int IntMap::get(int key) const
 	return myValues[i];
 }
 
-int IntMap::increment(int key)
-{
-	return increment(key, 1);
-}
-
 int IntMap::increment(int key, int amount)
 {
 	int i = findKey(key);
@@ -223,11 +218,6 @@ int IntMap::increment(int key, int amount)
 	return myValues[i];
 }
 
-int IntMap::decrement(int key)
-{
-	return decrement(key,1);
-}
-
 int IntMap::decrement(int key, int amount)
 {
 	int i = findKey(key);
@@ -238,11 +228,6 @@ int IntMap::decrement(int key, int amount)
 	
 	myValues[i] -= amount;
 	return myValues[i];
-}
-
-bool IntMap::isEmpty() const
-{
-	return mySize == 0;
 }
 
 bool IntMap::put(int key, int value)
@@ -349,11 +334,6 @@ bool IntMap::remove(int key)
 	return true;
 }
 
-int IntMap::size() const
-{
-	return mySize;
-}
-
 
 bool IntMap::insertAll(const IntMap& m)
 {
@@ -372,11 +352,6 @@ bool IntMap::insertAll(const IntMap& m)
 	
 	return oup;
 }
-
-
-
-
-
 
 
 

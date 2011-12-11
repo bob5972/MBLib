@@ -4,6 +4,8 @@
 #include <istream>
 #include <ostream>
 
+#include "mbassert.h"
+
 using namespace std;
 
 class MBString
@@ -24,20 +26,27 @@ class MBString
        	MBString(const MBString & str);
         MBString(char x);
 
-        ~MBString();
+        ~MBString() {
+        	delete [] myChars;
+        	myChars = NULL;
+    	}
 
     	const MBString & operator = (const MBString & str);
         const MBString & operator = (const char* s);
         const MBString & operator = (char c);
 
     	//Number of Characters
-    	int length() const;
+    	int length() const {
+    		return myLength;
+		}
    	    
    	    //return as C-String
    	    //The returned string must NOT be freed by the caller
    	    //The returned string may change if the
    	    //    MBString is modified
-   	    const char * cstr() const;
+   	    const char * cstr() const {
+   	    	return myChars;
+    	}
    	    
    	    //returns index of leftmost instance of x
    	    int find(char x) const;
@@ -49,12 +58,23 @@ class MBString
    	    MBString toUpper() const;
    	    MBString toLower() const;
 
-    	//Range-checked indexing
-    	char   operator[ ]( int k ) const;
-    	char getCharAt(int k) const;
+    	//indexing
+    	char operator[ ]( int k ) const {
+    		return getCharAt(k);
+		}
+		
+    	char getCharAt(int k) const {
+			ASSERT(k < myLength);
+			ASSERT(k >= 0);	
+			return myChars[k];
+		}
      	
      	//Range-checked indexing
-     	char & operator[ ]( int k );
+     	char & operator[ ]( int k ) {
+     		ASSERT(k < myLength);
+			ASSERT(k >= 0);	
+			return myChars[k];
+		}
    		
 
         //Append str

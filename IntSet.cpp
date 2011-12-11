@@ -2,24 +2,6 @@
 
 #include "mbassert.h"
 
-IntSet::IntSet()
-{   }
-
-IntSet::IntSet(const IntSet &s)
-{
-	insertAll(s);
-}
-
-bool IntSet::isEmpty() const
-{
-	return size() == 0;
-}
-
-int IntSet::size() const
-{
-	return values.size();
-}
-
 bool IntSet::makeEmpty()
 {
 	if(isEmpty()) {
@@ -30,11 +12,6 @@ bool IntSet::makeEmpty()
 	values.makeEmpty();
 	
 	return TRUE;
-}
-
-bool IntSet::contains(int x) const
-{
-	return m.get(x) == 1;
 }
 
 bool IntSet::insert(int x)
@@ -48,10 +25,6 @@ bool IntSet::insert(int x)
 	return oup;
 }
 
-bool IntSet::add(int x)
-{
-	return insert(x);
-}
 
 bool IntSet::checkInvariants() const
 {

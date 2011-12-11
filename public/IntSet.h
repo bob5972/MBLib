@@ -7,20 +7,32 @@
 class IntSet
 {
 	public:
-		IntSet();
-		IntSet(const IntSet &s);
+		IntSet() {}
+		IntSet(const IntSet &s) {
+			insertAll(s);
+		}
 		
 		//returns true iff the set was modified
 		bool makeEmpty();
 		
-		bool contains(int x) const;
+		bool contains(int x) const {
+			return m.get(x) == 1;
+		}
 		
-		bool isEmpty() const;
-		int size() const;
+		bool isEmpty() const {
+			return size() == 0;
+		}
+		
+		int size() const {
+			return values.size();
+		}
 		
 		//returns true iff the set was modified
 		bool insert(int x);
-		bool add(int x);
+		
+		bool add(int x) {
+			insert(x);
+		}
 		
 		//returns true iff the set was modified
 		// Linear time on the size of the set
