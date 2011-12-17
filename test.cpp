@@ -3,7 +3,6 @@
 #include <iostream>
 
 #include "MBString.h"
-#include "MBShareString.h"
 #include "MBStack.h"
 #include "mbassert.h"
 #include "MBVector.h"
@@ -145,134 +144,6 @@ void testMBString(void)
 	
 	result = str.find("elW");
 	ASSERT(result == -1);
-
-	//Sharing tests
-	str = "This is a test string.";
-	str2 = str;
-	str = str2;
-	cstr = str;
-	str = "This is another string.";
-	cstr = str;
-	cstr = str2;
-	str2 = cstr;
-	cstr = str;
-	str = cstr;
-	cstr = "Blah";
-	str2 = "Blah2";
-	str = "Blargh";
-}
-
-void testMBShareString(void)
-{
-	int result;
-	int i;
-	MBShareString str(30, 'd');
-	MBShareString str2(str);
-	MBShareString cstr("Hello World!");
-	
-	cstr = "Hello World!";
-	result = cstr.length();
-	ASSERT(result == 12);
-	result = cstr[0];
-	ASSERT(result == 'H');
-	result = cstr[1];
-	ASSERT(result == 'e');
-	result = cstr[6];
-	ASSERT(result == 'W');
-	result = cstr[10];
-	ASSERT(result == 'd');
-	result = cstr[11];
-	ASSERT(result == '!');
-	
-	cstr = "Hello World!";
-	result = (cstr < "Hello Q");
-	ASSERT(!result);
-	result = (cstr > "Hello Q");
-	ASSERT(result);
-	result = (cstr != "ABC");
-	ASSERT(result);
-	result = (cstr != "Hello Wozld!");
-	ASSERT(result);
-	result = (cstr == "Hello World!");
-	ASSERT(result);
-
-	str = "Goodbye World!";
-	str2 = str.substr(0, 1);
-	result = str2.length();
-	ASSERT(result == 1);
-	result = str2[0];
-	ASSERT(result == 'G');
-	
-	str2 = str.substr(1,3);
-	result = str2.compareTo("ood");
-	ASSERT(result == 0);
-	str2 = str.substr(4, 4);
-	result = str2.compareTo("bye ");
-	ASSERT(result == 0);
-	
-	str = "Hello World!";
-	
-	str2 = str;
-	
-	str2 = "Hello World!";
-	result = str2.length();
-	ASSERT(result == 12);
-	result = str2[0];
-	ASSERT(result == 'H');
-	result = str2[1];
-	ASSERT(result == 'e');
-	result = str2[6];
-	ASSERT(result == 'W');
-	result = str2[10];
-	ASSERT(result == 'd');
-	result = str2[11];
-	ASSERT(result == '!');
-	
-	str = "Hello World!";
-	result = str.find('H');
-	ASSERT(result == 0);
-	result = str.find('W');
-	ASSERT(result == 6);
-	result = str.find("W");
-	ASSERT(result == 6);
-	
-	result = str.find("Hello World!");
-	ASSERT(result == 0);
-	
-	result = str.find(str);
-	ASSERT(result == 0);
-	
-	result = str.find("rld");
-	ASSERT(result == 8);
-	
-	result = str.find("Hello");
-	ASSERT(result == 0);	
-
-	result = str.find("ld!");
-	ASSERT(result == 9);
-	
-	result = str.find("punk");
-	ASSERT(result == -1);
-	
-	result = str.find("elxxW");
-	ASSERT(result == -1);
-	
-	result = str.find("elW");
-	ASSERT(result == -1);
-
-	str = "This is a test string.";
-	str2 = str;
-	str = str2;
-	cstr = str;
-	str = "This is another string.";
-	cstr = str;
-	cstr = str2;
-	str2 = cstr;
-	cstr = str;
-	str = cstr;
-	cstr = "Blah";
-	str2 = "Blah2";
-	str = "Blargh";
 }
 
 void testMBStack(void)
@@ -554,7 +425,6 @@ int main(int argc, char *argv[])
 	BenchmarkTest tests[] = {
 		// enabled, weight, function
 		{ 1, 60000,  testMBString      },
-		{ 1, 30000,  testMBShareString },
 		{ 1, 10000,  testMBVector      },
 		{ 1, 5000,   testMBStack       },
 		{ 1, 20,     testMBSet         },
