@@ -156,19 +156,17 @@ istream& getline( istream& is, MBString& str )
 int MBString::compareTo(const MBString& rhs) const
 {
 	int maxx;
+	int result;
 	
 	if (myLength < rhs.myLength) {
 		maxx = myLength;
 	} else {
 		maxx = rhs.myLength;
 	}
-	
-	for (int x = 0;x < maxx; x++) {
-		if (myChars[x] < rhs.myChars[x]) {
-			return -1;
-		} else if (myChars[x] > rhs.myChars[x]) {
-			return 1;
-		}
+
+	result = memcmp(myChars, rhs.myChars, maxx);
+	if (result != 0) {
+		return result;
 	}
 	
 	if (myLength < rhs.myLength) {
