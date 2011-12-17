@@ -68,6 +68,17 @@ void testMBString(void)
 	ASSERT(result == 'd');
 	result = cstr[11];
 	ASSERT(result == '!');
+
+	result = (cstr < "Hello Q");
+	ASSERT(!result);
+	result = (cstr > "Hello Q");
+	ASSERT(result);
+	result = (cstr != "ABC");
+	ASSERT(result);
+	result = (cstr != "Hello Wozld!");
+	ASSERT(!result);
+	result = (cstr == "Hello World!");
+	ASSERT(result);
 	
 	str = "Goodbye World!";
 	str2 = str.substr(0, 1);
@@ -498,15 +509,15 @@ int main(int argc, char *argv[])
 	
 	BenchmarkTest tests[] = {
 		// enabled, weight, function
-		{ 1, 70000,  testMBString      },
-		{ 1, 60000,  testMBShareString },
-		{ 1, 10000,  testMBVector      },
-		{ 1, 5000,   testMBStack       },
-		{ 1, 20,     testMBSet         },
-		{ 1, 800,    testIntSet        },
-		{ 1, 1300,   testBitVector     },
-		{ 1, 8000,   testMBMap         },
-		{ 1, 2700,   testIntMap        },
+		{ 1, 60000,  testMBString      },
+		{ 0, 60000,  testMBShareString },
+		{ 0, 10000,  testMBVector      },
+		{ 0, 5000,   testMBStack       },
+		{ 0, 20,     testMBSet         },
+		{ 0, 800,    testIntSet        },
+		{ 0, 1300,   testBitVector     },
+		{ 0, 8000,   testMBMap         },
+		{ 0, 2700,   testIntMap        },
 	};
 	
 	//Functional tests

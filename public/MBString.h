@@ -173,7 +173,14 @@ class MBString
    		
 
         //Append str
-        void append(const MBString& str);
+        void append(const MBString& str)
+		{
+			ensureCapacity(myLength + str.myLength + 1);
+	
+			memcpy(&myChars[myLength], str.myChars, str.myLength);
+			myLength = myLength + str.myLength;
+			myChars[myLength] = '\0';
+		}
 
         const MBString & operator += ( const MBString & str )
 		{

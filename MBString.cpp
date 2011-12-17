@@ -112,15 +112,6 @@ void MBString::ensureCapacity(int cap)
 }
 
 
-void MBString::append(const MBString& str)
-{
-	ensureCapacity(myLength + str.myLength + 1);
-	
-	memcpy(&myChars[myLength], str.myChars, str.myLength);
-	myLength = myLength + str.myLength;
-	myChars[myLength] = '\0';
-}
-
 istream& operator >> ( istream& is, MBString& str )
 //precondition:  input stream is open for reading
 //postcondition: the next string from input stream is has been read
