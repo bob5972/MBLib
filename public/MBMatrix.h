@@ -9,7 +9,8 @@ class MBMatrix
 	public:
 		MBMatrix();
 		MBMatrix(const MBMatrix& m);
-		explicit MBMatrix(int dim);		MBMatrix(int rows, int columns);
+		explicit MBMatrix(int dim);
+		MBMatrix(int rows, int columns);
 		
 		MBMatrix(int rows, int columns, const itemType & fillValue);
 
