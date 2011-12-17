@@ -53,7 +53,6 @@ void testMBString(void)
 	MBString str(30, 'd');
 	MBString str2(str);
 	MBString cstr("Hello World!");
-	int i;
 	
 	cstr = "Hello World!";
 	result = cstr.length();
