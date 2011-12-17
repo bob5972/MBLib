@@ -10,7 +10,7 @@ using namespace std;
 
 //This is an experimental attempt to use shared references
 // between strings.  It has not been thoroughly tested,
-// and preliminary tests show it is slightly slower than the
+// and preliminary tests show it to be slower than the
 // original (at least for an mbc test suite).
 
 class MBShareString

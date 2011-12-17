@@ -498,8 +498,8 @@ int main(int argc, char *argv[])
 	
 	BenchmarkTest tests[] = {
 		// enabled, weight, function
-		{ 1, 60000,  testMBString      },
-		{ 1, 30000,  testMBShareString },
+		{ 1, 70000,  testMBString      },
+		{ 1, 60000,  testMBShareString },
 		{ 1, 10000,  testMBVector      },
 		{ 1, 5000,   testMBStack       },
 		{ 1, 20,     testMBSet         },
