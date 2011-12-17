@@ -54,6 +54,7 @@ void testMBString(void)
 	MBString str(30, 'd');
 	MBString str2(str);
 	MBString cstr("Hello World!");
+	int i;
 	
 	cstr = "Hello World!";
 	result = cstr.length();
@@ -144,11 +145,27 @@ void testMBString(void)
 	
 	result = str.find("elW");
 	ASSERT(result == -1);
+
+	//Sharing tests
+	str = "This is a test string.";
+	str2 = str;
+	str = str2;
+	cstr = str;
+	str = "This is another string.";
+	cstr = str;
+	cstr = str2;
+	str2 = cstr;
+	cstr = str;
+	str = cstr;
+	cstr = "Blah";
+	str2 = "Blah2";
+	str = "Blargh";
 }
 
 void testMBShareString(void)
 {
 	int result;
+	int i;
 	MBShareString str(30, 'd');
 	MBShareString str2(str);
 	MBShareString cstr("Hello World!");
@@ -242,6 +259,20 @@ void testMBShareString(void)
 	
 	result = str.find("elW");
 	ASSERT(result == -1);
+
+	str = "This is a test string.";
+	str2 = str;
+	str = str2;
+	cstr = str;
+	str = "This is another string.";
+	cstr = str;
+	cstr = str2;
+	str2 = cstr;
+	cstr = str;
+	str = cstr;
+	cstr = "Blah";
+	str2 = "Blah2";
+	str = "Blargh";
 }
 
 void testMBStack(void)
@@ -523,7 +554,7 @@ int main(int argc, char *argv[])
 	BenchmarkTest tests[] = {
 		// enabled, weight, function
 		{ 1, 60000,  testMBString      },
-		{ 1, 40000,  testMBShareString },
+		{ 1, 30000,  testMBShareString },
 		{ 1, 10000,  testMBVector      },
 		{ 1, 5000,   testMBStack       },
 		{ 1, 20,     testMBSet         },
