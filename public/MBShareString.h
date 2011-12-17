@@ -183,11 +183,35 @@ class MBShareString
      	//Range-checked indexing
      	//  Using this will assume you are writing to it
      	//  and trigger a copy if this is a shared reference
-     	char & operator[ ]( int k );
-   		
-        //Append str
-        const MBShareString & operator += ( const MBShareString & str );
-        
+     	char & operator[ ]( int k )
+		{
+			ASSERT(myRef->refCount > 0);
+			
+			if(myRef->refCount == 1) {
+				return myRef->str[k];
+			} else {
+				copyRef();
+				return myRef->str[k];
+			}
+		}
+
+     	//Append str
+     	const MBShareString& operator += ( const MBShareString & mbstr )
+		{
+			//weird case
+			if(length() == 0) {
+				return ((*this) = mbstr);
+			}
+			
+			if(mbstr.length() > 0) {
+				copyRef();
+			}
+			
+			myRef->str.append(mbstr.myRef->str);
+			
+			return *this;
+		}
+
         //Append char
         const MBShareString& operator += ( char ch )
 		{
@@ -244,17 +268,59 @@ class MBShareString
     			int refCount;
     			MBString str;
     	};
-    	
+
     	//decrements the ref count, and sets myRef to NULL
     	//  deletes it if necessary
-		void unlinkRef();
+    	void unlinkRef()
+		{
+			if(myRef != NULL) {
+				ASSERT(myRef->refCount > 0);
+				myRef->refCount--;
+				if(myRef->refCount == 0) {
+					delete myRef;
+				}
+				myRef = NULL;
+			}
+		}
 
 		//increments the ref count, and sets myRef to ref
-		void linkRef(StringRef* ref);
-		
+    	void linkRef(StringRef* ref)
+		{
+			if(myRef != NULL) {
+				unlinkRef();
+			}
+			
+			myRef = ref;
+			if(myRef != NULL) {
+				ASSERT(myRef->refCount > 0);
+				myRef->refCount++;
+				
+				//this is an overflow check
+				ASSERT(myRef->refCount > 0);
+			}
+		}
+
 		//Creates a new reference if necessary
-		// (ie, if we need to COW)
-		void copyRef();
+		// (ie, if we need to COW for a pending write)
+    	void copyRef()
+		{
+			if(myRef == NULL) {
+				myRef = new StringRef();
+				return;
+			}
+	
+			ASSERT(myRef->refCount > 0);
+			
+			if(myRef->refCount == 1) {
+				return;
+			}
+	
+			StringRef* temp = new StringRef(myRef->str);
+			
+			unlinkRef();
+			
+			myRef = temp;
+		}
     	
     	StringRef* myRef;
     	

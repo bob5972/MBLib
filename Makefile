@@ -35,7 +35,6 @@ $(DEPROOT)/%.d: $(MBLIB_SRCDIR)/%.c Makefile
 	    -MF $@ ${CPPFLAGS} $<;
 
 CPP_SOURCES = MBString.cpp \
-              MBShareString.cpp \
               MBVector.cpp \
               MBStack.cpp \
               MBQueue.cpp \
