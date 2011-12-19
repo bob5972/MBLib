@@ -8,35 +8,6 @@
 #include "mbutil.h"
 
 template<class itemType>
-MBVector<itemType>::MBVector()
-:mySize(0),
- myCapacity(1),
- myItems(new itemType[1])
-{
-	ASSERT(myCapacity > 0);
-}
-
-template<class itemType>
-MBVector<itemType>::MBVector(int size)
-:mySize(size),
- myCapacity(size),
- myItems(NULL)
-{
-	mySize = size;
-	ASSERT(mySize >= 0);
-	
-	if (mySize > 1) {
-		myCapacity = mySize;
-	} else {
-		myCapacity = 1;
-	}
-	
-	myItems = new itemType[myCapacity];
-	
-	ASSERT(myCapacity > 0);
-}
-
-template<class itemType>
 MBVector<itemType>::MBVector(const MBVector<itemType>& vec)
 :mySize(vec.mySize),
  myCapacity(mySize),

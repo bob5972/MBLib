@@ -9,11 +9,33 @@ class MBVector
 	public:
 
     //Constructors
-		MBVector();
+		MBVector()
+        :mySize(0),
+         myCapacity(1),
+         myItems(new itemType[1])
+        {
+	        ASSERT(myCapacity > 0);
+        }
+
 		MBVector(const MBVector& vec);
 
 		//Default Vector of length size
-		explicit MBVector(int size);
+		explicit MBVector(int size)
+        {
+	        mySize = size;
+	        ASSERT(mySize >= 0);
+	
+	        if (mySize >= 1) {
+		        myCapacity = mySize;
+	        } else {
+		        myCapacity = 1;
+	        }
+	
+	        myItems = new itemType[myCapacity];
+	
+	        ASSERT(myCapacity > 0);
+        }
+
 		
 		//Vector of length size initialized to fillValue
 		MBVector(int size, const itemType & fillValue);
