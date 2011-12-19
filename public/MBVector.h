@@ -25,8 +25,17 @@ class MBVector
 	//Accessors
 		//return the leftmost index of item
 		int find(const itemType & item) const;
-		int length() const;
-		int size() const;
+
+		int length() const
+        {
+            return mySize;
+        }
+
+		int size() const
+        {
+        	return mySize;
+        }
+
 		bool isEmpty() const;
 		void makeEmpty();
 		
@@ -49,13 +58,20 @@ class MBVector
 		void resize (int newSize, const itemType &fill);
 		
 		//Increases the vector size by 1
-		void grow();
+		void grow()
+        {
+        	grow(1);
+        }
 
 		//Increases the vector size by howMuch
 		void grow(int howMuch);
 
 		//Decreases vector size by 1
-		void shrink();
+		void shrink()
+        {
+	        shrink(1);
+        }
+
 
 		//Decreases vector size by howMuch
 		//Calling shrink past size 0 results in an error
@@ -63,7 +79,13 @@ class MBVector
 
 		//Adds item to the end of the vector
 		//returns new largest valid index (old size)
-		int push(const itemType & item);
+		int push(const itemType & item)
+        {
+        	grow();
+        	myItems[mySize-1] = item;
+        	return mySize-1;
+        }
+
 		
 		//returns the item on the end of the vector and decreases the size by 1
 		//ie (the last item pushed)

@@ -121,18 +121,6 @@ int MBVector<itemType>::find(const itemType & item) const
 	return -1;
 }
 
-template<class itemType>
-int MBVector<itemType>::length() const
-{
-	return mySize;
-}
-
-template<class itemType>
-int MBVector<itemType>::size() const
-{
-	return mySize;
-}
-
 template <class itemType>
 itemType & MBVector<itemType>::get (int x)
 {
@@ -265,12 +253,6 @@ void MBVector<itemType>::resize(int newSize,
 }
 
 template<class itemType>
-INLINE void MBVector<itemType>::grow()
-{
-	grow(1);
-}
-
-template<class itemType>
 INLINE void MBVector<itemType>::grow(int howMuch)
 {
 	ASSERT(howMuch >= 0);
@@ -284,25 +266,11 @@ INLINE void MBVector<itemType>::grow(int howMuch)
 }
 
 template<class itemType>
-INLINE void MBVector<itemType>::shrink()
-{
-	shrink(1);
-}
-
-template<class itemType>
 INLINE void MBVector<itemType>::shrink(int howMuch)
 {
 	ASSERT(howMuch >= 0);
 	ASSERT(mySize - howMuch >= 0);
 	mySize -= howMuch;
-}
-
-template<class itemType>
-int MBVector<itemType>::push(const itemType & item)
-{
-	grow();
-	myItems[mySize-1] = item;
-	return mySize-1;
 }
 
 template<class itemType>
