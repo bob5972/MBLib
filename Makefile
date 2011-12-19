@@ -40,7 +40,6 @@ CPP_SOURCES = MBString.cpp \
               MBQueue.cpp \
               MBSet.cpp \
               IntMap.cpp \
-              MBMap.cpp \
               MBMatrix.cpp \
               IntSet.cpp \
               cityhash.cpp
