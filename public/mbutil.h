@@ -14,6 +14,7 @@
 #define CLAMP(min, val, max) ( val < min ? min  : ( val > max ? max : val))
 
 #define IMPLIES(x, y) (!(x) || (y))
+#define EQUIVALENT(x, y) (!!(x) == !!(y))
 
 #define ARRAYSIZE(x) ((sizeof x) / (sizeof *x))
 
