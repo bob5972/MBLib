@@ -64,19 +64,6 @@ MBVector<itemType>::MBVector(int size, const itemType & fillValue)
 	ASSERT(myCapacity > 0);
 }
 
-template<class itemType>
-MBVector<itemType>::~MBVector()
-{
-	delete [] myItems;
-}
-
-template <class itemType>
-void MBVector<itemType>::makeEmpty()
-{
-	resize(0);
-	ASSERT(myCapacity > 0);
-}
-
 template <class itemType>
 void MBVector<itemType>::consume(MBVector<itemType> &v)
 {
@@ -119,74 +106,6 @@ int MBVector<itemType>::find(const itemType & item) const
 		}
 	}
 	return -1;
-}
-
-template <class itemType>
-itemType & MBVector<itemType>::get (int x)
-{
-	if (x >= mySize || x < 0) {
-		PANIC("Illegal vector index.");
-	}
-	
-	return myItems[x];
-}
-
-
-template<class itemType>
-const itemType & MBVector<itemType>::get (int x) const
-{
-	if (x >= mySize || x < 0) {
-		PANIC("Illegal vector index.");
-	}
-	return myItems[x];
-}
-
-template <class itemType>
-itemType & MBVector<itemType>::operator [] (int x)
-{
-	if (x >= mySize || x < 0) {
-		PANIC("Illegal vector index.");
-	}
-	
-	return myItems[x];
-}
-
-
-template<class itemType>
-const itemType & MBVector<itemType>::operator [] (int x) const
-{
-	if (x >= mySize || x < 0) {
-		PANIC("Illegal vector index.");
-	}
-	return myItems[x];
-}
-
-template <class itemType>
-itemType & MBVector<itemType>::last ()
-{
-	ASSERT(mySize > 0);
-	return myItems[mySize - 1];
-}
-
-template <class itemType>
-const itemType & MBVector<itemType>::last () const
-{
-	ASSERT(mySize > 0);
-	return myItems[mySize - 1];
-}
-
-template <class itemType>
-itemType & MBVector<itemType>::first ()
-{
-	ASSERT(mySize > 0);
-	return myItems[0];
-}
-
-template <class itemType>
-const itemType & MBVector<itemType>::first () const
-{
-	ASSERT(mySize > 0);
-	return myItems[0];
 }
 
 

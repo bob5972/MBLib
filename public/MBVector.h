@@ -19,7 +19,10 @@ class MBVector
 		MBVector(int size, const itemType & fillValue);
 
 	//Destructor
-		~MBVector();
+		~MBVector()
+        {
+	        delete [] myItems;
+        }
 		
 	//Assignment
 		const MBVector & operator = (const MBVector & vec);
@@ -43,18 +46,66 @@ class MBVector
 	        return size() == 0;
         }
 
-		void makeEmpty();
+		void makeEmpty()
+        {
+     	    resize(0);
+	        ASSERT(myCapacity > 0);
+        }
+
 		
 	//Indexing
-		const itemType & get(int index) const;
-		itemType& get(int index);
-		itemType & operator [ ] (int index);
-		const itemType & operator [ ] (int index) const;
+        itemType & get (int x)
+        {
+        	ASSERT(x < mySize);
+            ASSERT(x >= 0);
+    	
+    	    return myItems[x];
+        }
+
+
+        const itemType & get (int x) const
+        {
+        	ASSERT(x < mySize);
+            ASSERT(x >= 0);
+
+        	return myItems[x];
+        }
+
+        itemType & operator [] (int x)
+        {
+        	return get(x);
+        }
+
+        const itemType & operator [] (int x) const
+        {
+        	return get(x);
+        }
+
 		
-		const itemType &last() const;
-		itemType &last();
-		const itemType &first() const;
-		itemType &first();
+		const itemType &last() const
+        {
+	        ASSERT(mySize > 0);
+	        return myItems[mySize - 1];
+        }
+
+		itemType &last()
+        {
+	        ASSERT(mySize > 0);
+	        return myItems[mySize - 1];
+        }
+
+		const itemType &first() const
+        {
+	        ASSERT(mySize > 0);
+	        return myItems[0];
+        }
+
+		itemType &first()
+        {
+	        ASSERT(mySize > 0);
+	        return myItems[0];
+        }
+
 		
     //Modifiers
 		//Resizes vector to length newSize
