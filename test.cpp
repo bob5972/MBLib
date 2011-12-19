@@ -13,6 +13,15 @@
 #include "random.h"
 #include "MBMap.h"
 
+#define TEST(x) \
+do { \
+    int cond = (x); \
+    if (!cond) { \
+        PANIC("Test failure: %s\n", #x); \
+    } \
+} while (FALSE)
+
+
 void testTypes()
 {
 	typedef struct TypeSize {
@@ -41,7 +50,7 @@ void testTypes()
 			        types[x].name,
 			        types[x].expectedSize,
 			        types[x].actualSize);
-			ASSERT(FALSE);
+			TEST(FALSE);
         }
         x++;
     }
@@ -56,43 +65,43 @@ void testMBString(void)
 	
 	cstr = "Hello World!";
 	result = cstr.length();
-	ASSERT(result == 12);
+	TEST(result == 12);
 	result = cstr[0];
-	ASSERT(result == 'H');
+	TEST(result == 'H');
 	result = cstr[1];
-	ASSERT(result == 'e');
+	TEST(result == 'e');
 	result = cstr[6];
-	ASSERT(result == 'W');
+	TEST(result == 'W');
 	result = cstr[10];
-	ASSERT(result == 'd');
+	TEST(result == 'd');
 	result = cstr[11];
-	ASSERT(result == '!');
+	TEST(result == '!');
 
 	cstr = "Hello World!";
 	result = (cstr < "Hello Q");
-	ASSERT(!result);
+	TEST(!result);
 	result = (cstr > "Hello Q");
-	ASSERT(result);
+	TEST(result);
 	result = (cstr != "ABC");
-	ASSERT(result);
+	TEST(result);
 	result = (cstr != "Hello Wozld!");
-	ASSERT(result);
+	TEST(result);
 	result = (cstr == "Hello World!");
-	ASSERT(result);
+	TEST(result);
 	
 	str = "Goodbye World!";
 	str2 = str.substr(0, 1);
 	result = str2.length();
-	ASSERT(result == 1);
+	TEST(result == 1);
 	result = str2[0];
-	ASSERT(result == 'G');
+	TEST(result == 'G');
 	
 	str2 = str.substr(1,3);
 	result = str2.compareTo("ood");
-	ASSERT(result == 0);
+	TEST(result == 0);
 	str2 = str.substr(4, 4);
 	result = str2.compareTo("bye ");
-	ASSERT(result == 0);
+	TEST(result == 0);
 	
 	str = "Hello World!";
 	
@@ -100,49 +109,49 @@ void testMBString(void)
 	
 	str2 = "Hello World!";
 	result = str2.length();
-	ASSERT(result == 12);
+	TEST(result == 12);
 	result = str2[0];
-	ASSERT(result == 'H');
+	TEST(result == 'H');
 	result = str2[1];
-	ASSERT(result == 'e');
+	TEST(result == 'e');
 	result = str2[6];
-	ASSERT(result == 'W');
+	TEST(result == 'W');
 	result = str2[10];
-	ASSERT(result == 'd');
+	TEST(result == 'd');
 	result = str2[11];
-	ASSERT(result == '!');
+	TEST(result == '!');
 	
 	str = "Hello World!";
 	result = str.find('H');
-	ASSERT(result == 0);
+	TEST(result == 0);
 	result = str.find('W');
-	ASSERT(result == 6);
+	TEST(result == 6);
 	result = str.find("W");
-	ASSERT(result == 6);
+	TEST(result == 6);
 	
 	result = str.find("Hello World!");
-	ASSERT(result == 0);
+	TEST(result == 0);
 	
 	result = str.find(str);
-	ASSERT(result == 0);
+	TEST(result == 0);
 	
 	result = str.find("rld");
-	ASSERT(result == 8);
+	TEST(result == 8);
 	
 	result = str.find("Hello");
-	ASSERT(result == 0);	
+	TEST(result == 0);	
 
 	result = str.find("ld!");
-	ASSERT(result == 9);
+	TEST(result == 9);
 	
 	result = str.find("punk");
-	ASSERT(result == -1);
+	TEST(result == -1);
 	
 	result = str.find("elxxW");
-	ASSERT(result == -1);
+	TEST(result == -1);
 	
 	result = str.find("elW");
-	ASSERT(result == -1);
+	TEST(result == -1);
 }
 
 void testMBStack(void)
@@ -163,9 +172,9 @@ void testMBStack(void)
 	
 	for (int x = count; x >= 0; x--) {
 		result = s.pop();
-		ASSERT(result == x);
+		TEST(result == x);
 		result = r.pop();
-		ASSERT(result == x);
+		TEST(result == x);
 	}
 }
 
@@ -187,18 +196,18 @@ void testMBVector(void)
 	
 	for (int x = count; x >= 0; x--) {
         result = s[x];
-        ASSERT(result == x);
+        TEST(result == x);
         result = s.size();
-        ASSERT(result == x + 1);
+        TEST(result == x + 1);
 		result = s.pop();
-		ASSERT(result == x);
+		TEST(result == x);
 
         result = r[x];
-        ASSERT(result == x);
+        TEST(result == x);
         result = r.size();
-        ASSERT(result == x + 1);
+        TEST(result == x + 1);
 		result = r.pop();
-		ASSERT(result == x);
+		TEST(result == x);
 	}
 }
 
@@ -211,17 +220,17 @@ void testMBSet(void)
 	
 	for (int x = 0; x <= count; x++) {
 		s.add(x);
-		ASSERT(s.size() == x + 1);
+		TEST(s.size() == x + 1);
 	}
 	
 	for (int x = 0; x <= count; x++) {
 		result = s.contains(x);
-		ASSERT(result);
+		TEST(result);
 	}
 	
 	for (int x = count+1; x <= count*2; x++) {
 		result = s.contains(x);
-		ASSERT(!result);
+		TEST(!result);
 	}
 }
 
@@ -234,17 +243,17 @@ void testIntSet(void)
 	
 	for (int x = 0; x <= count; x++) {
 		s.add(x);
-		ASSERT(s.size() == x + 1);
+		TEST(s.size() == x + 1);
 	}
 	
 	for (int x = 0; x <= count; x++) {
 		result = s.contains(x);
-		ASSERT(result);
+		TEST(result);
 	}
 	
 	for (int x = count+1; x <= count*2; x++) {
 		result = s.contains(x);
-		ASSERT(!result);
+		TEST(!result);
 	}
 }
 
@@ -267,34 +276,34 @@ void testBitVector(void)
 	
 	for (int x = 0; x <= count; x++) {
 		result = b.get(x);
-		ASSERT(result);
+		TEST(result);
 	}
 	
 	for (int x = count + 1; x <= count * 2; x++) {
 		result = b.get(x);
-		ASSERT(!result);
+		TEST(!result);
 	}
 	
 	b.setAll();
 	for (int x = 0; x <= count * 2; x++) {
 		result = b.get(x);
-		ASSERT(result);
+		TEST(result);
 	}
 	
 	b.resetAll();
 	for (int x = 0; x <= count * 2; x++) {
 		result = b.get(x);
-		ASSERT(!result);
+		TEST(!result);
 	}
 	
 	b.setRange(1, count / 2);
 	for (int x = 1; x <= count/2; x++) {
 		result = b.get(x);
-		ASSERT(result);
+		TEST(result);
 	}
 	for (int x = count/2+1; x <= count; x++) {
 		result = b.get(x);
-		ASSERT(!result);
+		TEST(!result);
 	}
 	
 	for (int x = 0; x <= count; x++) {
@@ -302,10 +311,10 @@ void testBitVector(void)
 	}
 	for (int x = 0; x <= count; x++) {
 		result = b.get(x);
-		ASSERT(result == (x % 2) ? TRUE : FALSE);
+		TEST(result == (x % 2) ? TRUE : FALSE);
 		b.flip(x);
 		result = b.get(x);
-		ASSERT(result == (x % 2) ? FALSE : TRUE);
+		TEST(result == (x % 2) ? FALSE : TRUE);
 	}
 }
 
@@ -320,7 +329,7 @@ void testMBMap()
 	
 	for(int x=0;x<25;x++) {
 		MBString key = MBString::toString(x);
-		ASSERT(map[key] == x);
+		TEST(map[key] == x);
 	}
 	
 	for(int x=0;x<25;x++) {
@@ -332,7 +341,7 @@ void testMBMap()
 	for(int x=0;x<25;x++) {
 		MBString key = MBString::toString(x);
 		int value = x+10;
-		ASSERT(map[key] == value);
+		TEST(map[key] == value);
 	}
 }
 
@@ -345,26 +354,26 @@ void testIntMap()
 	for(int x=0;x<100;x++) {
 		m.put(x,x);
 		result = m.get(x);
-		ASSERT(x == result);
+		TEST(x == result);
 	}
 	
 	result = m.get(101);
-	ASSERT(result == 0);
+	TEST(result == 0);
 	
 	for(int x=0;x<100;x++) {
 		result = m.get(x);
-		ASSERT(x == result);
+		TEST(x == result);
 	}
 
 	n.insertAll(m);
 	for(int x=0;x<100;x++) {
 		result = n.get(x);
-		ASSERT(x == result);
+		TEST(x == result);
 	}
 	
 	for(int x=100;x<200;x++) {
 		result = n.containsKey(x);
-		ASSERT(!result);
+		TEST(!result);
 	}	
 }
 
@@ -433,14 +442,14 @@ int main(int argc, char *argv[])
 	
 	BenchmarkTest tests[] = {
 		// enabled, weight, function
-		{ 0, 60000,  testMBString      },
-		{ 1, 10000,  testMBVector      },
-		{ 0, 5000,   testMBStack       },
-		{ 0, 20,     testMBSet         },
-		{ 0, 800,    testIntSet        },
-		{ 0, 1300,   testBitVector     },
-		{ 0, 8000,   testMBMap         },
-		{ 0, 2700,   testIntMap        },
+		{ 1, 60000,  testMBString      },
+		{ 1, 5000,   testMBVector      },
+		{ 1, 5000,   testMBStack       },
+		{ 1, 20,     testMBSet         },
+		{ 1, 800,    testIntSet        },
+		{ 1, 1300,   testBitVector     },
+		{ 1, 8000,   testMBMap         },
+		{ 1, 2700,   testIntMap        },
 	};
 	
 	//Functional tests
