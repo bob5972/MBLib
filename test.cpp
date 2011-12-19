@@ -499,7 +499,7 @@ int main(int argc, char *argv[])
 		{ 1, 20000,  testMBVector      },
 		{ 1, 4000,   testMBStack       },
 		{ 1, 1800,   testMBMap         },
-		{ 1, 2500,   testIntMap        },        
+		{ 1, 3000,   testIntMap        },        
 		{ 1, 15,     testMBSet         },
 		{ 1, 420,    testIntSet        },
 		{ 1, 450,    testBitVector     },

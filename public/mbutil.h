@@ -13,6 +13,8 @@
 #define MAX(x, y) ( (x) > (y) ? (x) : (y))
 #define CLAMP(min, val, max) ( val < min ? min  : ( val > max ? max : val))
 
+#define IMPLIES(x, y) (!(x) || (y))
+
 #define ARRAYSIZE(x) ((sizeof x) / (sizeof *x))
 
 #define OFFSETOF(TYPE, MEMBER) ((size_t) &((TYPE *)0)->MEMBER)

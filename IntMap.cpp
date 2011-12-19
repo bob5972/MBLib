@@ -152,49 +152,52 @@ int IntMap::getInsertionIndex(int key) const
 
 int IntMap::increment(int key, int amount)
 {
-	int i = findKey(key);
-	if(i == -1) {
-		put(key,amount);
+	int i = getInsertionIndex(key);
+	if(i == -1 || !myActiveFlags.get(i)) {
+		putHelper(i, key, amount);
 		return amount;
 	}
 	
+    ASSERT(myKeys[i] == key);
 	myValues[i] += amount;
 	return myValues[i];
 }
 
 int IntMap::decrement(int key, int amount)
 {
-	int i = findKey(key);
-	if(i == -1) {
-		put(key,-amount);
+	int i = getInsertionIndex(key);
+	if(i == -1 || !myActiveFlags.get(i)) {
+		putHelper(i, key, -amount);
 		return -amount;
 	}
 	
+    ASSERT(myKeys[i] == key);
 	myValues[i] -= amount;
 	return myValues[i];
 }
 
 void IntMap::put(int key, int value)
 {
-	//load check
-	if( myFreeSpace == 0 || ((double)mySize+1)/mySpace >= myLoad) {
-		rehash();
-		ASSERT(mySpace % SEARCH_INCR == 1);
-	}
-	
-	//we are guaranteed to have an empty spot
-	ASSERT(mySize < mySpace);
-	ASSERT(myFreeSpace > 0);
-	ASSERT(mySpace % SEARCH_INCR == 1);
-		
-	int ind = getInsertionIndex(key);
-    ASSERT(ind != -1);
+    int ind = getInsertionIndex(key);
 	
 	putHelper(ind, key, value);
 }
 
 void IntMap::putHelper(int index, int key, int value)
 {
+    ASSERT(IMPLIES(index == -1, myFreeSpace == 0));
+    if (index == -1 || ((double)mySize+1)/mySpace >= myLoad) {
+    	rehash();
+		ASSERT(mySpace % SEARCH_INCR == 1);
+
+        index = getInsertionIndex(key);
+    }
+
+	//we are guaranteed to have an empty spot
+	ASSERT(mySize < mySpace);
+	ASSERT(myFreeSpace > 0);
+	ASSERT(mySpace % SEARCH_INCR == 1);
+
 	ASSERT(index >= 0);
     ASSERT(index < mySpace);
     ASSERT(!myActiveFlags.get(index) ||
@@ -271,9 +274,8 @@ bool IntMap::remove(int key)
 		return false;
 	}
 	
-	if(!myActiveFlags.get(ind) || !myFullFlags.get(ind)) {
-		return false;
-	}
+    ASSERT(myActiveFlags.get(ind));
+    ASSERT(myFullFlags.get(ind));
 	
 	//otherwise, we gotta remove it
 	ASSERT(myKeys[ind] == key);
