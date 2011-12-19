@@ -20,12 +20,12 @@ template<class itemType>
 MBVector<itemType>::MBVector(int size)
 :mySize(size),
  myCapacity(size),
- myItems(new itemType[size])
+ myItems(NULL)
 {
 	mySize = size;
 	ASSERT(mySize >= 0);
 	
-	if (mySize > 0) {
+	if (mySize > 1) {
 		myCapacity = mySize;
 	} else {
 		myCapacity = 1;
