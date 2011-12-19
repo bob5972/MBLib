@@ -3,6 +3,8 @@
 
 #include <map>
 
+// Basically a wrapper for the std::map class.
+
 template <class keyType, class valueType>
 class MBMap
 {
@@ -65,12 +67,9 @@ class MBMap
 		
 		//Returns true if key already existed (and was replaced)
 		//Overrides existing values
-		bool put(const keyType & key, const valueType & val)
-        {
-	        bool oup = containsKey(key);
-	
+		void put(const keyType & key, const valueType & val)
+        {	
 	        myMap[key] = val;
-	        return oup;
         }
 
 		//Note that using the index operator
