@@ -442,14 +442,14 @@ int main(int argc, char *argv[])
 	
 	BenchmarkTest tests[] = {
 		// enabled, weight, function
-		{ 1, 60000,  testMBString      },
+		{ 1, 30000,  testMBString      },
 		{ 1, 5000,   testMBVector      },
-		{ 1, 5000,   testMBStack       },
-		{ 1, 20,     testMBSet         },
-		{ 1, 800,    testIntSet        },
-		{ 1, 1300,   testBitVector     },
-		{ 1, 8000,   testMBMap         },
-		{ 1, 2700,   testIntMap        },
+		{ 1, 600,    testMBStack       },
+		{ 1, 2,      testMBSet         },
+		{ 1, 150,    testIntSet        },
+		{ 1, 50,     testBitVector     },
+		{ 1, 1600,   testMBMap         },
+		{ 1, 600,    testIntMap        },
 	};
 	
 	//Functional tests
