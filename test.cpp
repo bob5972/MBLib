@@ -190,6 +190,8 @@ void testMBVector(void)
 		for (int x = 0; x <= count; x++) {
 			s.push(x);
             r.push(s[x]);
+            result = r.pop();
+            TEST(result == x);
 		}
 		r = s;
 	}
@@ -209,6 +211,19 @@ void testMBVector(void)
 		result = r.pop();
 		TEST(result == x);
 	}
+
+    s.resize(count+1);
+    r.resize(count+1);
+	for (int x = 0; x <= count; x++) {
+        s[x] = x;
+        r[x] = s[x];
+	}
+	for (int x = 0; x <= count; x++) {
+        result = s[x];
+        TEST(result == x);
+        result = r[x];
+        TEST(result == x);
+    }
 }
 
 void testMBSet(void)
@@ -442,20 +457,20 @@ int main(int argc, char *argv[])
 	
 	BenchmarkTest tests[] = {
 		// enabled, weight, function
-		{ 1, 30000,  testMBString      },
-		{ 1, 5000,   testMBVector      },
-		{ 1, 600,    testMBStack       },
-		{ 1, 2,      testMBSet         },
-		{ 1, 150,    testIntSet        },
-		{ 1, 50,     testBitVector     },
-		{ 1, 1600,   testMBMap         },
-		{ 1, 600,    testIntMap        },
+		{ 1, 60000,  testMBString      },
+		{ 1, 20000,  testMBVector      },
+		{ 1, 4000,   testMBStack       },
+		{ 1, 15,     testMBSet         },
+		{ 1, 420,    testIntSet        },
+		{ 1, 450,    testBitVector     },
+		{ 1, 4000,   testMBMap         },
+		{ 1, 1800,   testIntMap        },
 	};
 	
 	//Functional tests
 	if (!benchmark) {
 		#if !MB_DEBUG
-			printf("Warning: Running tests with assertions disabled.\n");
+		printf("Warning: Running tests with assertions disabled.\n");
 		#endif
 		testTypes();
 		testRandom();
