@@ -14,7 +14,11 @@ class IntMap
 		
 		void makeEmpty();
 		
-		bool containsKey(int key) const;
+		bool containsKey(int key) const
+		{
+			return findKey(key) != -1;
+		}
+
 		bool isEmpty() const {
 			return mySize == 0;
 		}
@@ -24,7 +28,17 @@ class IntMap
 		}
 		
 		//defaults to a value of 0 for missing keys
-		int get(int key) const;
+		int get(int key) const
+		{
+			int i = findKey(key);
+			
+			if( i == -1) {
+				return 0;
+			}
+			
+			return myValues[i];
+		}
+
 		
 		//returns the new value
 		int increment(int key) {
@@ -58,7 +72,20 @@ class IntMap
 	
 	private:
 		//positive hash value between 0 and tableSize-1
-		int hash(int key) const;
+		int hash(int key) const
+		{	
+			int hash;
+			hash = key;
+			hash = hash % mySpace;
+			if(hash < 0) {
+				hash = -hash;
+			}
+
+			ASSERT(hash >= 0);
+			ASSERT(hash < mySpace);
+	
+			return hash;
+		}
 		
 		//returns the index of a valid key, or -1
 		int findKey(int key) const;

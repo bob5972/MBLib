@@ -105,28 +105,6 @@ IntMap::IntMap(const IntMap &m)
 	ASSERT(mySpace % SEARCH_INCR == 1);
 }
 
-void IntMap::makeEmpty()
-{
-	myFullFlags.resetAll();
-	myActiveFlags.resetAll();
-	mySize = 0;
-	myFreeSpace = mySpace;
-}
-
-bool IntMap::containsKey(int key) const
-{
-	return findKey(key) != -1;
-}
-
-int IntMap::hash(int key) const
-{
-	int hash = key%mySpace;
-	if(hash < 0) {
-		hash = -hash;
-	}
-	
-	return hash;
-}
 
 int IntMap::findKey(int key) const
 {
@@ -192,18 +170,6 @@ int IntMap::getFreeIndex(int key) const
 	
 	//we've been through the whole table without finding a free spot
 	return -1;
-}
-
-
-int IntMap::get(int key) const
-{
-	int i = findKey(key);
-	
-	if( i == -1) {
-		return 0;
-	}
-	
-	return myValues[i];
 }
 
 int IntMap::increment(int key, int amount)
@@ -353,5 +319,12 @@ bool IntMap::insertAll(const IntMap& m)
 	return oup;
 }
 
+void IntMap::makeEmpty()
+{
+	myFullFlags.resetAll();
+	myActiveFlags.resetAll();
+	mySize = 0;
+	myFreeSpace = mySpace;
+}
 
 
