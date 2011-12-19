@@ -89,18 +89,13 @@ class IntMap
 		
 		//returns the index of a valid key, or -1
 		int findKey(int key) const;
-		
-		//returns the index where key would go, or -1 if full
-		// ie, if key is in the map, this will return the index
-		//     if not, it will return an empty index
-		int getIndexOfKey(int key) const;
-		
-		//returns the first free index in this key's
-		// hash sequence, or -1 if full
-		// ie, calling this function for an insertion
-		//  presupposes the key is not in the table
-		int getFreeIndex(int key) const;
-		
+
+		//return the index of where this key would be inserted
+		//        or -1 if the map is full
+		// ie if the key is in the map, return it
+		//    if not, return the next free index
+		int getInsertionIndex(int key) const;
+
 		//makes the underlying table larger
 		void rehash();
 		

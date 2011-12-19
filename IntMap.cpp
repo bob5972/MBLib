@@ -128,7 +128,7 @@ int IntMap::findKey(int key) const
 	return -1;
 }
 
-int IntMap::getIndexOfKey(int key) const
+int IntMap::getInsertionIndex(int key) const
 {
 	int hashI = hash(key);		
 	int x=hashI;
@@ -141,30 +141,8 @@ int IntMap::getIndexOfKey(int key) const
 			return x;
 		}
 		
-		x+=SEARCH_INCR;
-		x%=mySpace;
-		firstTime=false;
-	}
-	
-	//we've been through the whole table without finding a free spot
-	return -1;
-}
-
-int IntMap::getFreeIndex(int key) const
-{
-	ASSERT(mySpace % SEARCH_INCR == 1);
-	
-	int hashI = hash(key);		
-	int x=hashI;
-	bool firstTime = true;
-
-	while(x != hashI || firstTime) {
-		if(!myActiveFlags.get(x)) {
-			return x;
-		}
-		
-		x+=SEARCH_INCR;
-		x%=mySpace;
+		x += SEARCH_INCR;
+		x %= mySpace;
 		firstTime=false;
 	}
 	
@@ -199,7 +177,7 @@ int IntMap::decrement(int key, int amount)
 void IntMap::put(int key, int value)
 {
 	//load check
-	if( mySize + 1 >= mySpace || ((double)mySize+1)/mySpace >= myLoad) {
+	if( myFreeSpace == 0 || ((double)mySize+1)/mySpace >= myLoad) {
 		rehash();
 		ASSERT(mySpace % SEARCH_INCR == 1);
 	}
@@ -209,21 +187,10 @@ void IntMap::put(int key, int value)
 	ASSERT(myFreeSpace > 0);
 	ASSERT(mySpace % SEARCH_INCR == 1);
 		
-	int ind = getIndexOfKey(key);
+	int ind = getInsertionIndex(key);
+    ASSERT(ind != -1);
 	
-	if (ind != -1) {
-		//are we replacing a value?
-		if (myFullFlags.get(ind) && myActiveFlags.get(ind)) {
-			putHelper(ind, key, value);
-            return;
-		}
-	}
-	
-	//key is NOT in the tree
-	ASSERT(mySpace % SEARCH_INCR == 1);
-	ind = getFreeIndex(key);
-	
-    putHelper(ind, key, value);
+	putHelper(ind, key, value);
 }
 
 void IntMap::putHelper(int index, int key, int value)
@@ -235,13 +202,18 @@ void IntMap::putHelper(int index, int key, int value)
 	
     if (!myActiveFlags.get(index)) {
         mySize++;
-        myFreeSpace--;
-        myFullFlags.set(index);
+
+        if (!myFullFlags.get(index)) {
+            myFreeSpace--;
+            myFullFlags.set(index);
+        }
+
         myActiveFlags.set(index);
         myKeys[index] = key;
     } else {
         ASSERT(myKeys[index] == key);
         ASSERT(myFullFlags.get(index));
+        ASSERT(myActiveFlags.get(index));
     }
 
     ASSERT(myKeys[index] == key);
@@ -284,7 +256,7 @@ void IntMap::rehash()
 	
 	for(int x=0;x<oldKeys.size();x++) {
 		if(oldFull.get(x) && oldActive.get(x)) {
-			put(oldKeys[x],oldValues[x]);
+			put(oldKeys[x], oldValues[x]);
 		}
 	}
 	
@@ -294,7 +266,7 @@ void IntMap::rehash()
 
 bool IntMap::remove(int key)
 {
-	int ind = getIndexOfKey(key);
+	int ind = findKey(key);
 	if(ind == -1) {
 		return false;
 	}
