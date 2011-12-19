@@ -28,8 +28,8 @@ bool IntSet::insert(int x)
 
 bool IntSet::checkInvariants() const
 {
-	for(int x=0;x<values.length();x++) {
-		for(int y=x+1;y<values.length();y++) {
+	for(int x=0;x<values.size();x++) {
+		for(int y=x+1;y<values.size();y++) {
 			ASSERT(values[x] != values[y]);
 		}
 	}
@@ -41,9 +41,9 @@ bool IntSet::remove(int x)
 	bool oup = m.remove(x);
 	
 	if(oup) {
-		for(int y=0;y<values.length();y++) {
+		for(int y=0;y<values.size();y++) {
 			if(values[y] == x ) {
-				values[y] = values[values.length()-1];
+				values[y] = values[values.size()-1];
 				values.shrink();
 				return oup;
 			}

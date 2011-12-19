@@ -60,9 +60,9 @@ bool MBSet<itemType>::contains(const itemType&t) const
 	int x = 0;
 	int seen = 0;
 	
-	ASSERT(myItems.length() == isUsed.size());
+	ASSERT(myItems.size() == isUsed.size());
 	
-	while (x < myItems.length() && seen < mySize) {
+	while (x < myItems.size() && seen < mySize) {
 		if (isUsed[x]) {
 			if(myItems[x] == t) {
 				return true;
@@ -78,7 +78,7 @@ template<class itemType>
 bool MBSet<itemType>::insert(const itemType & t)
 {
 	if (!contains(t)) {
-		int length = myItems.length();
+		int length = myItems.size();
 		ASSERT(length == isUsed.size());
 		ASSERT(length > 0);
 		
@@ -89,7 +89,7 @@ bool MBSet<itemType>::insert(const itemType & t)
 		}
 		
 		int x = 0;
-		length = myItems.length();
+		length = myItems.size();
 		ASSERT(mySize + 1 < length);
 		while (x < length) {
 			if(!isUsed[x]) 	{

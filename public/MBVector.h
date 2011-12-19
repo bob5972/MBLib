@@ -31,11 +31,6 @@ class MBVector
 		//return the leftmost index of item
 		int find(const itemType & item) const;
 
-		int length() const
-        {
-            return mySize;
-        }
-
 		int size() const
         {
         	return mySize;
