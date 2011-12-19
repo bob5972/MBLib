@@ -1,6 +1,8 @@
 #ifndef MBVECTOR_H_201001091353
 #define MBVECTOR_H_201001091353
 
+#include "mbassert.h"
+
 template<class itemType>
 class MBVector
 {
@@ -36,7 +38,11 @@ class MBVector
         	return mySize;
         }
 
-		bool isEmpty() const;
+		bool isEmpty() const
+        {
+	        return size() == 0;
+        }
+
 		void makeEmpty();
 		
 	//Indexing
@@ -64,7 +70,18 @@ class MBVector
         }
 
 		//Increases the vector size by howMuch
-		void grow(int howMuch);
+		void grow(int howMuch)
+        {
+        	ASSERT(howMuch >= 0);
+        	if (mySize + howMuch > myCapacity) {
+        		ensureCapacity(mySize + howMuch);
+        	}
+        	
+        	mySize += howMuch;
+        	ASSERT(mySize >= 0);
+        	ASSERT(mySize <= myCapacity);
+        }
+
 
 		//Decreases vector size by 1
 		void shrink()
@@ -75,7 +92,12 @@ class MBVector
 
 		//Decreases vector size by howMuch
 		//Calling shrink past size 0 results in an error
-		void shrink(int howMuch);
+		void shrink(int howMuch)
+        {
+	        ASSERT(howMuch >= 0);
+        	ASSERT(mySize - howMuch >= 0);
+        	mySize -= howMuch;
+        }
 
 		//Adds item to the end of the vector
 		//returns new largest valid index (old size)
@@ -89,7 +111,14 @@ class MBVector
 		
 		//returns the item on the end of the vector and decreases the size by 1
 		//ie (the last item pushed)
-		const itemType & pop();
+		const itemType & pop()
+        {
+        	ASSERT(mySize >= 0);
+        	
+        	shrink();
+	        return myItems[mySize];
+        }
+
 
 		//This is a weird function.
 		//It empties this vector, copies over everything from

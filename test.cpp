@@ -171,7 +171,7 @@ void testMBStack(void)
 
 void testMBVector(void)
 {
-	int count = 1000;
+	int count = 100;
 	int result;
 	MBVector<int> s;
 	MBVector<int> r;
@@ -180,13 +180,23 @@ void testMBVector(void)
 		s.makeEmpty();
 		for (int x = 0; x <= count; x++) {
 			s.push(x);
+            r.push(s[x]);
 		}
 		r = s;
 	}
 	
 	for (int x = count; x >= 0; x--) {
+        result = s[x];
+        ASSERT(result == x);
+        result = s.size();
+        ASSERT(result == x + 1);
 		result = s.pop();
 		ASSERT(result == x);
+
+        result = r[x];
+        ASSERT(result == x);
+        result = r.size();
+        ASSERT(result == x + 1);
 		result = r.pop();
 		ASSERT(result == x);
 	}
@@ -423,14 +433,14 @@ int main(int argc, char *argv[])
 	
 	BenchmarkTest tests[] = {
 		// enabled, weight, function
-		{ 1, 60000,  testMBString      },
+		{ 0, 60000,  testMBString      },
 		{ 1, 10000,  testMBVector      },
-		{ 1, 5000,   testMBStack       },
-		{ 1, 20,     testMBSet         },
-		{ 1, 800,    testIntSet        },
-		{ 1, 1300,   testBitVector     },
-		{ 1, 8000,   testMBMap         },
-		{ 1, 2700,   testIntMap        },
+		{ 0, 5000,   testMBStack       },
+		{ 0, 20,     testMBSet         },
+		{ 0, 800,    testIntSet        },
+		{ 0, 1300,   testBitVector     },
+		{ 0, 8000,   testMBMap         },
+		{ 0, 2700,   testIntMap        },
 	};
 	
 	//Functional tests

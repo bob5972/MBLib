@@ -253,42 +253,6 @@ void MBVector<itemType>::resize(int newSize,
 }
 
 template<class itemType>
-INLINE void MBVector<itemType>::grow(int howMuch)
-{
-	ASSERT(howMuch >= 0);
-	if (mySize + howMuch > myCapacity) {
-		ensureCapacity(mySize + howMuch);
-	}
-	
-	mySize += howMuch;
-	ASSERT(mySize >= 0);
-	ASSERT(mySize <= myCapacity);
-}
-
-template<class itemType>
-INLINE void MBVector<itemType>::shrink(int howMuch)
-{
-	ASSERT(howMuch >= 0);
-	ASSERT(mySize - howMuch >= 0);
-	mySize -= howMuch;
-}
-
-template<class itemType>
-const itemType & MBVector<itemType>::pop()
-{
-	ASSERT(mySize >= 0);
-	
-	shrink();
-	return myItems[mySize];
-}
-
-template<class itemType>
-bool MBVector<itemType>::isEmpty() const
-{
-	return size() == 0;
-}
-
-template<class itemType>
 int MBVector<itemType>::trim()
 {
 	if (mySize == myCapacity || myCapacity == 1) {
