@@ -334,6 +334,9 @@ void testBitVector(void)
 void testMBMap()
 {
 	MBMap<MBString, int> map;
+	MBMap<int, int> m;
+	MBMap<int, int> n;
+	int result;
 
 	for(int x=0;x<25;x++) {
 		MBString key = MBString::toString(x);
@@ -355,6 +358,23 @@ void testMBMap()
 		MBString key = MBString::toString(x);
 		int value = x+10;
 		TEST(map[key] == value);
+	}
+
+	for(int x=0;x<100;x++) {
+		m.put(x,x);
+		result = m.get(x);
+		TEST(x == result);
+        m.put(x, m.get(x) + 1);
+        result = m.get(x);
+        TEST(result == x + 1);
+        m.put(x, m.get(x) - 1);
+        result = m.get(x);
+        TEST(result == x);
+	}
+		
+	for(int x=0;x<100;x++) {
+		result = m.get(x);
+		TEST(x == result);
 	}
 }
 
@@ -395,8 +415,6 @@ void testIntMap()
 		TEST(!result);
 	}	
 }
-
-
 
 void testRandom(void)
 {
@@ -467,8 +485,8 @@ int main(int argc, char *argv[])
 		{ 1, 15,     testMBSet         },
 		{ 1, 420,    testIntSet        },
 		{ 1, 450,    testBitVector     },
-		{ 1, 4000,   testMBMap         },
-		{ 1, 1800,   testIntMap        },
+		{ 1, 1400,   testMBMap         },
+		{ 1, 1800,   testIntMap        },        
 	};
 	
 	//Functional tests
