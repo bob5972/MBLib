@@ -16,11 +16,16 @@ bool IntSet::makeEmpty()
 
 bool IntSet::insert(int x)
 {
-	bool oup = m.put(x,1);
+	bool oup = !m.containsKey(x);
+
+	m.put(x,1);
 	
-	if(oup) {
+	if (oup) {
+        ASSERT(values.find(x) == -1);
 		values.push(x);
-	}
+	} else {
+        ASSERT(values.find(x) != -1);
+    }
 	
 	return oup;
 }

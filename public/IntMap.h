@@ -55,8 +55,7 @@ class IntMap
 		//returns the new value
 		int decrement(int key, int amount);
 		
-		//return true iff the map changed
-		bool put(int key, int value);
+		void put(int key, int value);
 		
 		//returns true iff the map changed
 		// (Note that deleting an entry of (1,0) will "change"
@@ -68,7 +67,7 @@ class IntMap
 		//insert all keys from m into this map
 		//  if the key already exists, use the new value
 		//  linear time to the capacity (NOT size) of m
-		bool insertAll(const IntMap &m);
+		void insertAll(const IntMap &m);
 	
 	private:
 		//positive hash value between 0 and tableSize-1
@@ -79,10 +78,14 @@ class IntMap
 			hash = hash % mySpace;
 
 			ASSERT(hash >= 0);
-			ASSERT(hash < mySpace);
+			ASSERT(mySpace > 0);
+			ASSERT(hash < (uint32) mySpace);
 	
 			return hash;
 		}
+
+        //puts a key at the specified index
+        void putHelper(int index, int key, int value);
 		
 		//returns the index of a valid key, or -1
 		int findKey(int key) const;

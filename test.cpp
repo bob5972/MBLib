@@ -256,7 +256,8 @@ void testIntSet(void)
 	
 	for (int x = 0; x <= count; x++) {
 		s.add(x);
-		TEST(s.size() == x + 1);
+        result = s.size();
+		TEST(result == x + 1);
 	}
 	
 	for (int x = 0; x <= count; x++) {
@@ -380,7 +381,7 @@ void testMBMap()
 
 	    for(int x=0; x < 100; x++) {
             result = m.containsKey(x);
-            ASSERT(result);
+            TEST(result);
 		    result = m.get(x);
 		    TEST(x == result);
 	    }
@@ -397,7 +398,7 @@ void testIntMap()
 	IntMap m;
     int result;
 
-	for(int x=0;x<100;x++) {
+	for(int x = 0; x < 100; x++) {
 		m.put(x,x);
 		result = m.get(x);
 		TEST(x == result);
@@ -407,14 +408,20 @@ void testIntMap()
         m.decrement(x);
         result = m.get(x);
         TEST(result == x);
+
+        result = m.size();
+        TEST(result == x + 1);
 	}
 	
+    result = m.size();
+    TEST(result == 100);
+
 	result = m.get(101);
 	TEST(result == 0);
 	
 	for(int x=0; x < 100; x++) {
         result = m.containsKey(x);
-        ASSERT(result);
+        TEST(result);
 		result = m.get(x);
 		TEST(x == result);
 	}
@@ -491,11 +498,11 @@ int main(int argc, char *argv[])
 		{ 1, 60000,  testMBString      },
 		{ 1, 20000,  testMBVector      },
 		{ 1, 4000,   testMBStack       },
+		{ 1, 1800,   testMBMap         },
+		{ 1, 2500,   testIntMap        },        
 		{ 1, 15,     testMBSet         },
 		{ 1, 420,    testIntSet        },
 		{ 1, 450,    testBitVector     },
-		{ 1, 1800,   testMBMap         },
-		{ 1, 2500,   testIntMap        },        
 	};
 	
 	//Functional tests

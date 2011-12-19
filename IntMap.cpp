@@ -196,7 +196,7 @@ int IntMap::decrement(int key, int amount)
 	return myValues[i];
 }
 
-bool IntMap::put(int key, int value)
+void IntMap::put(int key, int value)
 {
 	//load check
 	if( mySize + 1 >= mySpace || ((double)mySize+1)/mySpace >= myLoad) {
@@ -213,12 +213,9 @@ bool IntMap::put(int key, int value)
 	
 	if (ind != -1) {
 		//are we replacing a value?
-		if(myFullFlags.get(ind) && myActiveFlags.get(ind)) {
-			ASSERT(myKeys[ind] == key);
-			
-			int oldValue = myValues[ind];
-			myValues[ind] = value;
-			return (oldValue != value);
+		if (myFullFlags.get(ind) && myActiveFlags.get(ind)) {
+			putHelper(ind, key, value);
+            return;
 		}
 	}
 	
@@ -226,17 +223,32 @@ bool IntMap::put(int key, int value)
 	ASSERT(mySpace % SEARCH_INCR == 1);
 	ind = getFreeIndex(key);
 	
-	ASSERT(ind >= 0);	
-	ASSERT(!myActiveFlags.get(ind));
+    putHelper(ind, key, value);
+}
+
+void IntMap::putHelper(int index, int key, int value)
+{
+	ASSERT(index >= 0);
+    ASSERT(index < mySpace);
+    ASSERT(!myActiveFlags.get(index) ||
+           myKeys[index] == key);
 	
-	mySize++;
-	myFreeSpace--;
-	myFullFlags.set(ind);
-	myActiveFlags.set(ind);
+    if (!myActiveFlags.get(index)) {
+        mySize++;
+        myFreeSpace--;
+        myFullFlags.set(index);
+        myActiveFlags.set(index);
+        myKeys[index] = key;
+    } else {
+        ASSERT(myKeys[index] == key);
+        ASSERT(myFullFlags.get(index));
+    }
+
+    ASSERT(myKeys[index] == key);
+    ASSERT(myFullFlags.get(index));
+	ASSERT(myActiveFlags.get(index));
 	
-	myKeys[ind] = key;
-	myValues[ind] = value;
-	return TRUE;
+	myValues[index] = value;
 }
 
 void IntMap::rehash()
@@ -301,22 +313,19 @@ bool IntMap::remove(int key)
 }
 
 
-bool IntMap::insertAll(const IntMap& m)
+void IntMap::insertAll(const IntMap& m)
 {
-	bool oup = FALSE;
 	int x=0;
 	int count = 0;
 	while(count < m.mySize) {
 		ASSERT(x < m.mySpace);
 		
 		if(m.myActiveFlags.get(x)) {
-			oup |= put(m.myKeys[x], m.myValues[x]);
+			put(m.myKeys[x], m.myValues[x]);
 			count++;
 		}
 		x++;
 	}
-	
-	return oup;
 }
 
 void IntMap::makeEmpty()
