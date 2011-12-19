@@ -150,6 +150,19 @@ void testMBString(void)
 	
 	result = str.find("elW");
 	TEST(result == -1);
+
+    str = "This is a particularly long test string.";
+    str2 = "";
+    for (int x = 0; x < str.length(); x++) {
+        str2 += str[x];
+    }
+    result = (str == str2);
+    TEST(result);
+
+    str2 = "";
+    str2 += str;
+    result = (str == str2);
+    TEST(result);
 }
 
 void testMBStack(void)
