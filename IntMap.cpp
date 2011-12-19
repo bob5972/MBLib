@@ -119,8 +119,8 @@ int IntMap::findKey(int key) const
 			return x;
 		}
 		
-		x+= SEARCH_INCR;
-		x%= mySpace;
+		x += SEARCH_INCR;
+		x %= mySpace;
 		firstTime = false;
 	}
 	
@@ -211,7 +211,7 @@ bool IntMap::put(int key, int value)
 		
 	int ind = getIndexOfKey(key);
 	
-	if(ind != -1) {
+	if (ind != -1) {
 		//are we replacing a value?
 		if(myFullFlags.get(ind) && myActiveFlags.get(ind)) {
 			ASSERT(myKeys[ind] == key);

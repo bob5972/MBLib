@@ -74,12 +74,9 @@ class IntMap
 		//positive hash value between 0 and tableSize-1
 		int hash(int key) const
 		{	
-			int hash;
+			uint32 hash;
 			hash = key;
 			hash = hash % mySpace;
-			if(hash < 0) {
-				hash = -hash;
-			}
 
 			ASSERT(hash >= 0);
 			ASSERT(hash < mySpace);
