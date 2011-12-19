@@ -368,6 +368,12 @@ void testIntMap()
 		m.put(x,x);
 		result = m.get(x);
 		TEST(x == result);
+        m.increment(x);
+        result = m.get(x);
+        TEST(result == x + 1);
+        m.decrement(x);
+        result = m.get(x);
+        TEST(result == x);
 	}
 	
 	result = m.get(101);
@@ -455,13 +461,13 @@ int main(int argc, char *argv[])
 	
 	BenchmarkTest tests[] = {
 		// enabled, weight, function
-		{ 1, 60000,  testMBString      },
-		{ 1, 20000,  testMBVector      },
-		{ 1, 4000,   testMBStack       },
-		{ 1, 15,     testMBSet         },
-		{ 1, 420,    testIntSet        },
-		{ 1, 450,    testBitVector     },
-		{ 1, 4000,   testMBMap         },
+		{ 0, 60000,  testMBString      },
+		{ 0, 20000,  testMBVector      },
+		{ 0, 4000,   testMBStack       },
+		{ 0, 15,     testMBSet         },
+		{ 0, 420,    testIntSet        },
+		{ 0, 450,    testBitVector     },
+		{ 0, 4000,   testMBMap         },
 		{ 1, 1800,   testIntMap        },
 	};
 	

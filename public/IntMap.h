@@ -104,7 +104,7 @@ class IntMap
 		//makes the underlying table larger
 		void rehash();
 		
-		static const int DEFAULT_SPACE = 7;
+		static const int DEFAULT_SPACE = 15;
 		static const double DEFAULT_LOAD = 0.75;
 		static const int SEARCH_INCR = 2;
 		
