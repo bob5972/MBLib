@@ -40,19 +40,17 @@ void testTypes()
 		{"uint64", 8, sizeof(uint64)},
 		{"int64",  8, sizeof(int64)},
 		{"bool",   1, sizeof(bool)},
-		{ NULL,    0, 0 }
 	};
 	
-	int x = 0;
-	while (types[x].name != NULL) {
-		if (types[x].actualSize != types[x].expectedSize) {
+	int x;
+    for (x = 0; x < ARRAYSIZE(types); x++) {
+    	if (types[x].actualSize != types[x].expectedSize) {
 			fprintf(stderr, "Bad %s size: expected %d, actual %d\n",
 			        types[x].name,
 			        types[x].expectedSize,
 			        types[x].actualSize);
 			TEST(FALSE);
         }
-        x++;
     }
 }
 
