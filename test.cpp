@@ -333,56 +333,69 @@ void testBitVector(void)
 
 void testMBMap()
 {
-	MBMap<MBString, int> map;
-	MBMap<int, int> m;
-	MBMap<int, int> n;
-	int result;
+    bool runStringTests = TRUE;
+    bool runIntTests = TRUE;
+    int result;
 
-	for(int x=0;x<25;x++) {
-		MBString key = MBString::toString(x);
-		map[key] = x;
-	}
-	
-	for(int x=0;x<25;x++) {
-		MBString key = MBString::toString(x);
-		TEST(map[key] == x);
-	}
-	
-	for(int x=0;x<25;x++) {
-		MBString key = MBString::toString(x);
-		int value = x+10;
-		map[key] = value;
-	}
-	
-	for(int x=0;x<25;x++) {
-		MBString key = MBString::toString(x);
-		int value = x+10;
-		TEST(map[key] == value);
-	}
+    if (runStringTests) {
+	    MBMap<MBString, int> map;
 
-	for(int x=0;x<100;x++) {
-		m.put(x,x);
-		result = m.get(x);
-		TEST(x == result);
-        m.put(x, m.get(x) + 1);
-        result = m.get(x);
-        TEST(result == x + 1);
-        m.put(x, m.get(x) - 1);
-        result = m.get(x);
-        TEST(result == x);
-	}
-		
-	for(int x=0;x<100;x++) {
-		result = m.get(x);
-		TEST(x == result);
-	}
+	    for(int x=0;x<25;x++) {
+		    MBString key = MBString::toString(x);
+		    map[key] = x;
+	    }
+	
+	    for(int x=0;x<25;x++) {
+		    MBString key = MBString::toString(x);
+		    TEST(map[key] == x);
+	    }
+	
+	    for(int x=0;x<25;x++) {
+		    MBString key = MBString::toString(x);
+		    int value = x+10;
+        	map[key] = value;
+	    }
+	
+	    for(int x=0;x<25;x++) {
+		    MBString key = MBString::toString(x);
+		    int value = x+10;
+		    TEST(map[key] == value);
+	    }
+    }
+
+    if (runIntTests) {
+       	MBMap<int, int> m;
+
+	    for(int x=0;x<100;x++) {
+		    m.put(x,x);
+    		result = m.get(x);
+    		TEST(x == result);
+            m[x] += 1;//m.put(x, m.get(x) + 1);
+            result = m.get(x);
+            TEST(result == x + 1);
+            m[x] -= 1;//m.put(x, m.get(x) - 1);
+            result = m.get(x);
+            TEST(result == x);
+    	}
+
+	    for(int x=0; x < 100; x++) {
+            result = m.containsKey(x);
+            ASSERT(result);
+		    result = m.get(x);
+		    TEST(x == result);
+	    }
+
+        for(int x = 100; x < 200; x++) {
+            result = m.containsKey(x);
+            TEST(!result);
+        }
+    }
 }
 
 void testIntMap()
 {
 	IntMap m;
-	IntMap n;
-	int result;
+    int result;
 
 	for(int x=0;x<100;x++) {
 		m.put(x,x);
@@ -399,21 +412,17 @@ void testIntMap()
 	result = m.get(101);
 	TEST(result == 0);
 	
-	for(int x=0;x<100;x++) {
+	for(int x=0; x < 100; x++) {
+        result = m.containsKey(x);
+        ASSERT(result);
 		result = m.get(x);
 		TEST(x == result);
 	}
 
-	n.insertAll(m);
-	for(int x=0;x<100;x++) {
-		result = n.get(x);
-		TEST(x == result);
-	}
-	
-	for(int x=100;x<200;x++) {
-		result = n.containsKey(x);
-		TEST(!result);
-	}	
+    for(int x = 100; x < 200; x++) {
+        result = m.containsKey(x);
+        TEST(!result);
+    }
 }
 
 void testRandom(void)
@@ -479,14 +488,14 @@ int main(int argc, char *argv[])
 	
 	BenchmarkTest tests[] = {
 		// enabled, weight, function
-		{ 0, 60000,  testMBString      },
-		{ 0, 20000,  testMBVector      },
-		{ 0, 4000,   testMBStack       },
-		{ 0, 15,     testMBSet         },
-		{ 0, 420,    testIntSet        },
-		{ 0, 450,    testBitVector     },
-		{ 1, 1400,   testMBMap         },
-		{ 0, 1800,   testIntMap        },        
+		{ 1, 60000,  testMBString      },
+		{ 1, 20000,  testMBVector      },
+		{ 1, 4000,   testMBStack       },
+		{ 1, 15,     testMBSet         },
+		{ 1, 420,    testIntSet        },
+		{ 1, 450,    testBitVector     },
+		{ 1, 1800,   testMBMap         },
+		{ 1, 2500,   testIntMap        },        
 	};
 	
 	//Functional tests
