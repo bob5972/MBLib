@@ -19,6 +19,11 @@
 
 #define INLINE inline
 
+//It might be possible to check #if HAVE_BUILTIN_EXPECT
+//to determine when this is safe.
+#define LIKELY(x) (__builtin_expect(!!(x), 1))
+#define UNLIKELY(x) (__builtin_expect((x), 0))
+
 #ifdef __cplusplus
 	}
 #endif 
