@@ -367,18 +367,24 @@ void testMBMap()
     if (runIntTests) {
        	MBMap<int, int> m;
 
-	    for(int x=0;x<100;x++) {
-		    m.put(x,x);
-    		result = m.get(x);
-    		TEST(x == result);
-            m[x] += 1;//m.put(x, m.get(x) + 1);
+	    for(int x = 0; x < 100; x++) {
+		    m.put(x, x);
+		    result = m.get(x);
+		    TEST(x == result);
+            m[x] += 1;
             result = m.get(x);
             TEST(result == x + 1);
-            m[x] -= 1;//m.put(x, m.get(x) - 1);
+            m[x] -= 1;
             result = m.get(x);
             TEST(result == x);
-    	}
 
+            result = m.size();
+            TEST(result == x + 1);
+	    }
+	
+        result = m.size();
+        TEST(result == 100);
+	
 	    for(int x=0; x < 100; x++) {
             result = m.containsKey(x);
             TEST(result);
@@ -399,7 +405,7 @@ void testIntMap()
     int result;
 
 	for(int x = 0; x < 100; x++) {
-		m.put(x,x);
+		m.put(x, x);
 		result = m.get(x);
 		TEST(x == result);
         m.increment(x);
@@ -496,12 +502,12 @@ int main(int argc, char *argv[])
 	BenchmarkTest tests[] = {
 		// enabled, weight, function
 		{ 1, 60000,  testMBString      },
-		{ 1, 20000,  testMBVector      },
+		{ 1, 30000,  testMBVector      },
 		{ 1, 4000,   testMBStack       },
 		{ 1, 1800,   testMBMap         },
 		{ 1, 3000,   testIntMap        },        
 		{ 1, 15,     testMBSet         },
-		{ 1, 420,    testIntSet        },
+		{ 1, 700,    testIntSet        },
 		{ 1, 450,    testBitVector     },
 	};
 	
