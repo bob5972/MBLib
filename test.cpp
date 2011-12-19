@@ -42,7 +42,7 @@ void testTypes()
 		{"bool",   1, sizeof(bool)},
 	};
 	
-	int x;
+	uint32 x;
     for (x = 0; x < ARRAYSIZE(types); x++) {
     	if (types[x].actualSize != types[x].expectedSize) {
 			fprintf(stderr, "Bad %s size: expected %d, actual %d\n",
