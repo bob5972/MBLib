@@ -74,7 +74,8 @@ class IntMap
 		int hash(int key) const
 		{	
 			uint32 hash;
-			hash = key;
+            uint32 rmix = (key >> 1) & 0xAAAAAAAA;
+			hash = key ^ rmix;
 			hash = hash % mySpace;
 
 			ASSERT(hash >= 0);

@@ -449,6 +449,23 @@ void testIntMap()
         result = m.containsKey(x);
         TEST(!result);
     }
+
+    m.makeEmpty();
+   	for(int x = 0; x < 1000; x++) {
+		m.put(x*x, x);
+		result = m.get(x*x);
+		TEST(x == result);
+
+        result = m.size();
+        TEST(result == x + 1);
+	}
+
+
+   	for(int x = 0; x < 1000; x++) {
+		m.put(x*x*x, x);
+		result = m.get(x*x*x);
+		TEST(x == result);
+	}
 }
 
 void testRandom(void)
@@ -518,7 +535,7 @@ int main(int argc, char *argv[])
 		{ 1, 30000,  testMBVector      },
 		{ 1, 4000,   testMBStack       },
 		{ 1, 1800,   testMBMap         },
-		{ 1, 3000,   testIntMap        },        
+		{ 1, 300,    testIntMap        },        
 		{ 1, 700,    testIntSet        },
 		{ 1, 15,     testMBSet         },
 		{ 1, 450,    testBitVector     },
