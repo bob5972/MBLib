@@ -6,15 +6,6 @@
 #include "mbassert.h"
 
 template<class itemType>
-MBQueue<itemType>::MBQueue()
-:	mySize(0),
-	myTop(NULL),
-	myBottom(NULL),
-	myLast(NULL)
-{
-}
-
-template<class itemType>
 MBQueue<itemType>::MBQueue(const MBQueue &q)
 :	mySize(q.mySize),
 	myTop(q.myTop),
@@ -34,18 +25,6 @@ MBQueue<itemType>::MBQueue(const MBQueue &q)
 		currentNode = newNode;
 	}
 	myBottom = currentNode;
-}
-
-template<class itemType>
-MBQueue<itemType>::~MBQueue()
-{
-	makeEmpty();
-	if(myLast) {
-		delete myLast;
-    }
-
-	myLast = NULL;
-	//Should be unnecesary...but what the heck
 }
 
 template<class itemType>
@@ -73,54 +52,6 @@ const MBQueue<itemType>& MBQueue<itemType>::operator = (const MBQueue<itemType> 
 		myBottom = currentNode;
 	}
 	return *this;
-}
-
-// return top (no dequeue)
-template<class itemType>
-const itemType& MBQueue<itemType>::front() const
-{
-    ASSERT(mySize > 0);
-
-	return myTop->value;
-}
-
-// insert item (at bottom)
-template<class itemType>
-void MBQueue<itemType>::enqueue( const itemType &item)
-{
-	if (mySize > 0) {
-		myBottom->nextNode = new MBNode(item,NULL);
-		myBottom = myBottom->nextNode;
-		mySize++;
-	} else {
-		myTop = new MBNode(item, NULL);
-		myBottom = myTop;
-		mySize=1;
-	}
-}
-
-template<class itemType>
-const itemType& MBQueue<itemType>::dequeue( )
-{
-    ASSERT(mySize > 0);
-
-	if (myLast) {
-		delete myLast;
-	}
-	
-	myLast = myTop;
-	myTop = myTop->nextNode;
-	mySize--;
-	return myLast->value;
-}
-
-template<class itemType>
-void MBQueue<itemType>::dequeue ( itemType &item)
-{
-	ASSERT(mySize > 0);
-	
-	item = front();
-	dequeue();
 }
 
 template<class itemType>

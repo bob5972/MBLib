@@ -614,7 +614,7 @@ int main(int argc, char *argv[])
 		{ 1, 65,    testIntSet        },
 		{ 1, 2,     testMBSet         },
 		{ 1, 40,    testBitVector     },
-		{ 1, 180,   testMBQueue       },
+		{ 1, 210,   testMBQueue       },
 	};
 	
 	//Functional tests

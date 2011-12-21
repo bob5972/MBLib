@@ -10,9 +10,24 @@ class MBQueue
   public:
 
 // constructors/destructor
-    MBQueue( );                                 // construct empty queue
+    MBQueue( )
+    :mySize(0),
+	 myTop(NULL),
+	 myBottom(NULL),
+	 myLast(NULL)
+    { }
+
     MBQueue( const MBQueue & q );               // copy constructor
-    ~MBQueue( );                                // destructor
+    ~MBQueue( )
+    {
+	    makeEmpty();
+	    if(myLast) {
+		    delete myLast;
+        }
+
+	    myLast = NULL;
+    }
+
 
   // assignment
 
@@ -26,7 +41,11 @@ class MBQueue
     }
 
     //Returns the next element to be dequeued
-	const itemType & front() const;
+	const itemType & front() const
+    {
+        ASSERT(mySize > 0);
+	    return myTop->value;
+    }
 
 	int size() const
     {
@@ -35,9 +54,42 @@ class MBQueue
 
 // modifiers
     void makeEmpty( );    // make queue empty
-    const itemType & dequeue();	//takes next item
-    void dequeue(itemType &);
-    void enqueue(const itemType&);//enqueues item
+
+    void enqueue(const itemType &item)
+    {
+	    if (mySize > 0) {
+		    myBottom->nextNode = new MBNode(item, NULL);
+		    myBottom = myBottom->nextNode;
+		    mySize++;
+	    } else {
+		    myTop = new MBNode(item, NULL);
+		    myBottom = myTop;
+		    mySize=1;
+	    }
+    }
+
+    const itemType& dequeue( )
+    {
+        ASSERT(mySize > 0);
+
+	    if (myLast) {
+		    delete myLast;
+	    }
+	
+	    myLast = myTop;
+	    myTop = myTop->nextNode;
+	    mySize--;
+	    return myLast->value;
+    }
+
+    void dequeue (itemType &item)
+    {
+	    ASSERT(mySize > 0);
+	
+	    item = front();
+	    dequeue();
+    }
+
 
    private:
 		struct MBNode
