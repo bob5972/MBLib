@@ -582,15 +582,15 @@ int main(int argc, char *argv[])
 	
 	BenchmarkTest tests[] = {
 		// enabled, weight, function
-		{ 1, 60000,  testMBString      },
-		{ 1, 30000,  testMBVector      },
-		{ 1, 4000,   testMBStack       },
-		{ 1, 200,    testMBMap         },
-		{ 1, 200,    testIntMap        },
-		{ 1, 40,     testRandomIntMap  },
-		{ 1, 700,    testIntSet        },
-		{ 1, 15,     testMBSet         },
-		{ 1, 450,    testBitVector     },
+		{ 1, 4500,  testMBString      },
+		{ 1, 3000,  testMBVector      },
+		{ 1, 400,   testMBStack       },
+		{ 1, 15,    testMBMap         },
+		{ 1, 20,    testIntMap        },
+		{ 1, 25,    testRandomIntMap  },
+		{ 1, 65,    testIntSet        },
+		{ 1, 2,     testMBSet         },
+		{ 1, 40,    testBitVector     },
 	};
 	
 	//Functional tests
@@ -618,7 +618,7 @@ int main(int argc, char *argv[])
 		}
 	}
 	
-	calibration = 10 * (seconds / numTests);
+	calibration = 100 * (seconds / numTests);
 	if (calibration <= 0) {
 		printf("Calibration < 0; resetting to 1\n");
 		calibration = 1;
