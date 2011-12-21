@@ -89,11 +89,15 @@ class MBString
         const MBString& operator = (const MBString & str)
 		{
 			if (this != &str) {
-				 myLength = 0;
-				 ensureCapacity(str.myLength + 1);
-				 myLength = str.myLength;
-				 memcpy(myChars, str.myChars, myLength);
-				 myChars[myLength] = '\0';
+			    // Empty the string so there's less to copy
+                // if we have to resize the buffer.				
+                myLength = 0;
+                myChars[myLength] = '\0';
+				
+                ensureCapacity(str.myLength + 1);
+				myLength = str.myLength;
+				memcpy(myChars, str.myChars, myLength);
+				myChars[myLength] = '\0';
 			}
 			return *this;
 		}
@@ -104,7 +108,12 @@ class MBString
 			int newLength;
 			if (c) {
 				newLength = strlen(c);
-				myLength = 0;
+
+                // Empty the string so there's less to copy
+                // if we have to resize the buffer.				
+                myLength = 0;
+                myChars[myLength] = '\0';
+
 				ensureCapacity(newLength + 1);
 				myLength = newLength;		
 				memcpy(myChars, c, myLength);
@@ -128,6 +137,7 @@ class MBString
 
     	//Number of Characters
     	int length() const {
+            ASSERT(myChars[myLength] == '\0');
     		return myLength;
 		}
    	    
@@ -136,6 +146,7 @@ class MBString
    	    //The returned string may change if the
    	    //    MBString is modified
    	    const char * cstr() const {
+            ASSERT(myChars[myLength] == '\0');
    	    	return myChars;
     	}
    	    

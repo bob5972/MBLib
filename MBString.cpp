@@ -91,6 +91,7 @@ void MBString::ensureCapacity(int cap)
 {
 	ASSERT(myCapacity >= myLength + 1);
 	ASSERT(cap > 0);
+	ASSERT(myChars[myLength] == '\0');
 	
 	if (myCapacity < cap) {
 		char *temp = myChars;
@@ -102,6 +103,7 @@ void MBString::ensureCapacity(int cap)
 		
 		myChars = new char[myCapacity];
 		ASSERT(myChars != NULL);
+		ASSERT(temp[myLength] == '\0');
 		memcpy(myChars, temp, myLength + 1);
 		ASSERT(myChars[myLength] == '\0');
 		
