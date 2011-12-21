@@ -416,6 +416,7 @@ void testIntMap()
 {
 	IntMap m;
     int result;
+    int num;
 
 	for(int x = 0; x < 100; x++) {
 		m.put(x, x);
@@ -451,9 +452,10 @@ void testIntMap()
     }
 
     m.makeEmpty();
-   	for(int x = 0; x < 1000; x++) {
-		m.put(x*x, x);
-		result = m.get(x*x);
+   	for(int x = 0; x < 1000;x++) {
+        num = x*x;
+		m.put(num, x);
+		result = m.get(num);
 		TEST(x == result);
 
         result = m.size();
@@ -462,8 +464,9 @@ void testIntMap()
 
 
    	for(int x = 0; x < 1000; x++) {
-		m.put(x*x*x, x);
-		result = m.get(x*x*x);
+        num = x*x*x;
+		m.put(num, x);
+		result = m.get(num);
 		TEST(x == result);
 	}
 }
