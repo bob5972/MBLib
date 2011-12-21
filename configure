@@ -61,7 +61,7 @@ if [ "$DEBUG" != "0" ]; then
 	DEFAULT_CFLAGS="${DEFAULT_CFLAGS} -Werror -Wall -g"
 else
 	if [ "$DEFAULT_CFLAGS" == "" ]; then
-		DEFAULT_CFLAGS="-O2 -fomit-frame-pointer"
+		DEFAULT_CFLAGS="-march=native -O2 -fomit-frame-pointer"
 	fi;
 fi;
 echo DEFAULT_CFLAGS=${DEFAULT_CFLAGS} >> $CONFIG_MK;

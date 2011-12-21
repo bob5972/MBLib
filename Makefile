@@ -70,7 +70,7 @@ $(MBLIB_BUILDDIR)/test.bin: $(MBLIB_BUILDDIR)/MBLib.a $(MBLIB_SRCDIR)/test.cpp
 	${CXX} ${CPPFLAGS} -g $(MBLIB_SRCDIR)/test.cpp $(MBLIB_BUILDDIR)/MBLib.a -o $(MBLIB_BUILDDIR)/test.bin
 
 $(MBLIB_BUILDDIR)/benchmark: $(MBLIB_BUILDDIR)/MBLib.a $(MBLIB_SRCDIR)/test.cpp
-	${CXX} -D BENCHMARK ${CPPFLAGS} $(MBLIB_SRCDIR)/test.cpp $(MBLIB_BUILDDIR)/MBLib.a -o $(MBLIB_BUILDDIR)/benchmark
+	${CXX} -D BENCHMARK -fwhole-program ${CPPFLAGS} $(MBLIB_SRCDIR)/test.cpp $(MBLIB_BUILDDIR)/MBLib.a -o $(MBLIB_BUILDDIR)/benchmark
 
 $(MBLIB_BUILDDIR)/MBLib.a: ${OBJECTS}
 	ar cr $(MBLIB_BUILDDIR)/MBLib.a ${OBJECTS}
