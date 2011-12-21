@@ -492,6 +492,38 @@ void testIntMap()
 	}
 }
 
+
+void testRandomIntMap()
+{
+	IntMap m;
+    int result;
+    uint32 num;
+
+    /*
+     * Making the hash tables get too big in a single run
+     * causes it to spend a bunch of it's time in system calls
+     * (presumably calling malloc?).
+     */
+    const int runs = 10;
+    const int count = 2000;
+
+    Random_Init();
+
+    for (int y = 0; y < runs; y++) {
+	    for (int x = 0; x < count; x++) {
+            num = Random_Uint32();
+		    result = m.get(num);
+
+		    m.put(num, x);
+		    result = m.get(num);
+		    TEST(x == result);
+	    }
+        m.makeEmpty();
+    }
+
+    Random_Exit();
+}
+
 void testRandom(void)
 {
     Random_Init();
@@ -559,7 +591,8 @@ int main(int argc, char *argv[])
 		{ 1, 30000,  testMBVector      },
 		{ 1, 4000,   testMBStack       },
 		{ 1, 200,    testMBMap         },
-		{ 1, 200,    testIntMap        },        
+		{ 1, 200,    testIntMap        },
+		{ 0, 40,     testRandomIntMap  },
 		{ 1, 700,    testIntSet        },
 		{ 1, 15,     testMBSet         },
 		{ 1, 450,    testBitVector     },

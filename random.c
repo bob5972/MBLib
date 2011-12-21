@@ -74,6 +74,19 @@ void Random_Seed(uint64 seed)
 	randomData.seed = seed;
 }
 
+/*
+ * The Workhorse of the entire module.
+ */
+uint32 Random_Uint32(void)
+{
+	static const uint64 constA = 2862933555777941757ULL;
+	static const uint64 constB = 3037000493ULL;
+
+	ASSERT(randomData.initialized);
+	randomData.seed = constA * randomData.seed + constB;
+	return randomData.seed >> 32;
+}
+
 bool Random_Bit(void)
 {
 	bool val;
@@ -185,19 +198,6 @@ int Random_Enum(EnumDistribution *dist, int numValues)
 	 */
 	Log(0, "%s: Distribution exceeded: cumulative = %f\n", cumulative);
 	return dist[numValues - 1].value;
-}
-
-/*
- * The Workhorse of the entire module.
- */
-uint32 Random_Uint32(void)
-{
-	static const uint64 constA = 2862933555777941757ULL;
-	static const uint64 constB = 3037000493ULL;
-
-	ASSERT(randomData.initialized);
-	randomData.seed = constA * randomData.seed + constB;
-	return randomData.seed >> 32;
 }
 
 uint64 Random_Uint64(void)
