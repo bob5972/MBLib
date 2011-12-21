@@ -17,10 +17,13 @@ typedef struct EnumDistribution {
 	float probability;
 } EnumDistribution;
 
-uint64 Random_Init(void);
+void Random_Init(void);
 void Random_Exit(void);
 
-void Random_Seed(uint64 seed);
+void Random_GenerateSeed();
+
+uint64 Random_GetSeed();
+void Random_SetSeed(uint64 seed);
 
 /*
  * Return TRUE with probability trueProb.

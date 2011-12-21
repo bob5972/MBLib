@@ -13,7 +13,11 @@
 
 typedef struct RandomGlobalData {
 	bool initialized;
-	uint64 seed;
+
+    bool haveSeed;	
+    uint64 seed;
+
+    uint64 value;
 	
 	uint32 bitBucket;
 	int bitBucketSize;
@@ -22,7 +26,12 @@ typedef struct RandomGlobalData {
 
 static RandomGlobalData randomData;
 
-uint64 Random_Init(void)
+/*
+ * Initializes the random module.
+ * This will generate a random seed if one has not
+ * been previously set.
+ */
+void Random_Init(void)
 {	
 	uint64 seed;
 	bool haveSeed = FALSE;
@@ -30,6 +39,27 @@ uint64 Random_Init(void)
 	ASSERT(!randomData.initialized);
 	
 	randomData.initialized = TRUE;
+
+    if (!randomData.haveSeed) {
+        Random_GenerateSeed();
+        ASSERT(randomData.haveSeed);
+    }	
+}
+
+void Random_Exit(void)
+{	
+	randomData.initialized = FALSE;
+    randomData.haveSeed = FALSE;
+}
+
+/*
+ * Generate a random seed for the module.
+ */
+void Random_GenerateSeed()
+{
+	uint64 seed;
+	
+    bool haveSeed = FALSE;
 	
 	int fd;
 	
@@ -47,7 +77,7 @@ uint64 Random_Init(void)
     if (!haveSeed) {
     	pid_t pid = getpid();
 	    seed = time(0) * pid + pid;
-    	Random_Seed(seed);
+    	Random_SetSeed(seed);
     	
     	seed = Random_Uint64();
 	    haveSeed = TRUE;
@@ -57,21 +87,29 @@ uint64 Random_Init(void)
 	randomData.bitBucketSize = 0;
 	
 	ASSERT(haveSeed);
-	Random_Seed(seed);
-	
-	return seed;
+	Random_SetSeed(seed);
 }
 
-void Random_Exit(void)
-{	
-	randomData.initialized = FALSE;
-}
-
-void Random_Seed(uint64 seed)
+/*
+ * Returns the seed being used for this run.
+ * (At least since the last time it was set...)
+ */
+uint64 Random_GetSeed()
 {
-	ASSERT(randomData.initialized);
-	
+    ASSERT(randomData.haveSeed);    
+    return randomData.seed;
+}
+
+/*
+ * May be called before or after initialization.
+ * Calling this before initialization prevents init from
+ * attempting to generate a seed itself.
+ */
+void Random_SetSeed(uint64 seed)
+{
 	randomData.seed = seed;
+    randomData.haveSeed = TRUE;
+    randomData.value = randomData.seed;
 }
 
 /*
@@ -83,8 +121,10 @@ uint32 Random_Uint32(void)
 	static const uint64 constB = 3037000493ULL;
 
 	ASSERT(randomData.initialized);
-	randomData.seed = constA * randomData.seed + constB;
-	return randomData.seed >> 32;
+    ASSERT(randomData.haveSeed);
+
+	randomData.value = constA * randomData.value + constB;
+	return randomData.value >> 32;
 }
 
 bool Random_Bit(void)

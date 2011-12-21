@@ -504,30 +504,20 @@ void testRandomIntMap()
      * causes it to spend a bunch of it's time in system calls
      * (presumably calling malloc?).
      */
-    const int runs = 10;
     const int count = 2000;
 
-    Random_Init();
+    for (int x = 0; x < count; x++) {
+        num = Random_Uint32();
+	    result = m.get(num);
 
-    for (int y = 0; y < runs; y++) {
-	    for (int x = 0; x < count; x++) {
-            num = Random_Uint32();
-		    result = m.get(num);
-
-		    m.put(num, x);
-		    result = m.get(num);
-		    TEST(x == result);
-	    }
-        m.makeEmpty();
+	    m.put(num, x);
+	    result = m.get(num);
+	    TEST(x == result);
     }
-
-    Random_Exit();
 }
 
 void testRandom(void)
 {
-    Random_Init();
-
 	int x, y;
 	int count = 100;
 
@@ -549,8 +539,6 @@ void testRandom(void)
 			}
 		}
 	}
-
-	Random_Exit();
 }
 
 
@@ -584,6 +572,8 @@ int main(int argc, char *argv[])
 			benchmark = FALSE;
 		}
 	}
+
+    Random_Init();
 	
 	BenchmarkTest tests[] = {
 		// enabled, weight, function
@@ -592,7 +582,7 @@ int main(int argc, char *argv[])
 		{ 1, 4000,   testMBStack       },
 		{ 1, 200,    testMBMap         },
 		{ 1, 200,    testIntMap        },
-		{ 0, 40,     testRandomIntMap  },
+		{ 1, 40,     testRandomIntMap  },
 		{ 1, 700,    testIntSet        },
 		{ 1, 15,     testMBSet         },
 		{ 1, 450,    testBitVector     },
@@ -639,6 +629,8 @@ int main(int argc, char *argv[])
 			tests[x].function();
 		}
 	}
+
+    Random_Exit();
 	
 	if (!benchmark) {
 		printf("Done.\n");
