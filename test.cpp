@@ -400,7 +400,7 @@ void testMBMap()
         result = m.size();
         TEST(result == count);
 
-	    for(int x=0; x < count; x++) {
+	    for(int x = 0; x < count; x++) {
             result = m.containsKey(x);
             TEST(result);
 		    result = m.get(x);
@@ -422,7 +422,6 @@ void testMBMap()
             result = m.size();
             TEST(result == x + 1);
 	    }
-
 
        	for(int x = 0; x < count; x++) {
             num = x*x*x;
@@ -462,7 +461,7 @@ void testIntMap()
 	result = m.get(count + 1);
 	TEST(result == 0);
 	
-	for(int x=0; x < count; x++) {
+	for(int x = 0; x < count; x++) {
         result = m.containsKey(x);
         TEST(result);
 		result = m.get(x);
@@ -484,7 +483,6 @@ void testIntMap()
         result = m.size();
         TEST(result == x + 1);
 	}
-
 
    	for(int x = 0; x < count; x++) {
         num = x*x*x;
