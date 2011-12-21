@@ -46,7 +46,10 @@
 #endif
 
 //There has to be some way to get these from the compiler
-#ifdef ARCH_AMD64
+#if defined(ARCH_AMD64)
+	#define SHORT_BIT 16
+	#define WORD_BIT 32
+#elif defined(ARCH_x86)
 	#define SHORT_BIT 16
 	#define WORD_BIT 32
 #else
