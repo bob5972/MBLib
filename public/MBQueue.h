@@ -54,6 +54,6 @@ class MBQueue
 	
 };
 
-#include "MBQueue.cpp"
+#include "../MBQueue.cpp"
 
 #endif //MBQueue_H_201001091433

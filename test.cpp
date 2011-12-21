@@ -12,6 +12,7 @@
 #include "mbutil.h"
 #include "random.h"
 #include "MBMap.h"
+#include "MBQueue.h"
 
 #define TEST(x) \
 do { \
@@ -546,6 +547,28 @@ void testRandom(void)
     }
 }
 
+void testMBQueue(void)
+{
+	MBQueue<int> q;
+    const int count = 1000;
+    int result;
+
+    for (int x = 0; x < count; x++) {
+        q.enqueue(x);
+
+        result = q.size();
+        TEST(result == x + 1);
+    }
+
+    for (int x = 0; x < count; x++) {
+        result = q.dequeue();
+        TEST(result == x);
+
+        result = q.size();
+        TEST(result == count - (x + 1));
+    }
+}
+
 
 typedef struct {
 	bool enabled;
@@ -591,6 +614,7 @@ int main(int argc, char *argv[])
 		{ 1, 65,    testIntSet        },
 		{ 1, 2,     testMBSet         },
 		{ 1, 40,    testBitVector     },
+		{ 1, 110,   testMBQueue       },
 	};
 	
 	//Functional tests
