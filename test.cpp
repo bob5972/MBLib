@@ -351,6 +351,7 @@ void testMBMap()
     bool runIntTests = TRUE;
     int result;
     int num;
+    const int count = 1000;
 
     if (runStringTests) {
 	    MBMap<MBString, int> map;
@@ -381,7 +382,7 @@ void testMBMap()
     if (runIntTests) {
        	MBMap<int, int> m;
 
-    	for(int x = 0; x < 100; x++) {
+    	for(int x = 0; x < count; x++) {
 		    m.put(x, x);
 		    result = m.get(x);
 		    TEST(x == result);
@@ -397,22 +398,22 @@ void testMBMap()
 	    }
 	
         result = m.size();
-        TEST(result == 100);
+        TEST(result == count);
 
-	    for(int x=0; x < 100; x++) {
+	    for(int x=0; x < count; x++) {
             result = m.containsKey(x);
             TEST(result);
 		    result = m.get(x);
 		    TEST(x == result);
 	    }
 
-        for(int x = 100; x < 200; x++) {
+        for(int x = count; x < 2*count; x++) {
             result = m.containsKey(x);
             TEST(!result);
         }
 
         m.makeEmpty();
-       	for(int x = 0; x < 1000;x++) {
+       	for(int x = 0; x < count;x++) {
             num = x*x;
 		    m.put(num, x);
 		    result = m.get(num);
@@ -423,7 +424,7 @@ void testMBMap()
 	    }
 
 
-       	for(int x = 0; x < 1000; x++) {
+       	for(int x = 0; x < count; x++) {
             num = x*x*x;
 		    m.put(num, x);
 		    result = m.get(num);
@@ -438,8 +439,9 @@ void testIntMap()
 	IntMap m;
     int result;
     int num;
+    const int count = 1000;
 
-	for(int x = 0; x < 100; x++) {
+	for(int x = 0; x < count; x++) {
 		m.put(x, x);
 		result = m.get(x);
 		TEST(x == result);
@@ -455,25 +457,25 @@ void testIntMap()
 	}
 	
     result = m.size();
-    TEST(result == 100);
+    TEST(result == count);
 
-	result = m.get(101);
+	result = m.get(count + 1);
 	TEST(result == 0);
 	
-	for(int x=0; x < 100; x++) {
+	for(int x=0; x < count; x++) {
         result = m.containsKey(x);
         TEST(result);
 		result = m.get(x);
 		TEST(x == result);
 	}
 
-    for(int x = 100; x < 200; x++) {
+    for(int x = count; x < 2*count; x++) {
         result = m.containsKey(x);
         TEST(!result);
     }
 
     m.makeEmpty();
-   	for(int x = 0; x < 1000;x++) {
+   	for(int x = 0; x < count; x++) {
         num = x*x;
 		m.put(num, x);
 		result = m.get(num);
@@ -484,7 +486,7 @@ void testIntMap()
 	}
 
 
-   	for(int x = 0; x < 1000; x++) {
+   	for(int x = 0; x < count; x++) {
         num = x*x*x;
 		m.put(num, x);
 		result = m.get(num);
@@ -558,8 +560,8 @@ int main(int argc, char *argv[])
 		{ 1, 60000,  testMBString      },
 		{ 1, 30000,  testMBVector      },
 		{ 1, 4000,   testMBStack       },
-		{ 1, 300,    testMBMap         },
-		{ 1, 300,    testIntMap        },        
+		{ 1, 200,    testMBMap         },
+		{ 1, 200,    testIntMap        },        
 		{ 1, 700,    testIntSet        },
 		{ 1, 15,     testMBSet         },
 		{ 1, 450,    testBitVector     },
