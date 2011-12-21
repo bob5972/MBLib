@@ -103,7 +103,7 @@ uint64 Random_GetSeed()
 /*
  * May be called before or after initialization.
  * Calling this before initialization prevents init from
- * attempting to generate a seed itself.
+ * attempting to generate a seed.
  */
 void Random_SetSeed(uint64 seed)
 {
@@ -165,10 +165,6 @@ bool Random_Flip(float trueProb)
 	 */
 	if (trueProb >= 1.0) {
 		return TRUE;
-	}
-	
-	if (trueProb == 0.5) {
-		return Random_Bit();
 	}
 	
 	if (Random_UnitFloat() <= trueProb) {
