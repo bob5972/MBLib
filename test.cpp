@@ -356,23 +356,23 @@ void testMBMap()
     if (runStringTests) {
 	    MBMap<MBString, int> map;
 
-	    for(int x=0;x<25;x++) {
+	    for(int x = 0; x < 25; x++) {
 		    MBString key = MBString::toString(x);
 		    map[key] = x;
 	    }
 	
-	    for(int x=0;x<25;x++) {
+	    for(int x = 0; x < 25; x++) {
 		    MBString key = MBString::toString(x);
 		    TEST(map[key] == x);
 	    }
 	
-	    for(int x=0;x<25;x++) {
+	    for(int x = 0; x < 25; x++) {
 		    MBString key = MBString::toString(x);
 		    int value = x+10;
         	map[key] = value;
 	    }
 	
-	    for(int x=0;x<25;x++) {
+	    for(int x=0; x < 25; x++) {
 		    MBString key = MBString::toString(x);
 		    int value = x+10;
 		    TEST(map[key] == value);
@@ -522,15 +522,15 @@ void testRandom(void)
 	int count = 100;
 
 	uint64 num;
-	for (x = 0;x < count; x++) {
+	for (x = 0; x < count; x++) {
 		num = Random_Uint64();
 	}	
 	
-	for (x = 0;x < count; x++) {
+	for (x = 0; x < count; x++) {
 		num = Random_Uint32();
 	}
 	
-	for (x = 0;x < count; x++) {
+	for (x = 0; x < count; x++) {
 		num = 0;
 		for (y = 0; y < 32; y++) {
 			num <<= 1;
