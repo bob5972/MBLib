@@ -350,6 +350,7 @@ void testMBMap()
     bool runStringTests = TRUE;
     bool runIntTests = TRUE;
     int result;
+    int num;
 
     if (runStringTests) {
 	    MBMap<MBString, int> map;
@@ -380,7 +381,7 @@ void testMBMap()
     if (runIntTests) {
        	MBMap<int, int> m;
 
-	    for(int x = 0; x < 100; x++) {
+    	for(int x = 0; x < 100; x++) {
 		    m.put(x, x);
 		    result = m.get(x);
 		    TEST(x == result);
@@ -397,7 +398,7 @@ void testMBMap()
 	
         result = m.size();
         TEST(result == 100);
-	
+
 	    for(int x=0; x < 100; x++) {
             result = m.containsKey(x);
             TEST(result);
@@ -409,6 +410,26 @@ void testMBMap()
             result = m.containsKey(x);
             TEST(!result);
         }
+
+        m.makeEmpty();
+       	for(int x = 0; x < 1000;x++) {
+            num = x*x;
+		    m.put(num, x);
+		    result = m.get(num);
+		    TEST(x == result);
+
+            result = m.size();
+            TEST(result == x + 1);
+	    }
+
+
+       	for(int x = 0; x < 1000; x++) {
+            num = x*x*x;
+		    m.put(num, x);
+		    result = m.get(num);
+		    TEST(x == result);
+	    }
+
     }
 }
 
@@ -537,7 +558,7 @@ int main(int argc, char *argv[])
 		{ 1, 60000,  testMBString      },
 		{ 1, 30000,  testMBVector      },
 		{ 1, 4000,   testMBStack       },
-		{ 1, 1800,   testMBMap         },
+		{ 1, 300,    testMBMap         },
 		{ 1, 300,    testIntMap        },        
 		{ 1, 700,    testIntSet        },
 		{ 1, 15,     testMBSet         },
