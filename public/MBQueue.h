@@ -2,6 +2,7 @@
 #define MBQueue_H_201001091433
 
 #include "mbtypes.h"
+#include "mbassert.h"
 
 template<class itemType>
 class MBQueue
@@ -18,9 +19,19 @@ class MBQueue
     const MBQueue & operator = ( const MBQueue & rhs );
 
 // accessors
-    bool isEmpty( ) const;        // return true if empty else false
-	const itemType & front() const; //Returns the next element to be dequeued
-	int size() const;		//returns the size
+    // return true if empty else false
+    bool isEmpty( ) const
+    {
+	    return (mySize == 0);
+    }
+
+    //Returns the next element to be dequeued
+	const itemType & front() const;
+
+	int size() const
+    {
+	    return mySize;
+    }
 
 // modifiers
     void makeEmpty( );    // make queue empty

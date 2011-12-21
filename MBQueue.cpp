@@ -40,8 +40,10 @@ template<class itemType>
 MBQueue<itemType>::~MBQueue()
 {
 	makeEmpty();
-	if(myLast)
+	if(myLast) {
 		delete myLast;
+    }
+
 	myLast = NULL;
 	//Should be unnecesary...but what the heck
 }
@@ -77,34 +79,21 @@ const MBQueue<itemType>& MBQueue<itemType>::operator = (const MBQueue<itemType> 
 template<class itemType>
 const itemType& MBQueue<itemType>::front() const
 {
-	if (mySize <=0) {	
-		PANIC("Attempted to read from empty queue");
-	}
+    ASSERT(mySize > 0);
+
 	return myTop->value;
-}
-
-template<class itemType>
-bool MBQueue<itemType>::isEmpty() const
-{
-	return (mySize == 0);
-}
-
-template<class itemType>
-int MBQueue<itemType>::size() const
-{
-	return mySize;
 }
 
 // insert item (at bottom)
 template<class itemType>
 void MBQueue<itemType>::enqueue( const itemType &item)
 {
-	if (mySize>0) {
+	if (mySize > 0) {
 		myBottom->nextNode = new MBNode(item,NULL);
 		myBottom = myBottom->nextNode;
 		mySize++;
 	} else {
-		myTop = new MBNode(item,NULL);
+		myTop = new MBNode(item, NULL);
 		myBottom = myTop;
 		mySize=1;
 	}
@@ -113,9 +102,8 @@ void MBQueue<itemType>::enqueue( const itemType &item)
 template<class itemType>
 const itemType& MBQueue<itemType>::dequeue( )
 {
-	if (mySize <=0) {	
-		PANIC("Attempted to read from empty queue");
-	}
+    ASSERT(mySize > 0);
+
 	if (myLast) {
 		delete myLast;
 	}
@@ -129,9 +117,7 @@ const itemType& MBQueue<itemType>::dequeue( )
 template<class itemType>
 void MBQueue<itemType>::dequeue ( itemType &item)
 {
-	if (mySize <=0) {	
-		PANIC("Attempted to read from empty queue");
-	}
+	ASSERT(mySize > 0);
 	
 	item = front();
 	dequeue();
