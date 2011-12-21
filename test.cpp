@@ -539,6 +539,11 @@ void testRandom(void)
 			}
 		}
 	}
+
+    for (x = 0; x < count; x++) {
+        double d;
+        d = Random_UnitFloat();
+    }
 }
 
 
