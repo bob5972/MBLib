@@ -100,7 +100,7 @@ class IntMap
 		void rehash();
 		
 		static const int DEFAULT_SPACE = 15;
-		static const double DEFAULT_LOAD = 0.75;
+		static const double DEFAULT_LOAD = 0.60;
 		static const int SEARCH_INCR = 2;
 		
 		MBVector<int> myKeys;
