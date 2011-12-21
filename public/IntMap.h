@@ -74,9 +74,15 @@ class IntMap
 		int hash(int key) const
 		{	
 			uint32 hash;
-            uint32 rmix = (key >> 1) & 0xAAAAAAAA;
-			hash = key ^ rmix;
-			hash = hash % mySpace;
+            uint32 mix;
+
+            // This seems to help my benchmarking tests
+            // though I'm not sure if it's a real improvement
+            // to the hashing algorithm, or just a quirk
+            // of the particular workload I'm running.
+            mix = 0x45678;
+			mix = key ^ (mix);
+			hash = mix % mySpace;
 
 			ASSERT(hash >= 0);
 			ASSERT(mySpace > 0);
