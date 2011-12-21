@@ -33,9 +33,6 @@ static RandomGlobalData randomData;
  */
 void Random_Init(void)
 {	
-	uint64 seed;
-	bool haveSeed = FALSE;
-	
 	ASSERT(!randomData.initialized);
 	
 	randomData.initialized = TRUE;
