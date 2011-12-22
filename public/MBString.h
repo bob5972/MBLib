@@ -8,8 +8,6 @@
 #include "mbassert.h"
 #include "mbutil.h"
 
-using namespace std;
-
 class MBString
 {
     public:
@@ -140,6 +138,11 @@ class MBString
             ASSERT(myChars[myLength] == '\0');
     		return myLength;
 		}
+
+       	int size() const {
+            return length();
+		}
+
    	    
    	    //return as C-String
    	    //The returned string must NOT be freed by the caller
@@ -235,15 +238,15 @@ class MBString
 
 
 //IO Functions
-static INLINE ostream& operator << ( ostream& os,
-                                     const MBString& str )
+static INLINE std::ostream& operator << ( std::ostream& os,
+                                          const MBString& str )
 {
 	return os << str.cstr();
 }
 
 
-istream& operator >> ( istream& is, MBString& str );
-istream& getline( istream& is, MBString& str );
+std::istream& operator >> ( std::istream& is, MBString& str );
+std::istream& getline( std::istream& is, MBString& str );
 
 // comparison operators:
 static INLINE bool operator == ( const MBString & lhs,

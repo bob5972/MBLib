@@ -1,7 +1,19 @@
 #ifndef MBSocket_H_201112211636
 #define MBSocket_H_201112211636
 
-class MBSocket {
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+
+#include "mbassert.h"
+#include "mbtypes.h"
+#include "MBString.h"
+
+class MBSocket
+{
     public:
         MBSocket()
         {
@@ -33,8 +45,8 @@ class MBSocket {
             serv_addr.sin_addr.s_addr = INADDR_ANY;
             serv_addr.sin_port = htons(port);
 
-            err = bind(reqSockFD, (struct sockaddr *) &serv_addr,
-                       sizeof(serv_addr));
+            err = ::bind(reqSockFD, (struct sockaddr *) &serv_addr,
+                         sizeof(serv_addr));
 
             if (err < 0) {
                 PANIC("Unable to bind socket\n");
@@ -50,12 +62,12 @@ class MBSocket {
             sockaddr_in cli_addr;
 
             ASSERT(bound);
-            listen(reqSockFD, 1);
+            ::listen(reqSockFD, 1);
 
-            cli:en = sizeof(cli_addr);
-            conSockFD = accept(reqSockFD, (struct sockaddr *) &cli_addr, 
+            cliLen = sizeof(cli_addr);
+            conSockFD = accept(reqSockFD, (struct sockaddr *) &cli_addr,
                                &cliLen);
-            if (conSockFD < 0) 
+            if (conSockFD < 0) {
                 PANIC("Unable to accept connection\n");
             }
             haveConnection = TRUE;
@@ -64,19 +76,19 @@ class MBSocket {
         void write(MBString str)
         {
             int n;
-            n = write(conSockFD, str.cstr(), str.size());
+            n = ::write(conSockFD, str.cstr(), str.size());
             if (n < 0) {
                 PANIC("Unable to write to socket\n");
             }
         }
-        
+
         char readChar()
         {
             char c;
             int n;
 
             ASSERT(haveConnection);
-            
+
             n = read(conSockFD, &c, 1);
             if (n < 1) {
                 PANIC("Unable to read from socket\n");
@@ -86,13 +98,13 @@ class MBSocket {
 
         MBString readLine()
         {
-            bool error = FALSE;
+        	char c;
             MBString oup;
 
             c = readChar();
             while (c != '\n') {
                 oup += c;
-                c = readChar();            
+                c = readChar();
             }
 
             return oup;
