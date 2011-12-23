@@ -185,8 +185,6 @@ class MBString
 			return myChars[k];
 		}
    		
-
-        //Append str
         void append(const MBString& str)
 		{
 			ensureCapacity(myLength + str.myLength + 1);
@@ -195,6 +193,32 @@ class MBString
 			myLength = myLength + str.myLength;
 			myChars[myLength] = '\0';
 		}
+
+        void prepend(const MBString &str)
+        {
+        	MBString tmp(str);
+        	tmp += (*this);
+
+        	this->consume(tmp);
+        }
+
+        /*
+         * Make this string equal to str, and then
+         * leave str empty.
+         */
+        void consume(MBString &str)
+        {
+        	free(myChars);
+
+        	myChars = str.myChars;
+        	myLength = str.myLength;
+        	myCapacity = str.myCapacity;
+
+        	str.myLength = 0;
+        	str.myCapacity = 8;
+        	str.myChars = new char[str.myCapacity];
+        	str.myChars[str.myLength] = '\0';
+        }
 
         const MBString & operator += ( const MBString & str )
 		{
