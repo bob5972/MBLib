@@ -8,12 +8,15 @@
 #include "mbutil.h"
 #include "MBString.h"
 #include "MBVector.h"
+#include "MBSocket.h"
 
 typedef struct CharReaderInterface {
     void *clientData;
     char (*readChar)(void *clientData);
     bool (*isEOF)(void *clientData);
 } CharReaderInterface;
+
+char ParserSocketReadChar(void *clientData);
 
 class Parser
 {
@@ -23,6 +26,18 @@ class Parser
 
             ASSERT(myInp.readChar != NULL);
 
+            hasNextChar = FALSE;
+            shouldEatGarbage = TRUE;
+            shouldEatWhitespace = TRUE;
+            shouldPanicOnError = TRUE;
+        }
+
+        Parser(MBSocket &socket)
+        {
+            memset(&myInp, 0, sizeof(myInp));
+            myInp.clientData = &socket;
+            myInp.readChar = ParserSocketReadChar;
+           
             hasNextChar = FALSE;
             shouldEatGarbage = TRUE;
             shouldEatWhitespace = TRUE;

@@ -73,13 +73,19 @@ class MBSocket
             haveConnection = TRUE;
         }
 
-        void write(MBString str)
-        {
-            int n;
-            n = ::write(conSockFD, str.cstr(), str.size());
+	    void write(const char *c, int size)
+	    {
+		    int n;
+            n = ::write(conSockFD, c, size);
+
             if (n < 0) {
-                PANIC("Unable to write to socket\n");
+                PANIC("Unable to write to socket: n=%d\n", n);
             }
+        }
+
+        void write(const MBString& str)
+        {
+            write(str.cstr(), str.size());
         }
 
         char readChar()

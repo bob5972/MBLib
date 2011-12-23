@@ -4,22 +4,35 @@
 #include "mbtypes.h"
 #include "mbutil.h"
 #include "MBString.h"
+#include "MBSocket.h"
 
 typedef struct CharWriterInterface {
     void *clientData;
-    void (*writeChar)(void *clientData, char c);
+    void (*write)(void *clientData, const char *c, int size);
     void (*flush)(void *clientData);
 } CharWriterInterface;
 
+void DumperSocketWrite(void *clientData, const char *c, int size);
+void DumperSocketFlush(void *clientData);
 
 class Dumper {
     public:
         Dumper(const CharWriterInterface *w)
         {
             ASSERT(w != NULL);
-            ASSERT(w->writeChar != NULL);
+            ASSERT(w->write != NULL);
 
             myOup = *w;
+        }
+
+        Dumper(MBSocket &s)
+        {
+            memset(&myOup, 0, sizeof(myOup));
+
+            myOup.clientData = &s;
+            myOup.write = DumperSocketWrite;
+            myOup.flush = DumperSocketFlush;
+            
         }
 
         void writeInt(int i)
@@ -31,16 +44,9 @@ class Dumper {
             write(" ");
         }
 
-        void write(const MBString &str)
-        {
-            for (int x = 0; x < str.size(); x++) {
-                writeChar(str[x]);
-            }
-        }
-
         void writeChar(char c)
         {
-            myOup.writeChar(myOup.clientData, c);
+            write(c);
         }
 
         void writeWord(const MBString &w)
@@ -74,7 +80,11 @@ class Dumper {
     
     private:
         CharWriterInterface myOup;
-
+        
+        void write(const MBString &str)
+        {
+            myOup.write(myOup.clientData, str.cstr(), str.size());
+        }
 };
 
 #endif //Dumper_H_201112231514
