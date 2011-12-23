@@ -7,10 +7,12 @@
 #include "mbassert.h"
 #include "mbutil.h"
 #include "MBString.h"
+#include "MBVector.h"
 
 typedef struct CharReaderInterface {
-    void * clientData;
+    void *clientData;
     char (*readChar)(void *clientData);
+    bool (*isEOF)(void *clientData);
 } CharReaderInterface;
 
 static INLINE bool isDigit(char c)
@@ -38,6 +40,8 @@ class Parser
     public:
         Parser(const CharReaderInterface *funcs) {
             myInp = *funcs;
+
+            ASSERT(myInp.readChar != NULL);
 
             hasNextChar = FALSE;
             shouldEatGarbage = TRUE;
@@ -243,6 +247,8 @@ class Parser
     private:
         CharReaderInterface myInp;
 
+        MBVector<char> buffer;
+
         bool shouldEatGarbage;
         bool shouldEatWhitespace;
         bool shouldPanicOnError;
@@ -265,11 +271,22 @@ class Parser
          */
         bool fillChar()
         {
-            int next = myInp.readChar(myInp.clientData);
-            
-            nextChar = (char) next;
-            
-            hasNextChar = (next != -1);
+            bool gotChar = FALSE;
+
+            if (buffer.size() > 0) {
+                nextChar = buffer.pop();
+                gotChar = TRUE;
+            } else {
+                if (myInp.isEOF != NULL) {
+                    gotChar = myInp.isEOF(myInp.clientData);
+                }
+                
+                if (gotChar) {
+                    nextChar = myInp.readChar(myInp.clientData);
+                }
+            }
+
+            hasNextChar = gotChar;
             return hasNextChar;
         }
         
@@ -279,8 +296,8 @@ class Parser
         void unreadChar()
         {
             ASSERT(hasNextChar);
-            //myInp.unread(nextChar);
-            NOT_IMPLEMENTED();
+            buffer.push(nextChar);
+            hasNextChar = FALSE;            
         }
 };
 
