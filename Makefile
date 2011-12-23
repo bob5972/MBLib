@@ -43,7 +43,8 @@ CPP_SOURCES = MBString.cpp \
               MBMatrix.cpp \
               IntSet.cpp \
               cityhash.cpp \
-              MBSocket.cpp
+              MBSocket.cpp \
+              Parser.cpp
 
 C_SOURCES = mbassert.c \
             mbdebug.c \

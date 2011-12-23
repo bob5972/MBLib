@@ -4,6 +4,7 @@
 #include <string.h>
 #include <istream>
 #include <ostream>
+#include <stdlib.h>
 
 #include "mbassert.h"
 #include "mbutil.h"
