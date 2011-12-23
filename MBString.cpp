@@ -3,11 +3,15 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
+#include <istream>
+#include <ostream>
 
 #include "mbtypes.h"
 #include "mbdebug.h"
 #include "mbassert.h"
 
+using std::istream;
+using std::ostream;
 
 int MBString::find(char ta) const
 {
@@ -189,7 +193,7 @@ MBString MBString::toString(int x)
 	
 	MBString oup;
 	bool negative = false;
-	if(x <0) {
+	if(x < 0) {
 		negative=true;
 		x = -x;
 	}
@@ -197,23 +201,23 @@ MBString MBString::toString(int x)
 	int digit;
 	char c;
 	
-	while(x>0) {
-		digit = x%10;
+	while (x > 0) {
+		digit = x % 10;
 		c = '0' + digit;
 		oup += c;
-		x-= digit;
-		x/=10;
+		x -= digit;
+		x /= 10;
 	}
 	
 	int size = oup.length();
-	for(int x=0;x<size/2;x++) {
+	for (int x = 0; x < size / 2;x++) {
 		c = oup[x];
-		oup[x] = oup[size-x-1];
-		oup[size-x-1] = c;
+		oup[x] = oup[size - x - 1];
+		oup[size - x - 1] = c;
 	}
 	
-	if(negative) {
-		oup = '-'+oup;
+	if (negative) {
+		oup = '-' + oup;
 	}
 	
 

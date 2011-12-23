@@ -15,26 +15,6 @@ typedef struct CharReaderInterface {
     bool (*isEOF)(void *clientData);
 } CharReaderInterface;
 
-static INLINE bool isDigit(char c)
-{
-    return '0' <= c && c <= '9';
-}
-
-static INLINE bool isWhitespace(char c)
-{
-    switch (c) {
-        case ' ':
-        case '\t':
-        case '\n':
-            return TRUE;
-        default:
-            return FALSE;
-    }
-
-    NOT_REACHED();
-}
-
-
 class Parser
 {
     public:

@@ -44,7 +44,8 @@ CPP_SOURCES = MBString.cpp \
               IntSet.cpp \
               cityhash.cpp \
               MBSocket.cpp \
-              Parser.cpp
+              Parser.cpp \
+              Dumper.cpp
 
 C_SOURCES = mbassert.c \
             mbdebug.c \

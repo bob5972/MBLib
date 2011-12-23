@@ -5,6 +5,8 @@
 #ifndef _MBUTIL_H_201106111445
 #define _MBUTIL_H_201106111445
 
+#include "mbtypes.h"
+
 #ifdef __cplusplus
 	extern "C" {
 #endif
@@ -26,6 +28,23 @@
 //to determine when this is safe.
 #define LIKELY(x) (__builtin_expect(!!(x), 1))
 #define UNLIKELY(x) (__builtin_expect((x), 0))
+
+static INLINE bool isDigit(char c)
+{
+    return '0' <= c && c <= '9';
+}
+
+static INLINE bool isWhitespace(char c)
+{
+    switch (c) {
+        case ' ':
+        case '\t':
+        case '\n':
+            return TRUE;
+        default:
+            return FALSE;
+    }
+}
 
 #ifdef __cplusplus
 	}
