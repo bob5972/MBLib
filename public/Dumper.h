@@ -27,7 +27,7 @@ class Dumper {
 
         Dumper(MBSocket &s)
         {
-            memset(&myOup, 0, sizeof(myOup));
+            zero(&myOup, sizeof(myOup));
 
             myOup.clientData = &s;
             myOup.write = DumperSocketWrite;

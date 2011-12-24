@@ -34,7 +34,7 @@ class Parser
 
         Parser(MBSocket &socket)
         {
-            memset(&myInp, 0, sizeof(myInp));
+            zero(&myInp, sizeof(myInp));
             myInp.clientData = &socket;
             myInp.readChar = ParserSocketReadChar;
            

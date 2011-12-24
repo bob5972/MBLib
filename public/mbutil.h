@@ -5,6 +5,8 @@
 #ifndef _MBUTIL_H_201106111445
 #define _MBUTIL_H_201106111445
 
+#include <string.h>
+
 #include "mbtypes.h"
 
 #ifdef __cplusplus
@@ -44,6 +46,11 @@ static INLINE bool isWhitespace(char c)
         default:
             return FALSE;
     }
+}
+
+static INLINE void zero(void *p, uint size)
+{
+	memset(p, 0, size);
 }
 
 #ifdef __cplusplus
