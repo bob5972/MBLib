@@ -274,6 +274,8 @@ class Parser
             } else {
                 if (myInp.isEOF != NULL) {
                     gotChar = myInp.isEOF(myInp.clientData);
+                } else {
+                    gotChar = TRUE;
                 }
                 
                 if (gotChar) {
