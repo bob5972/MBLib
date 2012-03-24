@@ -134,7 +134,7 @@ void BitVector_SetRange(BitVector *b, int first, int last)
 	myBytes = (uint8 *) b->bits;
 	myBytes += (x/8);
 	memset(myBytes, 0xFF, numBytes);
-	x+= 8 * numBytes;
+	x += 8 * numBytes;
 	
 	while (x <= last) {
 		BitVector_SetRaw(x, b->bits);
@@ -172,7 +172,7 @@ void BitVector_ResetRange(BitVector *b, int first, int last)
 	myBytes = (uint8 *) b->bits;
 	myBytes += (x/8);
 	memset(myBytes, 0x00, numBytes);
-	x+= 8 * numBytes;
+	x += 8 * numBytes;
 	
 	while (x <= last) {
 		BitVector_ResetRaw(x, b->bits);
