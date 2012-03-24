@@ -124,7 +124,7 @@ BitVector_Put(BitVector *b, int i, bool v)
 	ASSERT(i >= 0);
 	ASSERT(i < b->size);
 	
-	if(v) {
+	if (v) {
 		BitVector_SetRaw(i, b->bits);
 	} else {
 		BitVector_ResetRaw(i, b->bits);
