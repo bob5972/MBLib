@@ -44,9 +44,9 @@ void BitVector_ResetRange(BitVector *b, int first, int last);
  
 static INLINE bool
 BitVector_GetRaw(int i, const uint32 *bits)
-{	
+{
 #if defined(__GNUC__) && (defined(ARCH_AMD64) || defined(ARCH_x86))
-	{
+	if (!CONSTANT(i)) {
 		uint32 tmp;
 
 		asm("btl  %2, (%1); "
@@ -56,49 +56,53 @@ BitVector_GetRaw(int i, const uint32 *bits)
 		    : "cc");
 		return tmp;
 	}
-#else
-	return (bits[BVINDEX(i)] & BVMASK(i)) != 0;
-#endif	
+#endif
+
+	return (bits[BVINDEX(i)] & BVMASK(i)) != 0;	
 }
 
 static INLINE void
 BitVector_SetRaw(int i, uint32 *bits)
-{	
+{
 #if defined(__GNUC__) && (defined(ARCH_AMD64) || defined(ARCH_x86))
-	asm volatile("btsl %1, (%0)"
-                 :: "r" (bits), "r" (i)
-                 : "cc", "memory");
-#else
-	bits[BVINDEX(i)] |= BVMASK(i);
+	if (!CONSTANT(i)) {
+		asm volatile("btsl %1, (%0)"
+    	             :: "r" (bits), "r" (i)
+    	             : "cc", "memory");
+     
+     	return;
+     }
 #endif	
+	bits[BVINDEX(i)] |= BVMASK(i);
 }
 
 static INLINE void
 BitVector_ResetRaw(int i, uint32 *bits)
 {
 #if defined(__GNUC__) && (defined(ARCH_AMD64) || defined(ARCH_x86))
-	asm volatile("btrl %1, (%0)"
-                 :: "r" (bits), "r" (i)
-                 : "cc", "memory");
-#else
+	if (!CONSTANT(i)) {
+		asm volatile("btrl %1, (%0)"
+	                 :: "r" (bits), "r" (i)
+	                 : "cc", "memory");
+         return;
+     }
+#endif
 	bits[BVINDEX(i)] &= ~BVMASK(i);
-#endif	
 }
 
 static INLINE void
 BitVector_FlipRaw(int i, uint32 *bits)
 {	
 #if defined(__GNUC__) && (defined(ARCH_AMD64) || defined(ARCH_x86))
-	asm volatile("btcl %1, (%0)"
-                 :: "r" (bits), "r" (i)
-                 : "cc", "memory");
-#else
-	if (BitVector_GetRaw(i, bits)) {
-		BitVector_ResetRaw(i, bits);
-	} else {
-		BitVector_SetRaw(i, bits);
+	if (!CONSTANT(i)) {
+		asm volatile("btcl %1, (%0)"
+	                 :: "r" (bits), "r" (i)
+	                 : "cc", "memory");
+         
+		return;
 	}
-#endif	
+#endif
+	bits[BVINDEX(i)] ^= BVMASK(i);	
 }
 
 

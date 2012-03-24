@@ -25,11 +25,16 @@
 #define OFFSETOF(TYPE, MEMBER) ((size_t) &((TYPE *)0)->MEMBER)
 
 #define INLINE inline
+#define EXTERN extern
 
 //It might be possible to check #if HAVE_BUILTIN_EXPECT
 //to determine when this is safe.
 #define LIKELY(x) (__builtin_expect(!!(x), 1))
 #define UNLIKELY(x) (__builtin_expect((x), 0))
+
+#define CONSTANT(x) (__builtin_constant_p(x))
+
+#define UNUSED_VARIABLE(x) (x) = (x)
 
 static INLINE bool isDigit(char c)
 {

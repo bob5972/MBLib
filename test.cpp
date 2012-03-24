@@ -290,8 +290,21 @@ void testBitVector(void)
 	int count = 10000;
 	int result;
 	BitVector b;
+	uint32 rawbit[100];
+	int rawSize;
 	
 	b.resize(count + 1);
+	
+	rawSize = (int) ARRAYSIZE(rawbit) * sizeof(rawbit[0]) * 8;
+	for (int x = 0; x <= rawSize; x++) {
+		BitVector_SetRaw(x, rawbit);
+		result = BitVector_GetRaw(x, rawbit);
+		TEST(result);
+		
+		BitVector_ResetRaw(x, rawbit);
+		result = BitVector_GetRaw(x, rawbit);
+		TEST(!result);
+	}
 	
 	for (int x = 0; x <= count; x++) {
 		b.set(x);
@@ -543,6 +556,7 @@ void testRandom(void)
 
     for (x = 0; x < count; x++) {
         double d;
+        UNUSED_VARIABLE(d);
         d = Random_UnitFloat();
     }
 }
