@@ -36,12 +36,14 @@
 
 #define UNUSED_VARIABLE(x) (x) = (x)
 
-static INLINE bool isDigit(char c)
+static INLINE bool
+isDigit(char c)
 {
     return '0' <= c && c <= '9';
 }
 
-static INLINE bool isWhitespace(char c)
+static INLINE bool
+isWhitespace(char c)
 {
     switch (c) {
         case ' ':
@@ -53,9 +55,16 @@ static INLINE bool isWhitespace(char c)
     }
 }
 
-static INLINE void zero(void *p, uint size)
+static INLINE void
+zero(void *p, uint size)
 {
 	memset(p, 0, size);
+}
+
+static INLINE uint8
+popcount(uint32 x)
+{
+	return __builtin_popcount(x);
 }
 
 #ifdef __cplusplus

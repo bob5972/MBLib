@@ -357,6 +357,22 @@ void testBitVector(void)
 		result = b.get(x);
 		TEST(result == (x % 2) ? FALSE : TRUE);
 	}
+	
+	b.resetAll();
+	int array[] = {
+	    33, 50, 51, 67, 101, 1023
+    };
+    
+	for (int x = 0; x < 29; x++) {
+		b.set(x);
+	}
+	
+	for (int x = 0; x < (int) ARRAYSIZE(array); x++) {
+		b.set(array[x]);
+	}
+
+	result = b.popcount();
+	TEST(result == ARRAYSIZE(array) + 29);
 }
 
 void testMBMap()

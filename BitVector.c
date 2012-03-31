@@ -56,8 +56,6 @@ void BitVector_Consume(BitVector *dest, BitVector *src)
 	src->fill = oldFill;
 }
 
-
-
 void BitVector_Resize(BitVector *b, int size)
 {
 	int oldSize;
@@ -73,15 +71,15 @@ void BitVector_Resize(BitVector *b, int size)
 		return;
 	}
 	
+	/*
+	 * Account for stray bits, and leave an extra cell at the end
+	 * even if there aren't any (makes PopCount easier).
+	 */
 	oldValidCellCount = oldSize / BVUNITBITS;
-	if (oldSize % BVUNITBITS > 0) {
-		oldValidCellCount++;
-	}
+	oldValidCellCount++;
 	
 	newValidCellCount = size / BVUNITBITS;
-	if (size % BVUNITBITS > 0) {
-		newValidCellCount++;
-	}
+	newValidCellCount++;
 	
 	if(oldValidCellCount < newValidCellCount) {
 		int byteLength;
@@ -95,7 +93,7 @@ void BitVector_Resize(BitVector *b, int size)
 		b->arrSize = newValidCellCount;
 	}
 	
-	if(oldSize < b->size) {
+	if(oldSize < size) {
 		if(b->fill) {
 			BitVector_SetRange(b, oldSize, b->size-1);
 		} else {
