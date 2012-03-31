@@ -359,14 +359,16 @@ void testBitVector(void)
 	}
 	
 	b.resetAll();
-	int array[] = {
-	    33, 50, 51, 67, 101, 1023
-    };
-    
 	for (int x = 0; x < 29; x++) {
 		b.set(x);
 	}
 	
+	result = b.popcount();
+	TEST(result == 29);
+
+	int array[] = {
+	    33, 50, 51, 67, 101, 1023
+    };	
 	for (int x = 0; x < (int) ARRAYSIZE(array); x++) {
 		b.set(array[x]);
 	}
