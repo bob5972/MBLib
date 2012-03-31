@@ -178,4 +178,32 @@ void BitVector_ResetRange(BitVector *b, int first, int last)
 	}
 }
 
+uint BitVector_PopCount(const BitVector *b)
+{
+	int x;
+	int size;
+	int cellSize;
+	int sum;
+	
+	int strayBitCount;
+	uint32 strayBitMask;
+	
+	ASSERT(b != NULL);
+	
+	sum = 0;
+	size = b->size;
+	cellSize = size / BVUNITBITS;
+	
+	for (x = 0; x < cellSize; x++) {
+		sum += popcount(b->bits[x]);
+	}
+	
+	strayBitCount = size % BVUNITBITS;	
+	strayBitMask = (1 << strayBitCount) - 1;
+		
+	ASSERT(cellSize < b->arrSize);
+	sum += popcount(b->bits[cellSize] & strayBitMask);
+	
+	return sum;
+}
 
