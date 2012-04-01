@@ -290,11 +290,12 @@ void testBitVector(void)
 	int count = 10000;
 	int result;
 	BitVector b;
-	uint64 rawbit[100];
-	int rawSize;
 	
 	// Test basic get/set
 	{
+		uint64 rawbit[100];
+		int rawSize;
+		
 		rawSize = (int) ARRAYSIZE(rawbit) * sizeof(rawbit[0]) * 8;
 		for (int x = 0; x <= rawSize; x++) {
 			BitVector_SetRaw(x, rawbit);
@@ -304,6 +305,10 @@ void testBitVector(void)
 			BitVector_ResetRaw(x, rawbit);
 			result = BitVector_GetRaw(x, rawbit);
 			TEST(!result);
+			
+			BitVector_FlipRaw(x, rawbit);
+			result = BitVector_GetRaw(x, rawbit);
+			TEST(result);
 		}
 	}
 	
@@ -349,7 +354,7 @@ void testBitVector(void)
 				TEST(result);
 			}
 			
-			b.flipAll();
+			b.resetAll();
 			for (int x = 0; x < count; x++) {
 				result = b.get(x);
 				TEST(!result);
@@ -359,12 +364,6 @@ void testBitVector(void)
 			for (int x = 0; x < count; x++) {
 				result = b.get(x);
 				TEST(result);
-			}
-		
-			b.resetAll();
-			for (int x = 0; x < count; x++) {
-				result = b.get(x);
-				TEST(!result);
 			}
 		}
 	}
