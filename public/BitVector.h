@@ -37,8 +37,6 @@ void BitVector_Consume(BitVector *dest, BitVector *src);
 
 void BitVector_Resize(BitVector *b, int size);
 
-int BitVector_PopCount(const BitVector *b);
-
 // Helper function for fills
 void BitVectorSetRangeGeneric(BitVector *b, int first, int last);
 void BitVectorResetRangeGeneric(BitVector *b, int first, int last);
@@ -414,6 +412,37 @@ BitVector_SetFillValue(BitVector *b, bool f)
 {
 	ASSERT(b != NULL);
 	b->fill = f;
+}
+
+static INLINE int
+BitVector_PopCount(const BitVector *b)
+{
+	int x;
+	int size;
+	int cellSize;
+	int sum;
+	
+	int strayBitCount;
+	uint64 strayBitMask;
+	
+	ASSERT(b != NULL);
+	
+	sum = 0;
+	size = b->size;
+	cellSize = size / BVUNITBITS;
+	
+	for (x = 0; x < cellSize; x++) {
+		sum += popcountl(b->bits[x]);
+	}
+	
+	strayBitCount = size % BVUNITBITS;	
+	strayBitMask = ( ((uint64)1) << strayBitCount) - 1;
+		
+	ASSERT(cellSize >= 0);
+	ASSERT((uint) cellSize < b->arrSize);
+	sum += popcountl(b->bits[cellSize] & strayBitMask);
+	
+	return sum;
 }
 
 #ifdef __cplusplus

@@ -117,32 +117,4 @@ void BitVectorFlipRangeGeneric(BitVector *b, int first, int last)
 	BitVectorWriteRangeGenericImpl(b, first, last, BITVECTOR_WRITE_FLIP);
 }
 
-int BitVector_PopCount(const BitVector *b)
-{
-	int x;
-	int size;
-	int cellSize;
-	int sum;
-	
-	int strayBitCount;
-	uint64 strayBitMask;
-	
-	ASSERT(b != NULL);
-	
-	sum = 0;
-	size = b->size;
-	cellSize = size / BVUNITBITS;
-	
-	for (x = 0; x < cellSize; x++) {
-		sum += popcountl(b->bits[x]);
-	}
-	
-	strayBitCount = size % BVUNITBITS;	
-	strayBitMask = ( ((uint64)1) << strayBitCount) - 1;
-		
-	ASSERT(cellSize < b->arrSize);
-	sum += popcountl(b->bits[cellSize] & strayBitMask);
-	
-	return sum;
-}
 
