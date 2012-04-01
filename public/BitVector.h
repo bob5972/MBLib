@@ -34,6 +34,7 @@ void BitVector_Resize(BitVector *b, int size);
 //affects the bits from [first..last] inclusive
 void BitVector_SetRange(BitVector *b, int first, int last);
 void BitVector_ResetRange(BitVector *b, int first, int last);
+void BitVector_FlipRange(BitVector *b, int first, int last);
 
 uint BitVector_PopCount(const BitVector *b);
 
@@ -316,6 +317,10 @@ class BitVector
 		
 		void resetRange(int first, int last) {
 			BitVector_ResetRange(&b, first, last);
+		}
+		
+		void flipRange(int first, int last) {
+			BitVector_FlipRange(&b, first, last);
 		}
 		
 		void setAll() {

@@ -430,6 +430,55 @@ void testBitVector(void)
 		}
 	}
 	
+	
+	// Test FlipRange
+	{
+		int start;
+		int end;
+		
+		count = 1027;
+		
+		b.resize(count);
+		b.resetAll();
+
+		start = 3;
+		end = 515;
+		b.flipRange(start, end);		
+		
+		for (int x = 0; x < count; x++) {
+			result = b.get(x);
+	
+			if (x < start) {
+				TEST(result == FALSE);
+			} else if (x >= start && x <= end) {
+				TEST(result == TRUE);
+			} else {
+				TEST(result == FALSE);
+			}
+		}
+		
+		b.flipRange(start, end);
+		for (int x = 0; x < count; x++) {
+			result = b.get(x);
+			TEST(result == FALSE);
+		}
+		
+		start = 3;
+		end = 7;
+		b.flipRange(start, end);
+		for (int x = 0; x < count; x++) {
+			result = b.get(x);
+	
+			if (x < start) {
+				TEST(result == FALSE);
+			} else if (x >= start && x <= end) {
+				TEST(result == TRUE);
+			} else {
+				TEST(result == FALSE);
+			}
+		}		
+	}
+	
 }
 
 void testMBMap()
