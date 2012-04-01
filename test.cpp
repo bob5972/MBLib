@@ -358,24 +358,78 @@ void testBitVector(void)
 		TEST(result == (x % 2) ? FALSE : TRUE);
 	}
 	
-	b.resetAll();
-	b.resize(2049);
-	for (int x = 0; x < 29; x++) {
-		b.set(x);
+	// Test PopCount
+	{
+		count = 2049;
+		b.resetAll();
+		b.resize(count);
+		for (int x = 0; x < 29; x++) {
+			b.set(x);
+		}
+	
+		result = b.popcount();
+		TEST(result == 29);
+
+		int array[] = {
+			33, 50, 51, 67, 101, 1023, 2048
+		};	
+		for (int x = 0; x < (int) ARRAYSIZE(array); x++) {
+			b.set(array[x]);
+		}
+
+		result = b.popcount();
+		TEST(result == ARRAYSIZE(array) + 29);
+		
+		b.setAll();
+		result = b.popcount();
+		TEST(result == count);
+		
+		b.resetAll();
+		result = b.popcount();
+		TEST(result == 0);
 	}
 	
-	result = b.popcount();
-	TEST(result == 29);
-
-	int array[] = {
-	    33, 50, 51, 67, 101, 1023, 2048
-    };	
-	for (int x = 0; x < (int) ARRAYSIZE(array); x++) {
-		b.set(array[x]);
+	// Test FlipAll
+	{
+		count = 1027;
+		
+		b.resize(count);
+		b.resetAll();
+		b.flipAll(); // all set
+		
+		for (int x = 0; x < count; x++) {
+			result = b.get(x);
+			TEST(result == TRUE);
+		}
+		
+		b.flipAll(); // all reset
+		for (int x = 0; x < count; x++) {
+			result = b.get(x);
+			TEST(result == FALSE);
+		}
+		
+		int array[] = {
+			0, 7, 67, 131, 1024,
+		};
+		
+		for (int x = 0; x < (int) ARRAYSIZE(array); x++) {
+			b.set(x);
+		}
+		
+		b.flipAll(); // all set (except stragglers)
+		
+		for (int x = 0; x < (int) ARRAYSIZE(array); x++) {
+			result = b.get(x);
+			TEST(result == FALSE);
+			b.set(x);
+		}
+		
+		for (int x = 0; x < count; x++) {
+			result = b.get(x);
+			TEST(result == TRUE);
+		}
 	}
-
-	result = b.popcount();
-	TEST(result == ARRAYSIZE(array) + 29);
+	
 }
 
 void testMBMap()
@@ -695,7 +749,7 @@ int main(int argc, char *argv[])
     Random_Exit();
 	
 	if (!benchmark) {
-		printf("Tests successful!\n\n");
+		printf("\nTests successful!\n\n");
 		printf("Done.\n");
 	}
 	

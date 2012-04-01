@@ -216,6 +216,22 @@ BitVector_ResetAll(BitVector *b)
 	memset(b->bits, 0x00, byteLength);
 }
 
+static INLINE void
+BitVector_FlipAll(BitVector *b)
+{
+	ASSERT(b != NULL);
+	uint32 validCellCount;
+	uint x;
+	
+	validCellCount = b->size / sizeof(b->bits[0]);
+	validCellCount++;
+	ASSERT(validCellCount < b->arrSize);
+	
+	for (x = 0; x < validCellCount; x++) {
+		b->bits[x] = ~b->bits[x];
+	}
+}
+
 static INLINE bool 
 BitVector_GetFillValue(const BitVector *b)
 {
@@ -308,6 +324,10 @@ class BitVector
 		
 		void resetAll() {
 			BitVector_ResetAll(&b);
+		}
+		
+		void flipAll() {
+			BitVector_FlipAll(&b);
 		}
 		
 		int size() const {
