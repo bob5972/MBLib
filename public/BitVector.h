@@ -36,7 +36,7 @@ void BitVector_SetRange(BitVector *b, int first, int last);
 void BitVector_ResetRange(BitVector *b, int first, int last);
 void BitVector_FlipRange(BitVector *b, int first, int last);
 
-uint BitVector_PopCount(const BitVector *b);
+int BitVector_PopCount(const BitVector *b);
 
 /*
  * Inline Functions
@@ -356,7 +356,7 @@ class BitVector
 			BitVector_Consume(&b, &src.b);
 		}
 		
-		uint popcount() const {
+		int popcount() const {
 			return BitVector_PopCount(&b);
 		}
 	

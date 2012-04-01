@@ -199,7 +199,7 @@ void BitVector_FlipRange(BitVector *b, int first, int last)
 	}
 }
 
-uint BitVector_PopCount(const BitVector *b)
+int BitVector_PopCount(const BitVector *b)
 {
 	int x;
 	int size;
