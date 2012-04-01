@@ -6,9 +6,7 @@
 #include "mbassert.h"
 #include "mbutil.h"
 
-#define BITVECTOR_DEFAULT_SPACE 1
-
-static void BitVectorFillRange(BitVector *b, int first, int last, bool value);
+#define BITVECTOR_DEFAULT_SPACE 2
 
 void BitVector_Create(BitVector *b)
 {
@@ -97,106 +95,26 @@ void BitVector_Resize(BitVector *b, int size)
 	
 	if(oldSize < size) {
 		if(b->fill) {
-			BitVector_SetRange(b, oldSize, b->size-1);
+			BitVector_SetRange(b, oldSize, b->size - 1);
 		} else {
-			BitVector_ResetRange(b, oldSize, b->size-1);
+			BitVector_ResetRange(b, oldSize, b->size - 1);
 		}
 	}
 }
 
-
-void BitVectorFillRange(BitVector *b, int first, int last, bool value)
+void BitVectorSetRangeGeneric(BitVector *b, int first, int last)
 {
-	ASSERT(b != NULL);
-	ASSERT(first >= 0);
-	ASSERT(first < b->size);
-	ASSERT(last >= 0);
-	ASSERT(last < b->size);
-	ASSERT(first <= last);
-	
-	int numBytes;
-	int x;
-	uint8 *myBytes;
-	uint8 fillByte;
-	
-	if (last - first + 1 < 8 * 2) {
-		for (x = first; x <= last; x++) {
-			BitVector_Put(b, x, value);
-		}
-		return;
-	}
-	
-	x = first;
-	while (x % 8 != 0) {
-		BitVector_Put(b, x, value);
-		x++;
-	}
-	
-	fillByte = value ? 0xFF : 0x00;
-	
-	numBytes = (last - x) / 8;
-	myBytes = (uint8 *) b->bits;
-	myBytes += (x/8);
-	memset(myBytes, fillByte, numBytes);
-	x += 8 * numBytes;
-	
-	while (x <= last) {
-		BitVector_Put(b, x, value);
-		x++;
-	}
+	BitVectorWriteRangeGenericImpl(b, first, last, BITVECTOR_WRITE_SET);
 }
 
-void BitVector_SetRange(BitVector *b, int first, int last)
+void BitVectorResetRangeGeneric(BitVector *b, int first, int last)
 {
-	BitVectorFillRange(b, first, last, TRUE);
+	BitVectorWriteRangeGenericImpl(b, first, last, BITVECTOR_WRITE_RESET);
 }
 
-void BitVector_ResetRange(BitVector *b, int first, int last)
+void BitVectorFlipRangeGeneric(BitVector *b, int first, int last)
 {
-	BitVectorFillRange(b, first, last, FALSE);
-}
-
-void BitVector_FlipRange(BitVector *b, int first, int last)
-{
-	ASSERT(b != NULL);
-	ASSERT(first >= 0);
-	ASSERT(first < b->size);
-	ASSERT(last >= 0);
-	ASSERT(last < b->size);
-	ASSERT(first <= last);
-	
-	int numCells;
-	int x;
-	uint64 *myCells;
-	int i;
-	
-	if (last - first + 1 < BVUNITBITS * 2) {
-		for (x = first; x <= last; x++) {
-			BitVector_Flip(b, x);
-		}
-		return;
-	}
-	
-	x = first;
-	while (x % BVUNITBITS != 0) {
-		BitVector_Flip(b, x);
-		x++;
-	}
-	
-	numCells = (last - x) / BVUNITBITS;
-	myCells = (uint64 *) b->bits;
-	myCells += (x / BVUNITBITS);
-	
-	for (i = 0; i < numCells; i++) {
-		myCells[i] = ~myCells[i];
-	}
-	
-	x += BVUNITBITS * numCells;
-	
-	while (x <= last) {
-		BitVector_Flip(b, x);
-		x++;
-	}
+	BitVectorWriteRangeGenericImpl(b, first, last, BITVECTOR_WRITE_FLIP);
 }
 
 int BitVector_PopCount(const BitVector *b)

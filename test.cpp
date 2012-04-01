@@ -325,37 +325,82 @@ void testBitVector(void)
 		TEST(!result);
 	}
 	
-	b.setAll();
-	for (int x = 0; x <= count * 2; x++) {
-		result = b.get(x);
-		TEST(result);
+	// test (re)setAll
+	{
+		int sizeArray[] = {
+			1, 257, 512, 1015, 1016, 2048, 2049, 10001, 10002, 20002,
+		};
+		for (int y = 1; y < (int) ARRAYSIZE(sizeArray); y++) {
+			count = sizeArray[y];
+			b.resize(count);
+		
+			b.setAll();
+			for (int x = 0; x < count; x++) {
+				result = b.get(x);
+				TEST(result);
+			}
+			
+			b.flipAll();
+			for (int x = 0; x < count; x++) {
+				result = b.get(x);
+				TEST(!result);
+			}
+			
+			b.flipAll();
+			for (int x = 0; x < count; x++) {
+				result = b.get(x);
+				TEST(result);
+			}
+		
+			b.resetAll();
+			for (int x = 0; x < count; x++) {
+				result = b.get(x);
+				TEST(!result);
+			}
+		}
 	}
 	
-	b.resetAll();
-	for (int x = 0; x <= count * 2; x++) {
-		result = b.get(x);
-		TEST(!result);
+	//Test setRange
+	{
+		count = 10000;
+		b.resize((count + 1)* 2);
+		b.resetAll();
+		for (int x = 0; x <= count * 2; x++) {
+			result = b.get(x);
+			TEST(!result);
+		}
+	
+		b.setRange(1, count / 2);
+		for (int x = 1; x <= count/2; x++) {
+			result = b.get(x);
+			TEST(result);
+		}
+		for (int x = count/2+1; x <= count; x++) {
+			result = b.get(x);
+			TEST(!result);
+		}
 	}
 	
-	b.setRange(1, count / 2);
-	for (int x = 1; x <= count/2; x++) {
-		result = b.get(x);
-		TEST(result);
-	}
-	for (int x = count/2+1; x <= count; x++) {
-		result = b.get(x);
-		TEST(!result);
-	}
-	
-	for (int x = 0; x <= count; x++) {
-		b.put(x, (x % 2) ? TRUE : FALSE);
-	}
-	for (int x = 0; x <= count; x++) {
-		result = b.get(x);
-		TEST(result == (x % 2) ? TRUE : FALSE);
-		b.flip(x);
-		result = b.get(x);
-		TEST(result == (x % 2) ? FALSE : TRUE);
+	//Test flip
+	{
+		int sizeArray[] = {
+			257, 512, 1015, 1016, 2048, 2049, 10001, 10002, 20002,
+		};
+		for (int y = 1; y < (int) ARRAYSIZE(sizeArray); y++) {
+			count = sizeArray[y];
+			b.resize(count);
+			
+			for (int x = 0; x < count; x++) {
+				b.put(x, (x % 2) ? TRUE : FALSE);
+			}
+			for (int x = 0; x < count; x++) {
+				result = b.get(x);
+				TEST(result == (x % 2) ? TRUE : FALSE);
+				b.flip(x);
+				result = b.get(x);
+				TEST(result == (x % 2) ? FALSE : TRUE);
+			}
+		}
 	}
 	
 	// Test PopCount
@@ -399,13 +444,13 @@ void testBitVector(void)
 		
 		for (int x = 0; x < count; x++) {
 			result = b.get(x);
-			TEST(result == TRUE);
+			TEST(result);
 		}
 		
 		b.flipAll(); // all reset
 		for (int x = 0; x < count; x++) {
 			result = b.get(x);
-			TEST(result == FALSE);
+			TEST(!result);
 		}
 		
 		int array[] = {
@@ -420,13 +465,13 @@ void testBitVector(void)
 		
 		for (int x = 0; x < (int) ARRAYSIZE(array); x++) {
 			result = b.get(x);
-			TEST(result == FALSE);
+			TEST(!result);
 			b.set(x);
 		}
 		
 		for (int x = 0; x < count; x++) {
 			result = b.get(x);
-			TEST(result == TRUE);
+			TEST(result);
 		}
 	}
 	
@@ -449,18 +494,18 @@ void testBitVector(void)
 			result = b.get(x);
 	
 			if (x < start) {
-				TEST(result == FALSE);
+				TEST(!result);
 			} else if (x >= start && x <= end) {
-				TEST(result == TRUE);
+				TEST(result);
 			} else {
-				TEST(result == FALSE);
+				TEST(!result);
 			}
 		}
 		
 		b.flipRange(start, end);
 		for (int x = 0; x < count; x++) {
 			result = b.get(x);
-			TEST(result == FALSE);
+			TEST(!result);
 		}
 		
 		start = 3;
@@ -784,10 +829,11 @@ int main(int argc, char *argv[])
 		calibration = 1;
 	}
 	
-	runs = 1;
 	for (uint32 x = 0; x < ARRAYSIZE(tests); x++) {
 		if (benchmark) {
 			runs = tests[x].weight * calibration;
+		} else {
+			runs = tests[x].enabled ? 1 : 0;
 		}
 		
 		for (int y = 0; y < runs; y++) {

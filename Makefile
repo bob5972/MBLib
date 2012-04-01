@@ -10,8 +10,7 @@ INCLUDE_FLAGS=-I $(MBLIB_SRCDIR)/ -I $(MBLIB_SRCDIR)/public
 
 #The BUILDROOT folder is included for config.h
 CFLAGS = ${DEFAULT_CFLAGS} ${INCLUDE_FLAGS} -I $(BUILDROOT)
-
-CPPFLAGS= ${CFLAGS}
+CPPFLAGS = ${CFLAGS}
 
 CC=gcc
 CXX=g++

@@ -19,6 +19,12 @@ typedef struct {
 	bool fill;
 } BitVector;
 
+typedef enum {
+	BITVECTOR_WRITE_RESET,
+	BITVECTOR_WRITE_SET,
+	BITVECTOR_WRITE_FLIP,
+} BitVectorWriteType;
+
 void BitVector_Create(BitVector *b);
 void BitVector_Destroy(BitVector *b);
 void BitVector_Copy(BitVector *dest, const BitVector *src);
@@ -31,12 +37,12 @@ void BitVector_Consume(BitVector *dest, BitVector *src);
 
 void BitVector_Resize(BitVector *b, int size);
 
-//affects the bits from [first..last] inclusive
-void BitVector_SetRange(BitVector *b, int first, int last);
-void BitVector_ResetRange(BitVector *b, int first, int last);
-void BitVector_FlipRange(BitVector *b, int first, int last);
-
 int BitVector_PopCount(const BitVector *b);
+
+// Helper function for fills
+void BitVectorSetRangeGeneric(BitVector *b, int first, int last);
+void BitVectorResetRangeGeneric(BitVector *b, int first, int last);
+void BitVectorFlipRangeGeneric(BitVector *b, int first, int last);
 
 /*
  * Inline Functions
@@ -108,7 +114,6 @@ BitVector_FlipRaw(int i, uint64 *bits)
 	bits[BVINDEX(i)] ^= BVMASK(i);	
 }
 
-
 static INLINE bool
 BitVector_Get(const BitVector *b, int x)
 {
@@ -154,7 +159,6 @@ BitVector_Reset(BitVector *b, int x)
 	BitVector_ResetRaw(x, b->bits);
 }
 
-
 static INLINE void
 BitVector_Flip(BitVector *b, int x)
 {
@@ -163,6 +167,212 @@ BitVector_Flip(BitVector *b, int x)
 	ASSERT((uint) x < b->size);
 	
 	BitVector_FlipRaw(x, b->bits);
+}
+
+static INLINE void
+BitVectorWrite(BitVector *b, int x, BitVectorWriteType type)
+{
+	switch (type) {
+		case BITVECTOR_WRITE_SET:
+			BitVector_Set(b, x);
+			break;
+		case BITVECTOR_WRITE_RESET:
+			BitVector_Reset(b, x);
+			break;
+		case BITVECTOR_WRITE_FLIP:
+			BitVector_Flip(b, x);
+			break;
+	}
+}
+
+static INLINE void
+BitVectorWriteRangeGenericDispatch(BitVector *b,
+                                   int first, int last,
+                                   BitVectorWriteType type)
+{
+	switch (type) {
+		case BITVECTOR_WRITE_SET:
+			BitVectorSetRangeGeneric(b, first, last);
+			break;
+		case BITVECTOR_WRITE_RESET:
+			BitVectorResetRangeGeneric(b, first, last);
+			break;
+		case BITVECTOR_WRITE_FLIP:
+			BitVectorFlipRangeGeneric(b, first, last);
+			break;
+	}
+}
+
+static INLINE void
+BitVectorWriteRangeOptimized(BitVector *b,
+                             int first, int last,
+                             BitVectorWriteType type)
+{
+	const uint8 alignment = 8;
+	
+	ASSERT(b != NULL);
+	ASSERT(first % alignment == 0);
+	ASSERT(last % alignment == (alignment - 1));
+	ASSERT(last != first);
+	
+	int x;
+	uint8 fillByte;
+	uint8 *myBytes;
+	int numBytes;
+	uint32 startByte;
+	
+	numBytes = (last - first) / alignment + 1;
+	myBytes = (uint8 *) b->bits;
+	startByte = first / alignment;
+	myBytes += startByte;
+	
+	ASSERT(startByte + numBytes <= b->arrSize * sizeof(b->bits[0]));
+	
+	switch (type) {
+		case BITVECTOR_WRITE_SET:
+		case BITVECTOR_WRITE_RESET:	
+			if (type == BITVECTOR_WRITE_SET) {
+				fillByte = 0xFF;
+			} else {
+				fillByte = 0x00;
+			}
+			
+			memset(myBytes, fillByte, numBytes);
+			break;
+		case BITVECTOR_WRITE_FLIP:
+			for (x = 0; x < numBytes; x++) {
+				myBytes[x] = ~myBytes[x];
+			}
+			break;
+	}
+}
+
+static INLINE void
+BitVectorWriteRangeGenericImpl(BitVector *b,
+                               int first, int last,
+                               BitVectorWriteType type)
+{
+	ASSERT(b != NULL);
+	ASSERT(first >= 0);
+	ASSERT((uint) first < b->size);
+	ASSERT(last >= 0);
+	ASSERT((uint) last < b->size);
+	ASSERT(first <= last);
+	
+	int x;
+	const uint8 alignment = 8;
+	int alignedLast;
+	int alignedFirst;
+	
+	if (last - first + 1 <= alignment * 2) {
+		for (x = first; x <= last; x++) {
+			BitVectorWrite(b, x, type);
+		}
+		return;
+	}	
+
+	if (first % alignment != 0) {
+		alignedFirst = first + (alignment - (first % alignment));
+		ASSERT(first <= alignedFirst);
+		x = first;
+		while (x < alignedFirst) {
+			ASSERT(x >= first);
+			ASSERT(x <= last);
+			BitVectorWrite(b, x, type);
+			x++;
+		}
+		
+		first = alignedFirst;
+		ASSERT(first <= last);
+	}
+	
+	if (last % alignment != alignment - 1) {
+		alignedLast = last - (last % alignment) - 1;
+		ASSERT(alignedLast >= 0);
+		ASSERT(alignedLast >= first);
+	
+		x = alignedLast + 1;
+		while (x <= last) {
+			ASSERT(x >= first);
+			ASSERT(x <= last);
+			BitVectorWrite(b, x, type);
+			x++;
+		}
+
+		ASSERT(alignedLast <= last);
+		last = alignedLast;
+	}
+	
+	ASSERT(first < last);	
+	ASSERT(first % alignment == 0);
+	ASSERT(last % alignment == (alignment - 1));
+	BitVectorWriteRangeOptimized(b, first, last, type);
+	return;
+}
+
+static INLINE void
+BitVectorWriteRange(BitVector *b,
+                    int first, int last,
+                    BitVectorWriteType type)
+{
+	ASSERT(b != NULL);
+	ASSERT(first >= 0);
+	ASSERT((uint) first < b->size);
+	ASSERT(last >= 0);
+	ASSERT((uint) last < b->size);
+	ASSERT(first <= last);
+	
+	if (CONSTANT(type) && CONSTANT(first) && CONSTANT(last)) {
+		BitVectorWriteRangeGenericImpl(b, first, last, type);
+		return;
+	} else {
+		BitVectorWriteRangeGenericDispatch(b, first, last, type);
+	}
+}
+
+static INLINE void
+BitVector_SetAll(BitVector *b)
+{
+	int first = 0;
+	int last = b->size - 1;
+	
+	BitVectorWriteRange(b, first, last, BITVECTOR_WRITE_SET);
+}
+
+static INLINE void
+BitVector_ResetAll(BitVector *b)
+{
+	int first = 0;
+	int last = b->size - 1;
+	
+	BitVectorWriteRange(b, first, last, BITVECTOR_WRITE_RESET);
+}
+
+static INLINE void
+BitVector_FlipAll(BitVector *b)
+{
+	int first = 0;
+	int last = b->size - 1;
+	
+	BitVectorWriteRange(b, first, last, BITVECTOR_WRITE_FLIP);
+}
+
+static INLINE void
+BitVector_SetRange(BitVector *b, int first, int last)
+{
+	BitVectorWriteRange(b, first, last, BITVECTOR_WRITE_SET);
+}
+
+static INLINE void
+BitVector_ResetRange(BitVector *b, int first, int last)
+{
+	BitVectorWriteRange(b, first, last, BITVECTOR_WRITE_RESET);
+}
+
+static INLINE void
+BitVector_FlipRange(BitVector *b, int first, int last)
+{
+	BitVectorWriteRange(b, first, last, BITVECTOR_WRITE_FLIP);
 }
 
 static INLINE bool
@@ -190,47 +400,6 @@ BitVector_Size(const BitVector *b)
 {
 	ASSERT(b != NULL);
 	return b->size;
-}
-
-
-static INLINE void
-BitVector_SetAll(BitVector *b)
-{
-	ASSERT(b != NULL);
-	uint32 byteLength;
-	
-	byteLength = (b->size + 7) / 8;
-	ASSERT(byteLength / sizeof(b->bits[0]) <= b->arrSize);
-	
-	memset(b->bits, 0xFF, byteLength);
-}
-
-static INLINE void
-BitVector_ResetAll(BitVector *b)
-{
-	ASSERT(b != NULL);
-	uint32 byteLength;
-	
-	byteLength = (b->size + 7) / 8;
-	ASSERT(byteLength / sizeof(b->bits[0]) <= b->arrSize);
-	
-	memset(b->bits, 0x00, byteLength);
-}
-
-static INLINE void
-BitVector_FlipAll(BitVector *b)
-{
-	ASSERT(b != NULL);
-	uint32 validCellCount;
-	uint x;
-	
-	validCellCount = b->size / sizeof(b->bits[0]);
-	validCellCount++;
-	ASSERT(validCellCount < b->arrSize);
-	
-	for (x = 0; x < validCellCount; x++) {
-		b->bits[x] = ~b->bits[x];
-	}
 }
 
 static INLINE bool 
