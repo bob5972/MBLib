@@ -122,7 +122,6 @@ BitVector_Get(const BitVector *b, int x)
 	return BitVector_GetRaw(x, b->bits);
 }
 
-
 static INLINE void
 BitVector_Put(BitVector *b, int x, bool v)
 {
