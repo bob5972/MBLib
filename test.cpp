@@ -293,42 +293,51 @@ void testBitVector(void)
 	uint64 rawbit[100];
 	int rawSize;
 	
-	b.resize(count + 1);
-	
-	rawSize = (int) ARRAYSIZE(rawbit) * sizeof(rawbit[0]) * 8;
-	for (int x = 0; x <= rawSize; x++) {
-		BitVector_SetRaw(x, rawbit);
-		result = BitVector_GetRaw(x, rawbit);
-		TEST(result);
-		
-		BitVector_ResetRaw(x, rawbit);
-		result = BitVector_GetRaw(x, rawbit);
-		TEST(!result);
+	// Test basic get/set
+	{
+		rawSize = (int) ARRAYSIZE(rawbit) * sizeof(rawbit[0]) * 8;
+		for (int x = 0; x <= rawSize; x++) {
+			BitVector_SetRaw(x, rawbit);
+			result = BitVector_GetRaw(x, rawbit);
+			TEST(result);
+			
+			BitVector_ResetRaw(x, rawbit);
+			result = BitVector_GetRaw(x, rawbit);
+			TEST(!result);
+		}
 	}
 	
-	for (int x = 0; x <= count; x++) {
-		b.set(x);
-	}
+	// Test resize
+	{
+		b.resize(count + 1);
+		for (int x = 0; x <= count; x++) {
+			b.set(x);
+			result = b.get(x);
+			TEST(result);
+		}
 	
-	b.resize((count + 1)* 2);
-	for (int x = count + 1; x <= count * 2; x++) {
-		b.reset(x);
-	}
+		b.resize((count + 1)* 2);
+		for (int x = count + 1; x <= count * 2; x++) {
+			b.reset(x);
+			result = b.get(x);
+			TEST(!result);
+		}
 	
-	for (int x = 0; x <= count; x++) {
-		result = b.get(x);
-		TEST(result);
-	}
+		for (int x = 0; x <= count; x++) {
+			result = b.get(x);
+			TEST(result);
+		}
 	
-	for (int x = count + 1; x <= count * 2; x++) {
-		result = b.get(x);
-		TEST(!result);
+		for (int x = count + 1; x <= count * 2; x++) {
+			result = b.get(x);
+			TEST(!result);
+		}
 	}
 	
 	// test (re)setAll
 	{
 		int sizeArray[] = {
-			1, 257, 512, 1015, 1016, 2048, 2049, 10001, 10002, 20002,
+			1, 257, 512, 1015, 1016, 2048, 2049, 10001,
 		};
 		for (int y = 1; y < (int) ARRAYSIZE(sizeArray); y++) {
 			count = sizeArray[y];
@@ -384,7 +393,7 @@ void testBitVector(void)
 	//Test flip
 	{
 		int sizeArray[] = {
-			257, 512, 1015, 1016, 2048, 2049, 10001, 10002, 20002,
+			257, 512, 1015, 1016, 2048, 2049, 10001, 20002,
 		};
 		for (int y = 1; y < (int) ARRAYSIZE(sizeArray); y++) {
 			count = sizeArray[y];
@@ -416,7 +425,7 @@ void testBitVector(void)
 		TEST(result == 29);
 
 		int array[] = {
-			33, 50, 51, 67, 101, 1023, 2048
+			33, 50, 51, 67, 101, 517, 1023, 2048
 		};	
 		for (int x = 0; x < (int) ARRAYSIZE(array); x++) {
 			b.set(array[x]);
@@ -794,7 +803,7 @@ int main(int argc, char *argv[])
 		{ 1, 25,    testRandomIntMap  },
 		{ 1, 65,    testIntSet        },
 		{ 1, 2,     testMBSet         },
-		{ 1, 40,    testBitVector     },
+		{ 1, 12,    testBitVector     },
 		{ 1, 210,   testMBQueue       },
 	};
 	
