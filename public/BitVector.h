@@ -13,9 +13,9 @@
 #endif
 
 typedef struct {
-	uint32 *bits;
-	int size;
-	int arrSize;
+	uint64 *bits;
+	uint size;
+	uint arrSize;
 	bool fill;
 } BitVector;
 
@@ -40,12 +40,12 @@ uint BitVector_PopCount(const BitVector *b);
 /*
  * Inline Functions
  */
-#define BVUNITBITS 32
+#define BVUNITBITS 64
 #define BVINDEX(x) (x / BVUNITBITS)
-#define BVMASK(x)  (1 << (x % BVUNITBITS))
+#define BVMASK(x)  ( ((uint64)1) << (x % BVUNITBITS))
  
 static INLINE bool
-BitVector_GetRaw(int i, const uint32 *bits)
+BitVector_GetRaw(int i, const uint64 *bits)
 {
 #if defined(__GNUC__) && (defined(ARCH_AMD64) || defined(ARCH_x86))
 	if (!CONSTANT(i)) {
@@ -64,7 +64,7 @@ BitVector_GetRaw(int i, const uint32 *bits)
 }
 
 static INLINE void
-BitVector_SetRaw(int i, uint32 *bits)
+BitVector_SetRaw(int i, uint64 *bits)
 {
 #if defined(__GNUC__) && (defined(ARCH_AMD64) || defined(ARCH_x86))
 	if (!CONSTANT(i)) {
@@ -79,7 +79,7 @@ BitVector_SetRaw(int i, uint32 *bits)
 }
 
 static INLINE void
-BitVector_ResetRaw(int i, uint32 *bits)
+BitVector_ResetRaw(int i, uint64 *bits)
 {
 #if defined(__GNUC__) && (defined(ARCH_AMD64) || defined(ARCH_x86))
 	if (!CONSTANT(i)) {
@@ -93,7 +93,7 @@ BitVector_ResetRaw(int i, uint32 *bits)
 }
 
 static INLINE void
-BitVector_FlipRaw(int i, uint32 *bits)
+BitVector_FlipRaw(int i, uint64 *bits)
 {	
 #if defined(__GNUC__) && (defined(ARCH_AMD64) || defined(ARCH_x86))
 	if (!CONSTANT(i)) {
@@ -113,67 +113,67 @@ BitVector_Get(const BitVector *b, int x)
 {
 	ASSERT(b != NULL);
 	ASSERT(x >= 0);
-	ASSERT(x < b->size);
+	ASSERT((uint) x < b->size);
 	
 	return BitVector_GetRaw(x, b->bits);
 }
 
 
 static INLINE void
-BitVector_Put(BitVector *b, int i, bool v)
+BitVector_Put(BitVector *b, int x, bool v)
 {
 	ASSERT(b != NULL);
-	ASSERT(i >= 0);
-	ASSERT(i < b->size);
+	ASSERT(x >= 0);
+	ASSERT((uint) x < b->size);
 	
 	if (v) {
-		BitVector_SetRaw(i, b->bits);
+		BitVector_SetRaw(x, b->bits);
 	} else {
-		BitVector_ResetRaw(i, b->bits);
+		BitVector_ResetRaw(x, b->bits);
 	}
 }
 
 static INLINE void
-BitVector_Set(BitVector *b, int i)
+BitVector_Set(BitVector *b, int x)
 {
 	ASSERT(b != NULL);
-	ASSERT(i >= 0);
-	ASSERT(i < b->size);
+	ASSERT(x >= 0);
+	ASSERT((uint) x < b->size);
 
-	BitVector_SetRaw(i, b->bits);
+	BitVector_SetRaw(x, b->bits);
 }
 
 static INLINE void
-BitVector_Reset(BitVector *b, int i)
+BitVector_Reset(BitVector *b, int x)
 {
 	ASSERT(b != NULL);
-	ASSERT(i >= 0);
-	ASSERT(i < b->size);
+	ASSERT(x >= 0);
+	ASSERT((uint) x < b->size);
 	
-	BitVector_ResetRaw(i, b->bits);
+	BitVector_ResetRaw(x, b->bits);
 }
 
 
 static INLINE void
-BitVector_Flip(BitVector *b, int i)
+BitVector_Flip(BitVector *b, int x)
 {
 	ASSERT(b != NULL);
-	ASSERT(i >= 0);
-	ASSERT(i < b->size);
+	ASSERT(x >= 0);
+	ASSERT((uint) x < b->size);
 	
-	BitVector_FlipRaw(i, b->bits);
+	BitVector_FlipRaw(x, b->bits);
 }
 
 static INLINE bool
-BitVector_TestAndSet(BitVector *b, int i)
+BitVector_TestAndSet(BitVector *b, int x)
 {
 	bool oup;
 	ASSERT(b != NULL);
-	ASSERT(i >= 0);
-	ASSERT(i < b->size);
+	ASSERT(x >= 0);
+	ASSERT((uint) x < b->size);
 
-	oup = BitVector_GetRaw(i, b->bits);
-	BitVector_SetRaw(i, b->bits);
+	oup = BitVector_GetRaw(x, b->bits);
+	BitVector_SetRaw(x, b->bits);
 	return oup;
 }
 
@@ -199,7 +199,7 @@ BitVector_SetAll(BitVector *b)
 	uint32 byteLength;
 	
 	byteLength = (b->size + 7) / 8;
-	ASSERT(byteLength / sizeof(*b->bits) <= (uint32) b->arrSize);
+	ASSERT(byteLength / sizeof(b->bits[0]) <= b->arrSize);
 	
 	memset(b->bits, 0xFF, byteLength);
 }
@@ -211,7 +211,7 @@ BitVector_ResetAll(BitVector *b)
 	uint32 byteLength;
 	
 	byteLength = (b->size + 7) / 8;
-	ASSERT(byteLength / sizeof(*b->bits) <= (uint32) b->arrSize);
+	ASSERT(byteLength / sizeof(b->bits[0]) <= b->arrSize);
 	
 	memset(b->bits, 0x00, byteLength);
 }

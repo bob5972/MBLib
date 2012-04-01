@@ -67,6 +67,12 @@ popcount(uint32 x)
 	return __builtin_popcount(x);
 }
 
+static INLINE uint8
+popcountl(uint64 x)
+{
+	return __builtin_popcountl(x);
+}
+
 #ifdef __cplusplus
 	}
 #endif 

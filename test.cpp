@@ -290,7 +290,7 @@ void testBitVector(void)
 	int count = 10000;
 	int result;
 	BitVector b;
-	uint32 rawbit[100];
+	uint64 rawbit[100];
 	int rawSize;
 	
 	b.resize(count + 1);
@@ -359,6 +359,7 @@ void testBitVector(void)
 	}
 	
 	b.resetAll();
+	b.resize(2049);
 	for (int x = 0; x < 29; x++) {
 		b.set(x);
 	}
@@ -367,7 +368,7 @@ void testBitVector(void)
 	TEST(result == 29);
 
 	int array[] = {
-	    33, 50, 51, 67, 101, 1023
+	    33, 50, 51, 67, 101, 1023, 2048
     };	
 	for (int x = 0; x < (int) ARRAYSIZE(array); x++) {
 		b.set(array[x]);
@@ -694,6 +695,7 @@ int main(int argc, char *argv[])
     Random_Exit();
 	
 	if (!benchmark) {
+		printf("Tests successful!\n\n");
 		printf("Done.\n");
 	}
 	

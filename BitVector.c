@@ -14,7 +14,7 @@ void BitVector_Create(BitVector *b)
 	b->size = 0;
 	b->arrSize = BITVECTOR_DEFAULT_SPACE;
 	b->fill = FALSE;
-	b->bits = malloc(b->arrSize * sizeof(*b->bits));
+	b->bits = malloc(b->arrSize * sizeof(b->bits[0]));
 }
 
 void BitVector_Destroy(BitVector *b)
@@ -34,9 +34,9 @@ void BitVector_Copy(BitVector *dest, const BitVector *src)
 	dest->size = src->size;
 	dest->arrSize = (dest->size/BVUNITBITS) + 1;
 	
-	dest->bits = malloc(sizeof(*dest->bits) * dest->arrSize);
+	dest->bits = malloc(sizeof(dest->bits[0]) * dest->arrSize);
 	
-	numBytes = dest->arrSize * sizeof(*dest->bits);
+	numBytes = dest->arrSize * sizeof(dest->bits[0]);
 	memcpy(dest->bits, src->bits, numBytes);
 }
 
@@ -83,10 +83,10 @@ void BitVector_Resize(BitVector *b, int size)
 	
 	if(oldValidCellCount < newValidCellCount) {
 		int byteLength;
-		uint32 *temp = b->bits;
-		b->bits = malloc(newValidCellCount * sizeof (*b->bits));
+		uint64 *temp = b->bits;
+		b->bits = malloc(newValidCellCount * sizeof (b->bits[0]));
 		
-		byteLength = oldValidCellCount * sizeof(*b->bits);
+		byteLength = oldValidCellCount * sizeof(b->bits[0]);
 		memcpy(&b->bits[0], temp, byteLength);
 
 		free(temp);
@@ -186,7 +186,7 @@ uint BitVector_PopCount(const BitVector *b)
 	int sum;
 	
 	int strayBitCount;
-	uint32 strayBitMask;
+	uint64 strayBitMask;
 	
 	ASSERT(b != NULL);
 	
@@ -195,14 +195,14 @@ uint BitVector_PopCount(const BitVector *b)
 	cellSize = size / BVUNITBITS;
 	
 	for (x = 0; x < cellSize; x++) {
-		sum += popcount(b->bits[x]);
+		sum += popcountl(b->bits[x]);
 	}
 	
 	strayBitCount = size % BVUNITBITS;	
-	strayBitMask = (1 << strayBitCount) - 1;
+	strayBitMask = ( ((uint64)1) << strayBitCount) - 1;
 		
 	ASSERT(cellSize < b->arrSize);
-	sum += popcount(b->bits[cellSize] & strayBitMask);
+	sum += popcountl(b->bits[cellSize] & strayBitMask);
 	
 	return sum;
 }
