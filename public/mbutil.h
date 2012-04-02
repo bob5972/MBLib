@@ -29,6 +29,8 @@
 
 #define INLINE_ALWAYS INLINE __attribute__((__always_inline__))
 
+#define NORETURN __attribute__((noreturn))
+
 //It might be possible to check #if HAVE_BUILTIN_EXPECT
 //to determine when this is safe.
 #define LIKELY(x) (__builtin_expect(!!(x), 1))

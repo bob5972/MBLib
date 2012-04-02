@@ -293,22 +293,26 @@ void testBitVector(void)
 	
 	// Test basic get/set
 	{
-		uint64 rawbit[100];
+		uint64 rawbit[50];
 		int rawSize;
 		
 		rawSize = (int) ARRAYSIZE(rawbit) * sizeof(rawbit[0]) * 8;
-		for (int x = 0; x <= rawSize; x++) {
+		for (int x = 0; x < rawSize; x++) {
 			BitVector_SetRaw(x, rawbit);
 			result = BitVector_GetRaw(x, rawbit);
 			TEST(result);
 			
 			BitVector_ResetRaw(x, rawbit);
-			result = BitVector_GetRaw(x, rawbit);
+			result = BitVector_GetRaw(x, rawbit);			
 			TEST(!result);
 			
 			BitVector_FlipRaw(x, rawbit);
 			result = BitVector_GetRaw(x, rawbit);
 			TEST(result);
+			
+			BitVector_FlipRaw(x, rawbit);
+			result = BitVector_GetRaw(x, rawbit);
+			TEST(!result);
 		}
 	}
 	

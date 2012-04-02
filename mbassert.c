@@ -31,7 +31,7 @@ void AssertFail(const char *file, int line, const char *cond)
 	Panic();
 }
 
-void Panic()
+NORETURN void Panic()
 {
 	exit(1);
 }

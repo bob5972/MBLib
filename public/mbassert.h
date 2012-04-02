@@ -8,6 +8,7 @@
 #include "config.h"
 #include "mbtypes.h"
 #include "mbdebug.h"
+#include "mbutil.h"
 
 #ifdef __cplusplus
 	extern "C" {
@@ -42,7 +43,7 @@
 
 void AssertFail(const char *file, int line, const char *cond);
 void PanicWithMessage(const char *file, int line, const char *fmt, ...);
-void Panic();
+NORETURN void Panic();
 
 #ifdef __cplusplus
 	}
