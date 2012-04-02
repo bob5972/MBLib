@@ -41,9 +41,9 @@
 
 #define PANIC(...) PanicWithMessage( __FILE__, __LINE__, __VA_ARGS__)
 
-void AssertFail(const char *file, int line, const char *cond);
 void PanicWithMessage(const char *file, int line, const char *fmt, ...);
-NORETURN void Panic();
+void AssertFail(const char *file, int line, const char *cond);
+void Panic();
 
 #ifdef __cplusplus
 	}

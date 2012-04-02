@@ -29,7 +29,7 @@
 
 #define INLINE_ALWAYS INLINE __attribute__((__always_inline__))
 
-#define NORETURN __attribute__((noreturn))
+#define NORETURN __attribute__((__noreturn__))
 
 //It might be possible to check #if HAVE_BUILTIN_EXPECT
 //to determine when this is safe.

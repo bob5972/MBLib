@@ -303,7 +303,7 @@ void testBitVector(void)
 			TEST(result);
 			
 			BitVector_ResetRaw(x, rawbit);
-			result = BitVector_GetRaw(x, rawbit);			
+			result = BitVector_GetRaw(x, rawbit);
 			TEST(!result);
 			
 			BitVector_FlipRaw(x, rawbit);
