@@ -38,6 +38,35 @@
 
 #define UNUSED_VARIABLE(x) (x) = (x)
 
+// Unroll a for loop from 0 to (n - 1).
+#define UNROLL(_n, _i, _action) { UNROLL_ ## _n (_i, _action)   } 
+#define UNROLL_0(_i, _action)
+#define UNROLL_1(_i, _action)   UNROLL_0(_i, _action) ONCE(_i, 0, _action)
+#define UNROLL_2(_i, _action)   UNROLL_1(_i, _action) ONCE(_i, 1, _action)
+#define UNROLL_3(_i, _action)   UNROLL_2(_i, _action) ONCE(_i, 2, _action)
+#define UNROLL_4(_i, _action)   UNROLL_3(_i, _action) ONCE(_i, 3, _action)
+#define UNROLL_5(_i, _action)   UNROLL_4(_i, _action) ONCE(_i, 4, _action)
+#define UNROLL_6(_i, _action)   UNROLL_5(_i, _action) ONCE(_i, 5, _action)
+#define UNROLL_7(_i, _action)   UNROLL_6(_i, _action) ONCE(_i, 6, _action)
+#define UNROLL_8(_i, _action)   UNROLL_7(_i, _action) ONCE(_i, 7, _action)
+#define UNROLL_9(_i, _action)   UNROLL_8(_i, _action) ONCE(_i, 8, _action)
+#define UNROLL_10(_i, _action)   UNROLL_9(_i, _action) ONCE(_i, 9, _action)
+#define UNROLL_11(_i, _action)   UNROLL_10(_i, _action) ONCE(_i, 10, _action)
+#define UNROLL_12(_i, _action)   UNROLL_11(_i, _action) ONCE(_i, 11, _action)
+#define UNROLL_13(_i, _action)   UNROLL_12(_i, _action) ONCE(_i, 12, _action)
+#define UNROLL_14(_i, _action)   UNROLL_13(_i, _action) ONCE(_i, 13, _action)
+#define UNROLL_15(_i, _action)   UNROLL_14(_i, _action) ONCE(_i, 14, _action)
+#define UNROLL_16(_i, _action)   UNROLL_15(_i, _action) ONCE(_i, 15, _action)
+
+#define ONCE(_i, _v, _action) {    \
+   const unsigned _i = (_v);       \
+   unsigned _ignored ;             \
+   _ignored = _i;                  \
+   _ignored = _ignored;            \
+   _action;                        \
+}
+
+
 static INLINE bool
 isDigit(char c)
 {

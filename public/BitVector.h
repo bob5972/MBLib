@@ -166,7 +166,7 @@ BitVector_Flip(BitVector *b, int x)
 	BitVector_FlipRaw(x, b->bits);
 }
 
-static INLINE void
+static INLINE_ALWAYS void
 BitVectorWrite(BitVector *b, int x, BitVectorWriteType type)
 {
 	switch (type) {
@@ -182,7 +182,7 @@ BitVectorWrite(BitVector *b, int x, BitVectorWriteType type)
 	}
 }
 
-static INLINE void
+static INLINE_ALWAYS void
 BitVectorWriteRangeGenericDispatch(BitVector *b,
                                    int first, int last,
                                    BitVectorWriteType type)
@@ -200,7 +200,7 @@ BitVectorWriteRangeGenericDispatch(BitVector *b,
 	}
 }
 
-static INLINE void
+static INLINE_ALWAYS void
 BitVectorWriteRangeOptimized(BitVector *b,
                              int first, int last,
                              BitVectorWriteType type)
@@ -244,7 +244,32 @@ BitVectorWriteRangeOptimized(BitVector *b,
 	}
 }
 
-static INLINE void
+static INLINE_ALWAYS void
+BitVectorWriteRangePartial(BitVector *b,
+                               int first, int last,
+                               BitVectorWriteType type)
+{
+	ASSERT(b != NULL);
+	ASSERT(last - first <= 16);
+		
+	if (CONSTANT(type) && CONSTANT(first) && CONSTANT(last)) {
+		int count = last - first + 1;
+		ASSERT(count >= 0);			
+		UNROLL(16, i, {
+			if (i < (uint) count) {
+				BitVectorWrite(b, first + i, type);
+			}
+		});
+	} else {
+		int x = first;
+		while (x <= last) {
+			BitVectorWrite(b, x, type);
+			x++;
+		}
+	}
+}
+
+static INLINE_ALWAYS void
 BitVectorWriteRangeGenericImpl(BitVector *b,
                                int first, int last,
                                BitVectorWriteType type)
@@ -256,29 +281,22 @@ BitVectorWriteRangeGenericImpl(BitVector *b,
 	ASSERT((uint) last < b->size);
 	ASSERT(first <= last);
 	
-	int x;
 	const uint8 alignment = 8;
 	int alignedLast;
 	int alignedFirst;
 	
 	if (last - first + 1 <= alignment * 2) {
-		for (x = first; x <= last; x++) {
-			BitVectorWrite(b, x, type);
-		}
+		BitVectorWriteRangePartial(b, first, last, type);
 		return;
-	}	
+	}
 
 	if (first % alignment != 0) {
 		alignedFirst = first + (alignment - (first % alignment));
-		ASSERT(first <= alignedFirst);
-		x = first;
-		while (x < alignedFirst) {
-			ASSERT(x >= first);
-			ASSERT(x <= last);
-			BitVectorWrite(b, x, type);
-			x++;
-		}
+		ASSERT(first < alignedFirst);
 		
+		ASSERT(alignedFirst - 1 < last);
+		BitVectorWriteRangePartial(b, first, alignedFirst - 1, type);
+				
 		first = alignedFirst;
 		ASSERT(first <= last);
 	}
@@ -287,15 +305,9 @@ BitVectorWriteRangeGenericImpl(BitVector *b,
 		alignedLast = last - (last % alignment) - 1;
 		ASSERT(alignedLast >= 0);
 		ASSERT(alignedLast >= first);
-	
-		x = alignedLast + 1;
-		while (x <= last) {
-			ASSERT(x >= first);
-			ASSERT(x <= last);
-			BitVectorWrite(b, x, type);
-			x++;
-		}
-
+		ASSERT(alignedLast < last);
+			
+		BitVectorWriteRangePartial(b, alignedLast + 1, last, type);
 		ASSERT(alignedLast <= last);
 		last = alignedLast;
 	}
@@ -307,7 +319,7 @@ BitVectorWriteRangeGenericImpl(BitVector *b,
 	return;
 }
 
-static INLINE void
+static INLINE_ALWAYS void
 BitVectorWriteRange(BitVector *b,
                     int first, int last,
                     BitVectorWriteType type)

@@ -287,7 +287,7 @@ void testIntSet(void)
 
 void testBitVector(void)
 {
-	int count = 10000;
+	int count;
 	int result;
 	BitVector b;
 	
@@ -312,8 +312,48 @@ void testBitVector(void)
 		}
 	}
 	
+	//Test static ranges
+	{
+		count = 2048;
+		b.resize(count);
+		
+		b.setAll();
+		b.flipRange(123, 518);		
+		for (int x = 0; x < count; x++) {
+			result = b.get(x);
+			if (x >= 123 && x <= 518) {
+				TEST(!result);
+			} else {
+				TEST(result);
+			}
+		}
+		
+		b.setAll();
+		b.resetRange(111, 717);		
+		for (int x = 0; x < count; x++) {
+			result = b.get(x);
+			if (x >= 111 && x <= 717) {
+				TEST(!result);
+			} else {
+				TEST(result);
+			}
+		}
+		
+		b.resetAll();
+		b.setRange(321, 711);		
+		for (int x = 0; x < count; x++) {
+			result = b.get(x);
+			if (x >= 321 && x <= 711) {
+				TEST(result);
+			} else {
+				TEST(!result);
+			}
+		}
+	}
+	
 	// Test resize
 	{
+		count = 10000;
 		b.resize(count + 1);
 		for (int x = 0; x <= count; x++) {
 			b.set(x);
