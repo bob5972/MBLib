@@ -339,7 +339,7 @@ BitVectorWriteRange(BitVector *b,
 	}
 }
 
-static INLINE void
+static INLINE_ALWAYS void
 BitVector_SetAll(BitVector *b)
 {
 	int first = 0;
@@ -348,7 +348,7 @@ BitVector_SetAll(BitVector *b)
 	BitVectorWriteRange(b, first, last, BITVECTOR_WRITE_SET);
 }
 
-static INLINE void
+static INLINE_ALWAYS void
 BitVector_ResetAll(BitVector *b)
 {
 	int first = 0;
@@ -357,7 +357,7 @@ BitVector_ResetAll(BitVector *b)
 	BitVectorWriteRange(b, first, last, BITVECTOR_WRITE_RESET);
 }
 
-static INLINE void
+static INLINE_ALWAYS void
 BitVector_FlipAll(BitVector *b)
 {
 	int first = 0;
@@ -366,19 +366,19 @@ BitVector_FlipAll(BitVector *b)
 	BitVectorWriteRange(b, first, last, BITVECTOR_WRITE_FLIP);
 }
 
-static INLINE void
+static INLINE_ALWAYS void
 BitVector_SetRange(BitVector *b, int first, int last)
 {
 	BitVectorWriteRange(b, first, last, BITVECTOR_WRITE_SET);
 }
 
-static INLINE void
+static INLINE_ALWAYS void
 BitVector_ResetRange(BitVector *b, int first, int last)
 {
 	BitVectorWriteRange(b, first, last, BITVECTOR_WRITE_RESET);
 }
 
-static INLINE void
+static INLINE_ALWAYS void
 BitVector_FlipRange(BitVector *b, int first, int last)
 {
 	BitVectorWriteRange(b, first, last, BITVECTOR_WRITE_FLIP);
