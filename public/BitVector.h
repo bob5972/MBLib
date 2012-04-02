@@ -246,8 +246,8 @@ BitVectorWriteRangeOptimized(BitVector *b,
 
 static INLINE_ALWAYS void
 BitVectorWriteRangePartial(BitVector *b,
-                               int first, int last,
-                               BitVectorWriteType type)
+                           int first, int last,
+                           BitVectorWriteType type)
 {
 	ASSERT(b != NULL);
 	ASSERT(last - first <= 16);
