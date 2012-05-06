@@ -127,6 +127,9 @@ class MBString
         const MBString & operator = (char c)
         {
 			myLength = 0;
+			ASSERT(myCapacity > 0);
+			myChars[0] = '\0';
+			
 			ensureCapacity(2);
 			myLength = 1;
 			myChars[0] = c;
