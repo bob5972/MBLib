@@ -267,7 +267,7 @@ class Parser
         bool fillChar()
         {
             bool gotChar = FALSE;
-
+            
             if (buffer.size() > 0) {
                 nextChar = buffer.pop();
                 gotChar = TRUE;
@@ -278,8 +278,9 @@ class Parser
                     gotChar = TRUE;
                 }
                 
-                if (gotChar) {
+                if (!gotChar) {
                     nextChar = myInp.readChar(myInp.clientData);
+                    gotChar = TRUE;
                 }
             }
 
