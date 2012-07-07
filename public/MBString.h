@@ -146,6 +146,10 @@ class MBString
        	int size() const {
             return length();
 		}
+		
+		bool isEmpty() const {
+			return (size() == 0);
+		}
 
    	    
    	    //return as C-String
@@ -275,6 +279,14 @@ static INLINE std::ostream& operator << ( std::ostream& os,
 
 std::istream& operator >> ( std::istream& is, MBString& str );
 std::istream& getline( std::istream& is, MBString& str );
+
+static INLINE bool
+MBString_GetLine( std::istream& is, MBString &str)
+{
+	getline(is, str);
+	return !str.isEmpty();
+}
+
 
 // comparison operators:
 static INLINE bool operator == ( const MBString & lhs,
