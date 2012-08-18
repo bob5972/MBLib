@@ -77,7 +77,10 @@ class Parser
                     break;
                 case 1: // found '-'
                     ASSERT(nextChar == '-');
-                    fillChar();
+                    if (!fillChar()) {
+                    	PANIC("No digits found.\n");
+                	}
+                	
                     if (!isDigit(nextChar)) {
                         state = 0;
                     } else {
@@ -86,7 +89,7 @@ class Parser
                     }
                     break;
                 case 2: // found digit
-                    while (isDigit(nextChar)) {
+                    while (hasNextChar && isDigit(nextChar)) {
                         oup *= 10;
                         oup += nextChar - '0';
                         fillChar();
@@ -267,7 +270,7 @@ class Parser
         bool fillChar()
         {
             bool gotChar = FALSE;
-
+            
             if (buffer.size() > 0) {
                 nextChar = buffer.pop();
                 gotChar = TRUE;
@@ -278,8 +281,9 @@ class Parser
                     gotChar = TRUE;
                 }
                 
-                if (gotChar) {
+                if (!gotChar) {
                     nextChar = myInp.readChar(myInp.clientData);
+                    gotChar = TRUE;
                 }
             }
 
