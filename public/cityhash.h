@@ -97,6 +97,8 @@ inline uint64 Hash128to64(const uint128& x) {
 #ifndef CITY_HASH_CRC_H_
 #define CITY_HASH_CRC_H_
 
+#if defined(__SSE4_2__) && defined(ARCH_AMD64)
+
 // Hash function for a byte array.
 uint128 CityHashCrc128(const char *s, size_t len);
 
@@ -106,5 +108,7 @@ uint128 CityHashCrc128WithSeed(const char *s, size_t len, uint128 seed);
 
 // Hash function for a byte array.  Sets result[0] ... result[3].
 void CityHashCrc256(const char *s, size_t len, uint64 *result);
+
+#endif
 
 #endif  // CITY_HASH_CRC_H_

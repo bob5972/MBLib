@@ -346,8 +346,7 @@ uint128 CityHash128(const char *s, size_t len) {
 }
 
 //Requires _mm_crc32_u64 (not available on x86)
-#if defined(ARCH_AMD64)
-#ifdef __SSE4_2__
+#if defined(__SSE4_2__) && defined(ARCH_AMD64)
 #include <nmmintrin.h>
 
 // Requires len >= 240.
@@ -457,6 +456,5 @@ uint128 CityHashCrc128(const char *s, size_t len) {
     return uint128(result[2], result[3]);
   }
 }
-#endif // ARCH_AMD64
-
 #endif
+
