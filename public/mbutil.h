@@ -15,7 +15,6 @@
 
 #define MIN(x, y) ( (x) < (y) ? (x) : (y))
 #define MAX(x, y) ( (x) > (y) ? (x) : (y))
-#define CLAMP(min, val, max) ( val < min ? min  : ( val > max ? max : val))
 
 #define IMPLIES(x, y) (!(x) || (y))
 #define EQUIVALENT(x, y) (!!(x) == !!(y))
