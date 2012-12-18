@@ -12,9 +12,6 @@ INCLUDE_FLAGS=-I $(MBLIB_SRCDIR)/ -I $(MBLIB_SRCDIR)/public
 CFLAGS = ${DEFAULT_CFLAGS} ${INCLUDE_FLAGS} -I $(BUILDROOT)
 CPPFLAGS = ${CFLAGS}
 
-CC=gcc
-CXX=g++
-
 $(MBLIB_BUILDDIR)/%.opp: $(MBLIB_SRCDIR)/%.cpp
 	${CXX} -c ${CPPFLAGS} -o $(MBLIB_BUILDDIR)/$*.opp $<;
 
@@ -100,3 +97,4 @@ distclean:
 #include the generated dependency files
 -include $(addprefix $(MBLIB_DEPDIR)/,$(subst .cpp,.dpp,$(CPP_SOURCES)))
 -include $(addprefix $(MBLIB_DEPDIR)/,$(subst .c,.d,$(C_SOURCES)))
+
