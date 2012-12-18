@@ -71,5 +71,6 @@ if [ "$DEBUG" != "0" ]; then
 else
 	DEFAULT_CFLAGS="${DEFAULT_CFLAGS} -march=native -O2 -fomit-frame-pointer"
 fi;
+
 echo DEFAULT_CFLAGS=${DEFAULT_CFLAGS} >> $CONFIG_MK;
 

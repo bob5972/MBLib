@@ -1,5 +1,6 @@
 # -*- mode: Makefile;-*-
 # Makefile --
+# "Look on my works, ye Mighty, and despair!" --Ozymandias
 
 include config.mk
 -include local.mk
@@ -15,14 +16,10 @@ DEPDIR=$(DEPROOT)
 TARGET=result
 
 #The BUILDROOT folder is included for config.h
-WARNINGS = -Wall -Wno-unused-but-set-variable
 CFLAGS = ${DEFAULT_CFLAGS} -I $(BUILDROOT) $(INCLUDE_FLAGS)
 CPPFLAGS = ${CFLAGS}
 
 LIBFLAGS =
-
-CC=gcc
-CXX=g++
 
 $(BUILDDIR)/%.o: $(SRCDIR)/%.c
 	${CC} -c ${CFLAGS} -o $(BUILDDIR)/$*.o $<;
@@ -31,12 +28,14 @@ $(BUILDDIR)/%.opp: $(SRCDIR)/%.cpp
 
 #Autogenerate dependencies information
 #The generated makefiles get sourced into this file later
+ifeq ($(CC), gcc)
 $(DEPDIR)/%.d: $(SRCDIR)/%.c Makefile
 	$(CC) -M -MM -MT "$(BUILDDIR)/$*.o" -MT "$(DEPDIR)/$*.d" -MF $@ ${CFLAGS} $<;
 $(DEPROOT)/%.dpp: $(SRCDIR)/%.cpp Makefile
 	$(CXX) -M -MM -MT "$(BUILDDIR)/$*.opp" \
 	    -MT "$(DEPDIR)/$*.dpp" \
 	    -MF $@ ${CPPFLAGS} $<;
+endif
 
 #No paths. VPATH is assumed
 C_SOURCES = 
@@ -84,8 +83,8 @@ install: $(TARGET)
 	./install.sh
 
 #include the generated dependency files
+ifeq ($(CC), gcc)
 -include $(addprefix $(DEPDIR)/,$(subst .c,.d,$(C_SOURCES)))
 -include $(addprefix $(DEPDIR)/,$(subst .cpp,.dpp,$(CPP_SOURCES)))
-
-
+endif
 
