@@ -21,6 +21,7 @@ $(MBLIB_BUILDDIR)/%.o: $(MBLIB_SRCDIR)/%.c
 
 #Autogenerate dependencies information
 #The generated makefiles get source into this file later
+ifeq ($(CC), gcc)
 $(DEPROOT)/%.dpp: $(MBLIB_SRCDIR)/%.cpp Makefile
 	$(CXX) -M -MM -MT "$(MBLIB_BUILDDIR)/$*.opp" \
 	    -MT "$(MBLIB_DEPDIR)/$*.dpp" \
@@ -29,6 +30,7 @@ $(DEPROOT)/%.d: $(MBLIB_SRCDIR)/%.c Makefile
 	$(CC) -M -MM -MT "$(MBLIB_BUILDDIR)/$*.o" \
 	    -MT "$(MBLIB_DEPDIR)/$*.d" \
 	    -MF $@ ${CPPFLAGS} $<;
+endif
 
 CPP_SOURCES = MBString.cpp \
               MBVector.cpp \
@@ -95,6 +97,8 @@ distclean:
 	rm -rf $(MBLIB_BUILDDIR)/
 
 #include the generated dependency files
+ifeq ($(CC), gcc)
 -include $(addprefix $(MBLIB_DEPDIR)/,$(subst .cpp,.dpp,$(CPP_SOURCES)))
 -include $(addprefix $(MBLIB_DEPDIR)/,$(subst .c,.d,$(C_SOURCES)))
+endif
 

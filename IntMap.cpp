@@ -2,6 +2,10 @@
 
 #include "mbassert.h"
 
+#define DEFAULT_SPACE 15
+#define DEFAULT_LOAD  (0.60)
+#define SEARCH_INCR   2
+
 IntMap::IntMap()
 :myKeys(DEFAULT_SPACE),
  myValues(DEFAULT_SPACE),

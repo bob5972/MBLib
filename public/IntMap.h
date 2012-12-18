@@ -106,10 +106,6 @@ class IntMap
 		//makes the underlying table larger
 		void rehash();
 		
-		static const int DEFAULT_SPACE = 15;
-		static const double DEFAULT_LOAD = 0.60;
-		static const int SEARCH_INCR = 2;
-		
 		MBVector<int> myKeys;
 		MBVector<int> myValues;
 		
@@ -123,6 +119,8 @@ class IntMap
 		int myFreeSpace;
 		double myLoad;	
 };
+
+
 
 
 
