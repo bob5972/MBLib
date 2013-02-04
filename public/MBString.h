@@ -25,9 +25,6 @@ typedef struct {
 
 void MBString_EnsureCapacity(MBString *str, int cap);
 
-void MBString_Copy(MBString *dest, const MBString *src);
-void MBString_CopyCStr(MBString *dest, const char *cstr);
-
 int MBString_FindChar(const MBString *str, char x);
 int MBString_FindStr(const MBString *str, const MBString *substr);
 
@@ -104,16 +101,20 @@ static INLINE const char *MBString_GetCStr(const MBString *str)
     return str->chars;
 }
 
-static INLINE void MBString_Create(MBString *str)
+static INLINE void MBString_CreateWithCapacity(MBString *str, int cap)
 {
-    int size = 8;
-
     ASSERT(str != NULL);
+    ASSERT(cap > 0);
     str->length = 0;
-    str->capacity = size;
-    str->chars = (char *)malloc(size * sizeof(str->chars[0]));
+    str->capacity = cap;
+    str->chars = (char *)malloc(cap * sizeof(str->chars[0]));
     str->chars[0] = '\0';
     ASSERT(MBStringIsNullTerminated(str));
+}
+
+static INLINE void MBString_Create(MBString *str)
+{
+    MBString_CreateWithCapacity(str, 8);
 }
 
 static INLINE void MBString_Destroy(MBString *str)
@@ -149,6 +150,7 @@ static INLINE void MBString_FillChar(MBString *str, char c, int pos, int len)
 static INLINE void MBString_Resize(MBString *str, int size)
 {
     ASSERT(MBStringIsNullTerminated(str));
+    ASSERT(size > 0);
     MBString_EnsureCapacity(str, size);
     str->length = size;
     str->chars[str->length] = '\0';
@@ -164,6 +166,48 @@ static INLINE void MBString_AppendChar(MBString *str, char c)
     str->chars[myLength+1] = '\0';
     str->length = myLength + 1;
     ASSERT(MBStringIsNullTerminated(str));
+}
+
+static INLINE void MBString_Copy(MBString *dest, const MBString *src)
+{
+    int srcLength = src->length;
+    ASSERT(dest != src);
+    ASSERT(MBStringIsNullTerminated(src));
+    ASSERT(MBStringIsNullTerminated(dest));
+
+    /*
+     * Empty the destination so there's nothing to copy if we have to
+     * resize the buffer.
+     */
+    MBString_MakeEmpty(dest);
+    MBString_EnsureCapacity(dest, srcLength);
+    dest->length = srcLength;
+    memcpy(dest->chars, src->chars, srcLength + 1);
+    ASSERT(MBStringIsNullTerminated(dest));
+}
+
+static INLINE void MBString_CopyCStr(MBString *dest, const char *cstr)
+{
+    int len;
+    ASSERT(cstr != NULL);
+    ASSERT(MBStringIsNullTerminated(dest));
+
+    MBString_MakeEmpty(dest);
+
+    /*
+     * We end up walking cstr twice (once to calculate the length, and
+     * once to copy the data).
+     *
+     * For small strings this should be negligible, and for large strings
+     * it avoids potentially having to do multiple copies if we have to
+     * resize our buffer.
+     */
+    len = strlen(cstr);
+    MBString_EnsureCapacity(dest, len);
+
+    memcpy(dest->chars, cstr, len + 1);
+    dest->length = len;
+    ASSERT(MBStringIsNullTerminated(dest));
 }
 
 #ifdef __cplusplus
@@ -183,7 +227,7 @@ class MBString
     	//construct a string of length size, filled with fill
     	MBString(int size, char fill)
     	{
-    	    MBString_Create(&data);
+    	    MBString_CreateWithCapacity(&data, size);
     	    MBString_Resize(&data, size);
     	    MBString_FillChar(&data, fill, 0, size);
     	}
@@ -197,7 +241,8 @@ class MBString
 
        	MBString(const MBString & str)
        	{
-       	    MBString_Create(&data);
+       	    int len = MBString_Length(&str.data);
+       	    MBString_CreateWithCapacity(&data, len);
        	    MBString_Copy(&data, &str.data);
        	}
 

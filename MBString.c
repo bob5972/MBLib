@@ -49,48 +49,6 @@ void MBString_EnsureCapacity(MBString *str, int cap)
     ASSERT(str->capacity >= cap + 1);
 }
 
-void MBString_Copy(MBString *dest, const MBString *src)
-{
-    int srcLength = src->length;
-    ASSERT(dest != src);
-    ASSERT(MBStringIsNullTerminated(src));
-    ASSERT(MBStringIsNullTerminated(dest));
-
-    /*
-     * Empty the destination so there's nothing to copy if we have to
-     * resize the buffer.
-     */
-    MBString_MakeEmpty(dest);
-    MBString_EnsureCapacity(dest, srcLength);
-    dest->length = srcLength;
-    memcpy(dest->chars, src->chars, srcLength + 1);
-    ASSERT(MBStringIsNullTerminated(dest));
-}
-
-void MBString_CopyCStr(MBString *dest, const char *cstr)
-{
-    int len;
-    ASSERT(cstr != NULL);
-    ASSERT(MBStringIsNullTerminated(dest));
-
-    MBString_MakeEmpty(dest);
-
-    /*
-     * We end up walking cstr twice (once to calculate the length, and
-     * once to copy the data).
-     *
-     * For small strings this should be negligible, and for large strings
-     * it avoids potentially having to do multiple copies if we have to
-     * resize our buffer.
-     */
-    len = strlen(cstr);
-    MBString_EnsureCapacity(dest, len);
-
-    memcpy(dest->chars, cstr, len + 1);
-    dest->length = len;
-    ASSERT(MBStringIsNullTerminated(dest));
-}
-
 int MBString_FindChar(const MBString *str, char c)
 {
     int length = str->length;
