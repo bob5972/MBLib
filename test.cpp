@@ -838,7 +838,7 @@ int main(int argc, char *argv[])
 	
 	BenchmarkTest tests[] = {
 		// enabled, weight, function
-		{ 1, 4500,  testMBString      },
+		{ 1, 8000,  testMBString      },
 		{ 1, 3000,  testMBVector      },
 		{ 1, 400,   testMBStack       },
 		{ 1, 15,    testMBMap         },
@@ -875,7 +875,7 @@ int main(int argc, char *argv[])
 		}
 	}
 	
-	calibration = 100 * (seconds / numTests);
+	calibration = 150 * (seconds / numTests);
 	if (calibration <= 0) {
 		printf("Calibration < 0; resetting to 1\n");
 		calibration = 1;
