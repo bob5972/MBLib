@@ -32,7 +32,7 @@ class Dumper {
             myOup.clientData = &s;
             myOup.write = DumperSocketWrite;
             myOup.flush = DumperSocketFlush;
-            
+
         }
 
         void writeInt(int i)
@@ -77,13 +77,13 @@ class Dumper {
                 myOup.flush(myOup.clientData);
             }
         }
-    
+
     private:
         CharWriterInterface myOup;
-        
+
         void write(const MBString &str)
         {
-            myOup.write(myOup.clientData, str.cstr(), str.size());
+            myOup.write(myOup.clientData, str.CStr(), str.length());
         }
 };
 

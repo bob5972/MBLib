@@ -457,7 +457,7 @@ BitVector_PopCount(const BitVector *b)
 }
 
 #ifdef __cplusplus
-	}
+	} // extern "C"
 	
 	#undef BitVector
 

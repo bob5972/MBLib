@@ -65,15 +65,15 @@ void testMBString(void)
 	cstr = "Hello World!";
 	result = cstr.length();
 	TEST(result == 12);
-	result = cstr[0];
+	result = cstr.getChar(0);
 	TEST(result == 'H');
-	result = cstr[1];
+	result = cstr.getChar(1);
 	TEST(result == 'e');
-	result = cstr[6];
+	result = cstr.getChar(6);
 	TEST(result == 'W');
-	result = cstr[10];
+	result = cstr.getChar(10);
 	TEST(result == 'd');
-	result = cstr[11];
+	result = cstr.getChar(11);
 	TEST(result == '!');
 
 	cstr = "Hello World!";
@@ -92,14 +92,14 @@ void testMBString(void)
 	str2 = str.substr(0, 1);
 	result = str2.length();
 	TEST(result == 1);
-	result = str2[0];
+	result = str2.getChar(0);
 	TEST(result == 'G');
 	
 	str2 = str.substr(1,3);
-	result = str2.compareTo("ood");
+	result = str2.compare("ood");
 	TEST(result == 0);
 	str2 = str.substr(4, 4);
-	result = str2.compareTo("bye ");
+	result = str2.compare("bye ");
 	TEST(result == 0);
 	
 	str = "Hello World!";
@@ -109,15 +109,15 @@ void testMBString(void)
 	str2 = "Hello World!";
 	result = str2.length();
 	TEST(result == 12);
-	result = str2[0];
+	result = str2.getChar(0);
 	TEST(result == 'H');
-	result = str2[1];
+	result = str2.getChar(1);
 	TEST(result == 'e');
-	result = str2[6];
+	result = str2.getChar(6);
 	TEST(result == 'W');
-	result = str2[10];
+	result = str2.getChar(10);
 	TEST(result == 'd');
-	result = str2[11];
+	result = str2.getChar(11);
 	TEST(result == '!');
 	
 	str = "Hello World!";
@@ -155,7 +155,7 @@ void testMBString(void)
     str = "This is a particularly long test string.";
     str2 = "";
     for (int x = 0; x < str.length(); x++) {
-        str2 += str[x];
+        str2 += str.getChar(x);
     }
     result = (str == str2);
     TEST(result);

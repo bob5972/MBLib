@@ -85,7 +85,7 @@ class MBSocket
 
         void write(const MBString& str)
         {
-            write(str.cstr(), str.size());
+            write(str.CStr(), str.length());
         }
 
         char readChar()
