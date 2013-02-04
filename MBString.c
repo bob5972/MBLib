@@ -8,23 +8,18 @@
 #include "mbdebug.h"
 #include "mbassert.h"
 
-static INLINE bool MBStringIsNullTerminated(const MBString *str)
-{
-    ASSERT(str != NULL);
-    ASSERT(str->capacity >= str->length + 1);
-    return str->chars[str->length] == '\0';
-}
-
 /*
  * Ensure the string has capacity for the specified length.
  * (Length does not need to include the terminating NUL).
  * Can only ever enlarge the buffer.
+ *
+ * The logical length of the underlying string is not changed.
  */
-static void MBStringEnsureCapacity(MBString *str, int length)
+void MBString_EnsureCapacity(MBString *str, int cap)
 {
     int myCapacity = str->capacity;
     int myLength = str->length;
-    int capacity = length + 1;
+    int capacity = cap + 1;
 
     ASSERT(myCapacity > 0);
     ASSERT(myCapacity >= myLength + 1);
@@ -51,52 +46,7 @@ static void MBStringEnsureCapacity(MBString *str, int length)
         free(temp);
     }
 
-    ASSERT(str->capacity >= length + 1);
-}
-
-void MBString_Create(MBString *str)
-{
-    int size = 8;
-
-    ASSERT(str != NULL);
-    str->length = 0;
-    str->capacity = size;
-    str->chars = malloc(size * sizeof(str->chars[0]));
-    str->chars[0] = '\0';
-    ASSERT(MBStringIsNullTerminated(str));
-}
-
-void MBString_Destroy(MBString *str)
-{
-    ASSERT(str != NULL);
-    ASSERT(MBStringIsNullTerminated(str));
-
-    free(str->chars);
-    str->chars = NULL;
-}
-
-/*
- * New contents are uninitialized.
- *
- * Note that this could leave unexpected NUL characters in the middle
- * of your string.
- */
-void MBString_Resize(MBString *str, int size)
-{
-    ASSERT(MBStringIsNullTerminated(str));
-    MBStringEnsureCapacity(str, size);
-    str->length = size;
-    str->chars[str->length] = '\0';
-    ASSERT(MBStringIsNullTerminated(str));
-}
-
-void MBString_MakeEmpty(MBString *str)
-{
-    ASSERT(str->capacity >= 1);
-    str->length = 0;
-    str->chars[str->length] = '\0';
-
-    ASSERT(MBStringIsNullTerminated(str));
+    ASSERT(str->capacity >= cap + 1);
 }
 
 void MBString_Copy(MBString *dest, const MBString *src)
@@ -111,7 +61,7 @@ void MBString_Copy(MBString *dest, const MBString *src)
      * resize the buffer.
      */
     MBString_MakeEmpty(dest);
-    MBStringEnsureCapacity(dest, srcLength);
+    MBString_EnsureCapacity(dest, srcLength);
     dest->length = srcLength;
     memcpy(dest->chars, src->chars, srcLength + 1);
     ASSERT(MBStringIsNullTerminated(dest));
@@ -134,36 +84,11 @@ void MBString_CopyCStr(MBString *dest, const char *cstr)
      * resize our buffer.
      */
     len = strlen(cstr);
-    MBStringEnsureCapacity(dest, len);
+    MBString_EnsureCapacity(dest, len);
 
     memcpy(dest->chars, cstr, len + 1);
     dest->length = len;
     ASSERT(MBStringIsNullTerminated(dest));
-}
-
-int MBString_Length(const MBString *str)
-{
-    ASSERT(MBStringIsNullTerminated(str));
-    return str->length;
-}
-
-bool MBString_IsEmpty(const MBString *str)
-{
-    return (MBString_Length(str) == 0);
-}
-
-/*
- * Return this string as a null-terminated C-String.
- *
- * The returned string must NOT be freed by the caller.
- * The returned string is not guaranteed to be valid if the
- * string is modified.
- */
-const char *MBString_GetCStr(const MBString *str)
-{
-    ASSERT(str != NULL);
-    ASSERT(MBStringIsNullTerminated(str));
-    return str->chars;
 }
 
 int MBString_FindChar(const MBString *str, char c)
@@ -260,49 +185,6 @@ void MBString_ToLower(MBString *str)
     }
 }
 
-char MBString_GetChar(const MBString *str, int x)
-{
-    ASSERT(x >= 0);
-    ASSERT(x < str->length);
-    ASSERT(MBStringIsNullTerminated(str));
-
-    return str->chars[x];
-}
-
-void MBString_SetChar(MBString *str, int x, char c)
-{
-    ASSERT(x >= 0);
-    ASSERT(x < str->length);
-    ASSERT(MBStringIsNullTerminated(str));
-
-    str->chars[x] = c;
-}
-
-/*
- * Fill str with len copies of c starting at index pos.
- */
-void MBString_FillChar(MBString *str, char c, int pos, int len)
-{
-    ASSERT(MBStringIsNullTerminated(str));
-    ASSERT(pos >= 0);
-    ASSERT(pos < str->length);
-    ASSERT(pos + len <= str->length);
-
-    memset(&str->chars[pos], c, len);
-    ASSERT(MBStringIsNullTerminated(str));
-}
-
-void MBString_AppendChar(MBString *str, char c)
-{
-    int myLength = str->length;
-    ASSERT(MBStringIsNullTerminated(str));
-    MBStringEnsureCapacity(str, myLength + 1);
-    str->chars[myLength] = c;
-    str->chars[myLength+1] = '\0';
-    str->length = myLength + 1;
-    ASSERT(MBStringIsNullTerminated(str));
-}
-
 void MBString_AppendStr(MBString *str, const MBString *suffix)
 {
     int myLength = str->length;
@@ -311,7 +193,7 @@ void MBString_AppendStr(MBString *str, const MBString *suffix)
     ASSERT(MBStringIsNullTerminated(str));
     ASSERT(MBStringIsNullTerminated(suffix));
 
-    MBStringEnsureCapacity(str, myLength + sufLen);
+    MBString_EnsureCapacity(str, myLength + sufLen);
 
     memcpy(&str->chars[myLength], suffix->chars, sufLen + 1);
     str->length = myLength + sufLen;
@@ -327,7 +209,7 @@ void MBString_PrependChar(MBString *str, char c)
     /*
      * Not terribly efficient...
      */
-    MBStringEnsureCapacity(str, str->length + 1);
+    MBString_EnsureCapacity(str, str->length + 1);
     str->length++;
     str->chars[str->length] = '\0';
 

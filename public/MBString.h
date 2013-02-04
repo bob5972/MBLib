@@ -22,15 +22,11 @@ typedef struct {
     char *chars;
 } MBString;
 
-void MBString_Create(MBString *str);
-void MBString_Destroy(MBString *str);
-void MBString_Resize(MBString *str, int size);
+
+void MBString_EnsureCapacity(MBString *str, int cap);
 
 void MBString_Copy(MBString *dest, const MBString *src);
 void MBString_CopyCStr(MBString *dest, const char *cstr);
-int MBString_Length(const MBString *str);
-bool MBString_IsEmpty(const MBString *str);
-const char *MBString_GetCStr(const MBString *str);
 
 int MBString_FindChar(const MBString *str, char x);
 int MBString_FindStr(const MBString *str, const MBString *substr);
@@ -41,11 +37,6 @@ void MBString_CopySubstr(MBString *dest, const MBString *str,
 void MBString_ToUpper(MBString *str);
 void MBString_ToLower(MBString *str);
 
-char MBString_GetChar(const MBString *str, int x);
-void MBString_SetChar(MBString *str, int x, char c);
-void MBString_FillChar(MBString *str, char c, int pos, int len);
-
-void MBString_AppendChar(MBString *str, char c);
 void MBString_AppendStr(MBString *str, const MBString *suffix);
 void MBString_PrependChar(MBString *str, char c);
 void MBString_PrependStr(MBString *str, const MBString *prefix);
@@ -53,6 +44,127 @@ void MBString_Consume(MBString *consumer, MBString *strData);
 
 int MBString_Compare(const MBString *lhs, const MBString *rhs);
 void MBString_IntToString(MBString *str, int x);
+
+static INLINE bool MBStringIsNullTerminated(const MBString *str)
+{
+    ASSERT(str != NULL);
+    ASSERT(str->capacity >= str->length + 1);
+    return str->chars[str->length] == '\0';
+}
+
+static INLINE char MBString_GetChar(const MBString *str, int x)
+{
+    ASSERT(x >= 0);
+    ASSERT(x < str->length);
+    ASSERT(MBStringIsNullTerminated(str));
+
+    return str->chars[x];
+}
+
+static INLINE void MBString_SetChar(MBString *str, int x, char c)
+{
+    ASSERT(x >= 0);
+    ASSERT(x < str->length);
+    ASSERT(MBStringIsNullTerminated(str));
+
+    str->chars[x] = c;
+}
+
+static INLINE int MBString_Length(const MBString *str)
+{
+    ASSERT(MBStringIsNullTerminated(str));
+    return str->length;
+}
+
+static INLINE bool MBString_IsEmpty(const MBString *str)
+{
+    return (MBString_Length(str) == 0);
+}
+
+static INLINE void MBString_MakeEmpty(MBString *str)
+{
+    ASSERT(str->capacity >= 1);
+    str->length = 0;
+    str->chars[str->length] = '\0';
+
+    ASSERT(MBStringIsNullTerminated(str));
+}
+
+/*
+ * Return this string as a null-terminated C-String.
+ *
+ * The returned string must NOT be freed by the caller.
+ * The returned string is not guaranteed to be valid if the
+ * string is modified.
+ */
+static INLINE const char *MBString_GetCStr(const MBString *str)
+{
+    ASSERT(str != NULL);
+    ASSERT(MBStringIsNullTerminated(str));
+    return str->chars;
+}
+
+static INLINE void MBString_Create(MBString *str)
+{
+    int size = 8;
+
+    ASSERT(str != NULL);
+    str->length = 0;
+    str->capacity = size;
+    str->chars = (char *)malloc(size * sizeof(str->chars[0]));
+    str->chars[0] = '\0';
+    ASSERT(MBStringIsNullTerminated(str));
+}
+
+static INLINE void MBString_Destroy(MBString *str)
+{
+    ASSERT(str != NULL);
+    ASSERT(MBStringIsNullTerminated(str));
+
+    free(str->chars);
+    str->chars = NULL;
+}
+
+/*
+ * Fill str with len copies of c starting at index pos.
+ */
+static INLINE void MBString_FillChar(MBString *str, char c, int pos, int len)
+{
+    ASSERT(MBStringIsNullTerminated(str));
+    ASSERT(pos >= 0);
+    ASSERT(pos < str->length);
+    ASSERT(pos + len <= str->length);
+
+    memset(&str->chars[pos], c, len);
+    ASSERT(MBStringIsNullTerminated(str));
+}
+
+
+/*
+ * New contents are uninitialized.
+ *
+ * Note that this could leave unexpected NUL characters in the middle
+ * of your string.
+ */
+static INLINE void MBString_Resize(MBString *str, int size)
+{
+    ASSERT(MBStringIsNullTerminated(str));
+    MBString_EnsureCapacity(str, size);
+    str->length = size;
+    str->chars[str->length] = '\0';
+    ASSERT(MBStringIsNullTerminated(str));
+}
+
+static INLINE void MBString_AppendChar(MBString *str, char c)
+{
+    int myLength = str->length;
+    ASSERT(MBStringIsNullTerminated(str));
+    MBString_EnsureCapacity(str, myLength + 1);
+    str->chars[myLength] = c;
+    str->chars[myLength+1] = '\0';
+    str->length = myLength + 1;
+    ASSERT(MBStringIsNullTerminated(str));
+}
 
 #ifdef __cplusplus
     } // extern "C"
