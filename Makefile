@@ -49,7 +49,8 @@ C_SOURCES = mbassert.c \
             mbdebug.c \
             random.c \
             BitVector.c \
-            MBString.c
+            MBString.c \
+            MBVector.c
 
 SOURCES = $(CPP_SOURCES) $(C_SOURCES)
 

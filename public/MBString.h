@@ -7,12 +7,13 @@
 #include "mbassert.h"
 #include "mbutil.h"
 
-typedef struct {
+typedef struct MBString {
     int length;
     int capacity;
     char *chars;
 } MBString;
 
+typedef MBString MBStringData;
 
 void MBString_EnsureCapacity(MBString *str, int cap);
 

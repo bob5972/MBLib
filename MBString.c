@@ -1,3 +1,7 @@
+/*
+ * MBString.c --
+ */
+
 #include "MBString.h"
 
 #include <stdlib.h>
