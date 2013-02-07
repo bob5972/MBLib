@@ -15,6 +15,7 @@
 #include "MBQueue.hpp"
 
 DECLARE_MBVECTOR_TYPE(int, IntVector);
+static int seed;
 
 #define TEST(x) \
 do { \
@@ -170,7 +171,7 @@ void testMBStack(void)
     for (int y = 0; y < 3; y++) {
         s.makeEmpty();
         for (int x = 0; x <= count; x++) {
-            s.push(x);
+            s.push(x + seed);
         }
         r = s;
         r.trim();
@@ -178,9 +179,9 @@ void testMBStack(void)
 
     for (int x = count; x >= 0; x--) {
         result = s.pop();
-        TEST(result == x);
+        TEST(result == x + seed);
         result = r.pop();
-        TEST(result == x);
+        TEST(result == x + seed);
     }
 }
 
@@ -194,41 +195,41 @@ void testMBVector(void)
     for (int y = 0; y < 2; y++) {
         s.makeEmpty();
         for (int x = 0; x <= count; x++) {
-            s.push(x);
+            s.push(x + seed);
             r.push(s[x]);
             result = r.pop();
-            TEST(result == x);
+            TEST(result == x + seed);
         }
         r = s;
     }
 
     for (int x = count; x >= 0; x--) {
         result = s[x];
-        TEST(result == x);
+        TEST(result == x + seed);
         result = s.size();
         TEST(result == x + 1);
         result = s.pop();
-        TEST(result == x);
+        TEST(result == x + seed);
 
         result = r[x];
-        TEST(result == x);
+        TEST(result == x + seed);
         result = r.size();
         TEST(result == x + 1);
         result = r.pop();
-        TEST(result == x);
+        TEST(result == x + seed);
     }
 
     s.resize(count + 1);
     r.resize(count + 1);
     for (int x = 0; x <= count; x++) {
-        s[x] = x;
-        r[x] = s[x];
+        s[x] = x + seed;
+        r[x] = s[x] + seed;
     }
     for (int x = 0; x <= count; x++) {
         result = s[x];
-        TEST(result == x);
+        TEST(result == x + seed);
         result = r[x];
-        TEST(result == x);
+        TEST(result == x + (2 * seed));
     }
 }
 
@@ -278,11 +279,11 @@ void testCMBVector(void)
 
     for (int x = 0; x < IntVector_Size(&s); x++) {
         value = IntVector_Get(&s, x);
-        *value = x;
+        *value = x + seed;
     }
     for (int x = 0; x < IntVector_Size(&s); x++) {
         value = IntVector_Get(&s, x);
-        TEST(*value == x);
+        TEST(*value == x + seed);
     }
 
     IntVector_GrowBy(&s, count);
@@ -291,13 +292,13 @@ void testCMBVector(void)
     for (int x = 0; x < IntVector_Size(&s); x++) {
         value = IntVector_Get(&s, x);
         if (x < count) {
-            TEST(*value == x);
+            TEST(*value == x + seed);
         }
-        *value = x;
+        *value = x + seed;
     }
     for (int x = 0; x < IntVector_Size(&s); x++) {
         value = IntVector_Get(&s, x);
-        TEST(*value == x);
+        TEST(*value == x + seed);
     }
 
     IntVector_ShrinkBy(&s, count);
@@ -305,7 +306,7 @@ void testCMBVector(void)
     TEST(result == count);
     for (int x = 0; x < IntVector_Size(&s); x++) {
         value = IntVector_Get(&s, x);
-        TEST(*value == x);
+        TEST(*value == x + seed);
     }
 
     IntVector_Copy(&r, &s);
@@ -313,7 +314,7 @@ void testCMBVector(void)
     TEST(result == count);
     for (int x = 0; x < IntVector_Size(&r); x++) {
         value = IntVector_Get(&r, x);
-        TEST(*value == x);
+        TEST(*value == x + seed);
     }
 
     IntVector_Destroy(&s);
@@ -328,17 +329,17 @@ void testMBSet(void)
     MBSet<int> s;
 
     for (int x = 0; x <= count; x++) {
-        s.add(x);
+        s.add(x + seed);
         TEST(s.size() == x + 1);
     }
 
     for (int x = 0; x <= count; x++) {
-        result = s.contains(x);
+        result = s.contains(x + seed);
         TEST(result);
     }
 
     for (int x = count + 1; x <= count * 2; x++) {
-        result = s.contains(x);
+        result = s.contains(x + seed);
         TEST(!result);
     }
 }
@@ -351,18 +352,18 @@ void testIntSet(void)
     IntSet s;
 
     for (int x = 0; x <= count; x++) {
-        s.add(x);
+        s.add(x + seed);
         result = s.size();
         TEST(result == x + 1);
     }
 
     for (int x = 0; x <= count; x++) {
-        result = s.contains(x);
+        result = s.contains(x + seed);
         TEST(result);
     }
 
     for (int x = count + 1; x <= count * 2; x++) {
-        result = s.contains(x);
+        result = s.contains(x + seed);
         TEST(!result);
     }
 }
@@ -663,23 +664,23 @@ void testMBMap()
         MBMap<MBString, int> map;
 
         for (int x = 0; x < 25; x++) {
-            MBString key = MBString::toString(x);
-            map[key] = x;
+            MBString key = MBString::toString(x + seed);
+            map[key] = x + seed;
         }
 
         for (int x = 0; x < 25; x++) {
-            MBString key = MBString::toString(x);
-            TEST(map[key] == x);
+            MBString key = MBString::toString(x + seed);
+            TEST(map[key] == x + seed);
         }
 
         for (int x = 0; x < 25; x++) {
-            MBString key = MBString::toString(x);
+            MBString key = MBString::toString(x + seed);
             int value = x + 10;
             map[key] = value;
         }
 
         for (int x = 0; x < 25; x++) {
-            MBString key = MBString::toString(x);
+            MBString key = MBString::toString(x + seed);
             int value = x + 10;
             TEST(map[key] == value);
         }
@@ -689,15 +690,15 @@ void testMBMap()
         MBMap<int, int> m;
 
         for (int x = 0; x < count; x++) {
-            m.put(x, x);
+            m.put(x, x + seed);
             result = m.get(x);
-            TEST(x == result);
+            TEST(x + seed == result);
             m[x] += 1;
             result = m.get(x);
-            TEST(result == x + 1);
+            TEST(result == x + seed + 1);
             m[x] -= 1;
             result = m.get(x);
-            TEST(result == x);
+            TEST(result == x + seed);
 
             result = m.size();
             TEST(result == x + 1);
@@ -710,7 +711,7 @@ void testMBMap()
             result = m.containsKey(x);
             TEST(result);
             result = m.get(x);
-            TEST(x == result);
+            TEST(x + seed == result);
         }
 
         for (int x = count; x < 2 * count; x++) {
@@ -720,7 +721,7 @@ void testMBMap()
 
         m.makeEmpty();
         for (int x = 0; x < count; x++) {
-            num = x * x;
+            num = x * x + seed;
             m.put(num, x);
             result = m.get(num);
             TEST(x == result);
@@ -730,7 +731,7 @@ void testMBMap()
         }
 
         for (int x = 0; x < count; x++) {
-            num = x * x * x;
+            num = x * x * x + seed;
             m.put(num, x);
             result = m.get(num);
             TEST(x == result);
@@ -747,15 +748,15 @@ void testIntMap()
     const int count = 1000;
 
     for (int x = 0; x < count; x++) {
-        m.put(x, x);
+        m.put(x, x + seed);
         result = m.get(x);
-        TEST(x == result);
+        TEST(x + seed == result);
         m.increment(x);
         result = m.get(x);
-        TEST(result == x + 1);
+        TEST(result == x + seed + 1);
         m.decrement(x);
         result = m.get(x);
-        TEST(result == x);
+        TEST(result == x + seed);
 
         result = m.size();
         TEST(result == x + 1);
@@ -771,7 +772,7 @@ void testIntMap()
         result = m.containsKey(x);
         TEST(result);
         result = m.get(x);
-        TEST(x == result);
+        TEST(x + seed == result);
     }
 
     for (int x = count; x < 2 * count; x++) {
@@ -889,7 +890,6 @@ int main(int argc, char *argv[])
     int calibration;
     MBString arg;
     bool benchmark;
-    int runs;
 
     benchmark = FALSE;
 #ifdef BENCHMARK
@@ -906,6 +906,14 @@ int main(int argc, char *argv[])
         }
     }
 
+    /*
+     * Make benchmark mode deterministic.
+     */
+    if (benchmark) {
+        Random_SetSeed(0);
+    } else {
+        Random_GenerateSeed();
+    }
     Random_Init();
 
     BenchmarkTest tests[] = {
@@ -955,14 +963,21 @@ int main(int argc, char *argv[])
     }
 
     for (uint32 x = 0; x < ARRAYSIZE(tests); x++) {
+        int runs;
+
         if (benchmark) {
             runs = tests[x].weight * calibration;
         } else {
-            runs = tests[x].enabled ? 1 : 0;
+            runs = tests[x].enabled ? 20 : 0;
         }
 
+        /*
+         * Do one run with a seed of zero, and then permute.
+         */
+        seed = 0;
         for (int y = 0; y < runs; y++) {
             tests[x].function();
+            seed = Random_Uint32();
         }
     }
 

@@ -12,15 +12,15 @@
 #include "mbassert.h"
 
 typedef struct RandomGlobalData {
-	bool initialized;
+    bool initialized;
 
-    bool haveSeed;	
+    bool haveSeed;
     uint64 seed;
 
     uint64 value;
-	
-	uint32 bitBucket;
-	int bitBucketSize;
+
+    uint32 bitBucket;
+    int bitBucketSize;
 } RandomGlobalData;
 
 
@@ -32,20 +32,20 @@ static RandomGlobalData randomData;
  * been previously set.
  */
 void Random_Init(void)
-{	
-	ASSERT(!randomData.initialized);
-	
-	randomData.initialized = TRUE;
+{
+    ASSERT(!randomData.initialized);
+
+    randomData.initialized = TRUE;
 
     if (!randomData.haveSeed) {
         Random_GenerateSeed();
         ASSERT(randomData.haveSeed);
-    }	
+    }
 }
 
 void Random_Exit(void)
-{	
-	randomData.initialized = FALSE;
+{
+    randomData.initialized = FALSE;
     randomData.haveSeed = FALSE;
 }
 
@@ -55,13 +55,13 @@ void Random_Exit(void)
 void Random_GenerateSeed()
 {
 	uint64 seed;
-	
+
     bool haveSeed = FALSE;
-	
+
 	int fd;
-	
+
 	fd = open ("/dev/urandom", O_RDONLY);
-	
+
 	if (fd != -1) {
 		int count;
 		count = read(fd, &seed, sizeof(seed));
@@ -70,19 +70,19 @@ void Random_GenerateSeed()
 		}
 	    close (fd);
 	}
-    
+
     if (!haveSeed) {
     	pid_t pid = getpid();
 	    seed = time(0) * pid + pid;
     	Random_SetSeed(seed);
-    	
+
     	seed = Random_Uint64();
 	    haveSeed = TRUE;
     }
-    	
+
 	randomData.bitBucket = 0;
 	randomData.bitBucketSize = 0;
-	
+
 	ASSERT(haveSeed);
 	Random_SetSeed(seed);
 }
@@ -93,7 +93,7 @@ void Random_GenerateSeed()
  */
 uint64 Random_GetSeed()
 {
-    ASSERT(randomData.haveSeed);    
+    ASSERT(randomData.haveSeed);
     return randomData.seed;
 }
 
@@ -127,21 +127,21 @@ uint32 Random_Uint32(void)
 bool Random_Bit(void)
 {
 	bool val;
-	
+
 	ASSERT(randomData.initialized);
 	ASSERT(randomData.bitBucketSize >= 0);
 	ASSERT(randomData.bitBucketSize <= 32);
-	
+
 	if (randomData.bitBucketSize == 0) {
 		randomData.bitBucket = Random_Uint32();
 		randomData.bitBucketSize = 32;
 	}
-	
+
 	ASSERT(randomData.bitBucketSize > 0);
 	randomData.bitBucketSize--;
 	val = randomData.bitBucket & 0x1;
 	randomData.bitBucket >>= 1;
-	
+
 	ASSERT(val == TRUE || val == FALSE);
 	return val;
 }
@@ -151,11 +151,11 @@ bool Random_Flip(float trueProb)
 	//XXX: Naive implementation.
 
 	ASSERT(trueProb >= 0);
-	
+
 	if (trueProb == 0) {
 		return FALSE;
 	}
-	
+
 	/*
 	 * I could assert that it's <= 1, but I worry about people computing
 	 * probabilities having things round slightly above 1.
@@ -163,7 +163,7 @@ bool Random_Flip(float trueProb)
 	if (trueProb >= 1.0) {
 		return TRUE;
 	}
-	
+
 	if (Random_UnitFloat() <= trueProb) {
 		return TRUE;
 	} else {
@@ -177,31 +177,31 @@ float Random_Float(float min, float max)
 	double range;
 	double dmin;
 	double dmax;
-	
+
 	ASSERT(randomData.initialized);
 	ASSERT(max >= min);
 
 	//This might work, but I'm too lazy to figure out signs right now.
 	ASSERT(max >= 0);
 	ASSERT(min >= 0);
-	
+
 	if (min == max) {
 		return min;
 	}
-	
+
 	// Uniform randomData from [0, 1).
 	rval = Random_UnitFloat();
-	
+
 	if (min == 0.0 && max == 1.0) {
 		//Let's not screw up the obvious case here.
 	} else {
 		dmin = min;
 		dmax = max;
 		range = dmax - dmin;
-	
+
 		rval = rval * range + dmin;
 	}
-	
+
 	ASSERT(rval >= min);
 	ASSERT(rval <= max);
 
@@ -215,9 +215,9 @@ int Random_Enum(EnumDistribution *dist, int numValues)
 	float rval;
 	int x;
 	ASSERT(numValues > 0);
-	
+
 	rval = Random_UnitFloat();
-	
+
 	cumulative = 0.0;
 	for (x = 0; x < numValues; x++) {
 		cumulative += dist[x].probability;
@@ -225,7 +225,7 @@ int Random_Enum(EnumDistribution *dist, int numValues)
 			return dist[x].value;
 		}
 	}
-	
+
 	/*
 	 * Rounding error, and/or caller is dumb.
 	 */
@@ -237,10 +237,10 @@ uint64 Random_Uint64(void)
 {
 	uint64 a;
 	uint32 b;
-	
+
 	a = Random_Uint32();
 	b = Random_Uint32();
-	
+
 	return (a << 32) | b;
 }
 
@@ -276,9 +276,9 @@ int Random_Int(int min, int max)
 float Random_UnitFloat(void)
 {
 	float rval;
-	
+
 	rval = ((float) Random_Uint32()) / (float) ((uint32) -1);
-	
+
 	return rval;
 }
 
@@ -289,13 +289,13 @@ int Random_DiceSum(int numDice, int diceMax)
 {
 	int x;
 	int oup = 0;
-	
+
 	ASSERT(numDice >= 0 );
-	
+
 	for (x = 0; x < numDice; x++) {
 		oup += Random_Int(1, diceMax);
 	}
-	
+
 	return oup;
 }
 
