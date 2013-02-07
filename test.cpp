@@ -14,6 +14,8 @@
 #include "MBMap.hpp"
 #include "MBQueue.hpp"
 
+DECLARE_MBVECTOR_TYPE(int, IntVector);
+
 #define TEST(x) \
 do { \
     int cond = (x); \
@@ -228,6 +230,94 @@ void testMBVector(void)
         result = r[x];
         TEST(result == x);
     }
+}
+
+void testCMBVector(void)
+{
+    int result;
+    IntVector s;
+    IntVector r;
+    int sizes[] = {
+        0, 1, 10, 100, 200, 300,
+    };
+    int *value;
+    int count = 100;
+
+    IntVector_CreateEmpty(&s);
+    IntVector_CreateEmpty(&r);
+
+    for (unsigned y = 0; y < ARRAYSIZE(sizes); y++) {
+        IntVector_MakeEmpty(&s);
+        result = IntVector_Size(&s);
+        TEST(result == 0);
+
+        for (unsigned x = y; x < ARRAYSIZE(sizes); x++) {
+            IntVector_Resize(&s, sizes[y]);
+            result = IntVector_Size(&s);
+            TEST(result == sizes[y]);
+            IntVector_Resize(&s, sizes[x]);
+            result = IntVector_Size(&s);
+            TEST(result == sizes[x]);
+            IntVector_Resize(&s, sizes[y]);
+            result = IntVector_Size(&s);
+            TEST(result == sizes[y]);
+
+            IntVector_MakeEmpty(&s);
+            result = IntVector_Size(&s);
+            TEST(result == 0);
+            result = IntVector_IsEmpty(&s);
+            TEST(result);
+        }
+    }
+
+    IntVector_Resize(&s, count);
+    result = IntVector_Size(&s);
+    TEST(result == count);
+    result = IntVector_IsEmpty(&s);
+    TEST(!result);
+
+    for (int x = 0; x < IntVector_Size(&s); x++) {
+        value = IntVector_Get(&s, x);
+        *value = x;
+    }
+    for (int x = 0; x < IntVector_Size(&s); x++) {
+        value = IntVector_Get(&s, x);
+        TEST(*value == x);
+    }
+
+    IntVector_GrowBy(&s, count);
+    result = IntVector_Size(&s);
+    TEST(result == 2 * count);
+    for (int x = 0; x < IntVector_Size(&s); x++) {
+        value = IntVector_Get(&s, x);
+        if (x < count) {
+            TEST(*value == x);
+        }
+        *value = x;
+    }
+    for (int x = 0; x < IntVector_Size(&s); x++) {
+        value = IntVector_Get(&s, x);
+        TEST(*value == x);
+    }
+
+    IntVector_ShrinkBy(&s, count);
+    result = IntVector_Size(&s);
+    TEST(result == count);
+    for (int x = 0; x < IntVector_Size(&s); x++) {
+        value = IntVector_Get(&s, x);
+        TEST(*value == x);
+    }
+
+    IntVector_Copy(&r, &s);
+    result = IntVector_Size(&r);
+    TEST(result == count);
+    for (int x = 0; x < IntVector_Size(&r); x++) {
+        value = IntVector_Get(&r, x);
+        TEST(*value == x);
+    }
+
+    IntVector_Destroy(&s);
+    IntVector_Destroy(&r);
 }
 
 void testMBSet(void)
@@ -820,11 +910,18 @@ int main(int argc, char *argv[])
 
     BenchmarkTest tests[] = {
             // enabled, weight, function
-            { 1, 8000, testMBString }, { 1, 3000, testMBVector }, { 1, 400,
-                    testMBStack }, { 1, 15, testMBMap }, { 1, 20, testIntMap },
-            { 1, 25, testRandomIntMap }, { 1, 65, testIntSet }, { 1, 2,
-                    testMBSet }, { 1, 12, testBitVector },
-            { 1, 210, testMBQueue }, };
+            { 1, 8000, testMBString     },
+            { 1, 3000, testMBVector     },
+            { 1, 3000, testCMBVector    },
+            { 1, 400,  testMBStack      },
+            { 1, 15,   testMBMap        },
+            { 1, 20,   testIntMap       },
+            { 1, 25,   testRandomIntMap },
+            { 1, 65,   testIntSet       },
+            { 1, 2,    testMBSet        },
+            { 1, 12,   testBitVector    },
+            { 1, 210,  testMBQueue       },
+    };
 
     //Functional tests
     if (!benchmark) {

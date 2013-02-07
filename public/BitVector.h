@@ -6,12 +6,11 @@
 #include "mbassert.h"
 #include <string.h>
 
-typedef struct
-{
-        uint64 *bits;
-        uint size;
-        uint arrSize;
-        bool fill;
+typedef struct BitVector {
+    uint64 *bits;
+    uint size;
+    uint arrSize;
+    bool fill;
 } BitVector;
 
 typedef BitVector BitVectorData;

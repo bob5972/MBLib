@@ -84,12 +84,18 @@ static INLINE void MBVector_MakeEmpty(MBVector *vector)
     MBVector_Resize(vector, 0);
 }
 
-static INLINE void *MBVector_Get(MBVector *vector, int index)
+static INLINE void *MBVectorGetHelper(MBVector *vector, int index, int itemSize)
 {
     ASSERT(index >= 0);
     ASSERT(index < vector->size);
+    ASSERT(itemSize == vector->itemSize);
 
-    return ((uint8 *)vector->items) + (index * vector->itemSize);
+    return ((uint8 *)vector->items) + (index * itemSize);
+}
+
+static INLINE void *MBVector_Get(MBVector *vector, int index)
+{
+    return MBVectorGetHelper(vector, index, vector->itemSize);
 }
 
 static INLINE void MBVector_Copy(MBVector *dest, const MBVector *src)
@@ -98,7 +104,55 @@ static INLINE void MBVector_Copy(MBVector *dest, const MBVector *src)
 
     MBVector_Resize(dest, 0);
     MBVector_EnsureCapacity(dest, src->size);
+    MBVector_Resize(dest, src->size);
     memcpy(dest->items, src->items, src->itemSize * src->size);
 }
+
+
+#define DECLARE_MBVECTOR_TYPE(_type, _name) \
+    typedef struct _name { \
+        MBVectorData v; \
+    } _name ; \
+    \
+    static INLINE void _name ## _Create \
+    (_name *v, int size, int capacity) \
+    { MBVector_Create(&v->v, sizeof(_type), size, capacity); } \
+    static INLINE void _name ## _CreateEmpty \
+    (_name *v) \
+    { MBVector_CreateEmpty(&v->v, sizeof(_type)); } \
+    static INLINE void _name ## _CreateWithSize \
+    (_name *v, int size) \
+    { MBVector_CreateWithSize(&v->v, sizeof(_type), size); } \
+    static INLINE void _name ## _Destroy \
+    (_name *v) \
+    { MBVector_Destroy(&v->v); } \
+    static INLINE int _name ## _Size \
+    (_name *v) \
+    { return MBVector_Size(&v->v); } \
+    static INLINE void _name ## _Resize \
+    (_name *v, int size) \
+    { MBVector_Resize(&v->v, size); } \
+    static INLINE void _name ## _GrowBy \
+    (_name *v, int increment) \
+    { MBVector_GrowBy(&v->v, increment); } \
+    static INLINE void _name ## _ShrinkBy \
+    (_name *v, int decrement) \
+    { MBVector_ShrinkBy(&v->v, decrement); } \
+    static INLINE bool _name ## _IsEmpty \
+    (_name *v) \
+    { return MBVector_IsEmpty(&v->v); } \
+    static INLINE void _name ## _MakeEmpty \
+    (_name *v) \
+    { MBVector_MakeEmpty(&v->v); } \
+    static INLINE _type *_name ## _Get \
+    (_name *v, int index) \
+    { return (_type *)MBVectorGetHelper(&v->v, index, sizeof(_type)); } \
+    static INLINE void _name ## _Copy \
+    (_name *dest, const _name *src) \
+    { MBVector_Copy(&dest->v, &src->v); } \
+    static INLINE void _name ## _EnsureCapacity \
+    (_name *v, int capacity) \
+    { MBVector_EnsureCapacity(&v->v, capacity); }
+
 
 #endif // MBVECTOR_H_201202060000
