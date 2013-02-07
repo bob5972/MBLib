@@ -1,4 +1,4 @@
-#include "MBString.h"
+#include "MBString.hpp"
 
 #include <stdlib.h>
 #include <ctype.h>

@@ -1,5 +1,5 @@
-#ifndef MBVECTOR_H_201001091353
-#define MBVECTOR_H_201001091353
+#ifndef MBVECTOR_HPP_201001091353
+#define MBVECTOR_HPP_201001091353
 
 #include "mbassert.h"
 
@@ -348,4 +348,4 @@ class MBVector
 #include "../MBVector.cpp"
 #endif //__cplusplus
 
-#endif //MBVECTOR_H_201001091353
+#endif //MBVECTOR_HPP_201001091353

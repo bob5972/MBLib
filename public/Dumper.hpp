@@ -1,10 +1,10 @@
-#ifndef Dumper_H_201112231514
-#define Dumper_H_201112231514
+#ifndef Dumper_HPP_201112231514
+#define Dumper_HPP_201112231514
 
 #include "mbtypes.h"
 #include "mbutil.h"
-#include "MBString.h"
-#include "MBSocket.h"
+#include "MBString.hpp"
+#include "MBSocket.hpp"
 
 typedef struct CharWriterInterface {
     void *clientData;
@@ -87,4 +87,4 @@ class Dumper {
         }
 };
 
-#endif //Dumper_H_201112231514
+#endif //Dumper_HPP_201112231514

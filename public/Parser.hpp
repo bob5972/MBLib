@@ -1,14 +1,14 @@
-#ifndef Parser_H_201112231325
-#define Parser_H_201112231325
+#ifndef Parser_HPP_201112231325
+#define Parser_HPP_201112231325
 
 #include <math.h>
 
 #include "mbtypes.h"
 #include "mbassert.h"
 #include "mbutil.h"
-#include "MBString.h"
-#include "MBVector.h"
-#include "MBSocket.h"
+#include "MBString.hpp"
+#include "MBVector.hpp"
+#include "MBSocket.hpp"
 
 typedef struct CharReaderInterface {
     void *clientData;
@@ -37,7 +37,7 @@ class Parser
             zero(&myInp, sizeof(myInp));
             myInp.clientData = &socket;
             myInp.readChar = ParserSocketReadChar;
-           
+
             hasNextChar = FALSE;
             shouldEatGarbage = TRUE;
             shouldEatWhitespace = TRUE;
@@ -48,12 +48,12 @@ class Parser
         int readInt()
         {
             int oup = 0;
-            
+
             int state = 0;
             bool isNegative = false;
-            
+
             fillChar();
-            
+
             while (hasNextChar) {
                 switch (state) {
                 case 0: // bad char
@@ -67,7 +67,7 @@ class Parser
                             return 0;
                         }
                     }
-                    
+
                     if (nextChar == '-') {
                         state = 1;
                     } else {
@@ -80,7 +80,7 @@ class Parser
                     if (!fillChar()) {
                     	PANIC("No digits found.\n");
                 	}
-                	
+
                     if (!isDigit(nextChar)) {
                         state = 0;
                     } else {
@@ -94,7 +94,7 @@ class Parser
                         oup += nextChar - '0';
                         fillChar();
                     }
-                    
+
                     unreadChar();
                     if (isNegative) {
                         oup = -oup;
@@ -102,87 +102,87 @@ class Parser
                     return oup;
                 }
             }
-            
+
             ASSERT(!hasNextChar);
             if (shouldPanicOnError) {
                 PANIC("Premature end of stream reached.\n");
             }
-            
+
             return 0;
         }
-        
+
         void eatWhitespace()
         {
             fillChar();
             while (hasNextChar && isWhitespace(nextChar)) {
                 fillChar();
             }
-            
+
             if (hasNextChar) {
                 unreadChar();
             }
         }
-        
+
 
         // ie read 12,  34, 23,3
         void readIntArray(int *a, int size)
-        {            
+        {
             for (int x = 0; x < size; x++) {
                 a[x] = readInt();
                 eatWhitespace();
-                
+
                 fillChar();
                 if (hasNextChar && nextChar != ',') {
                     unreadChar();
                 }
             }
         }
-        
+
         char readChar()
         {
             fillChar();
-            
+
             if (!hasNextChar && shouldPanicOnError) {
                 PANIC("Premature end of stream reached.");
             }
-            
+
             return nextChar;
         }
-        
+
         char readNonWhitespaceChar()
         {
             eatWhitespace();
-            
+
             fillChar();
-            
+
             if (!hasNextChar && shouldPanicOnError) {
                 PANIC("Premature end of stream reached.\n");
             }
-            
+
             ASSERT(!hasNextChar || !isWhitespace(nextChar));
             return nextChar;
         }
-        
-        
+
+
         MBString readWord()
         {
             MBString oup;
             eatWhitespace();
-            
+
             fillChar();
-            
+
             while (hasNextChar && !isWhitespace(nextChar)) {
                 oup.append(nextChar);
                 fillChar();
             }
-            
+
             if (hasNextChar) {
                 unreadChar();
             }
-            
+
             return oup;
         }
-        
+
         // reads num words
         void readWords(MBString *w, int num)
         {
@@ -191,7 +191,7 @@ class Parser
             }
 
         }
-        
+
         MBString readLine()
         {
             MBString oup;
@@ -201,43 +201,43 @@ class Parser
                 oup.append(nextChar);
                 fillChar();
             }
-            
+
             return oup;
         }
-        
+
         double readDouble()
         {
             double wholeD, fracD;
             double oup;
-            
+
             int whole = readInt();
             int frac = 0;
             int leadingZeroes = 0;
             int fracDigits;
-            
+
             fillChar();
             if (hasNextChar && nextChar == '.') {
                 fillChar();
-                
+
                 while (hasNextChar && nextChar == '0') {
                     leadingZeroes++;
-                    fillChar();                
+                    fillChar();
                 }
-                
+
                 if (hasNextChar && isDigit(nextChar)) {
                     unreadChar();
-                    frac = readInt();                
+                    frac = readInt();
                 }
             }
-            
+
             wholeD = whole;
             fracD = frac;
-            
+
             fracDigits = ((int)log10(fracD) + 1);
             fracDigits += leadingZeroes;
-            
-            fracD = fracD / pow(10.0, fracDigits);        
-            
+
+            fracD = fracD / pow(10.0, fracDigits);
+
             oup = wholeD + fracD;
             return oup;
         }
@@ -250,7 +250,7 @@ class Parser
         bool shouldEatGarbage;
         bool shouldEatWhitespace;
         bool shouldPanicOnError;
-        
+
         char nextChar;
         bool hasNextChar;
 
@@ -258,11 +258,11 @@ class Parser
          *  Put a new char in nextChar.
          *  Return true iff we got a char
 
-         *  
+         *
          *  The contents of nextChar should be invalid by the time any public
          *  read method returns.  Anything that a public method wants to leave
          *  "unread" should be pushed back onto the input buffer.
-         *  
+         *
          *  In other words, each method should assume it needs to call
          *  fillChar to get a new character when it is called, and
          *  after calling any other read methods.
@@ -270,7 +270,7 @@ class Parser
         bool fillChar()
         {
             bool gotChar = FALSE;
-            
+
             if (buffer.size() > 0) {
                 nextChar = buffer.pop();
                 gotChar = TRUE;
@@ -280,7 +280,7 @@ class Parser
                 } else {
                     gotChar = TRUE;
                 }
-                
+
                 if (!gotChar) {
                     nextChar = myInp.readChar(myInp.clientData);
                     gotChar = TRUE;
@@ -290,7 +290,7 @@ class Parser
             hasNextChar = gotChar;
             return hasNextChar;
         }
-        
+
         /*
          * Move the contents of nextChar back into the input buffer.
          */
@@ -298,9 +298,9 @@ class Parser
         {
             ASSERT(hasNextChar);
             buffer.push(nextChar);
-            hasNextChar = FALSE;            
+            hasNextChar = FALSE;
         }
 };
 
-#endif //Parser_H_201112231325
+#endif //Parser_HPP_201112231325
 

@@ -29,7 +29,7 @@
 
 #include "config.h"
 #include "mbutil.h"
-#include "cityhash.h"
+#include "cityhash.hpp"
 
 #include <algorithm>
 #include <string.h>  // for memcpy and memset

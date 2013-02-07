@@ -1,7 +1,7 @@
 #ifndef MBMatrix_CPP_201002052320
 #define MBMatrix_CPP_201002052320
 
-#include "MBMatrix.h"
+#include "MBMatrix.hpp"
 #include "mbtypes.h"
 #include "mbdebug.h"
 #include "mbassert.h"
@@ -29,7 +29,7 @@ MBMatrix<itemType>::MBMatrix(const MBMatrix<itemType>& vec)
  myItems(0)
 {
 	resize(vec.myRows,vec.myCols);
-	
+
 	for(int r=0;r<myRows;r++) {
 		for(int c=0;c<myCols;c++) {
 			myItems[r][c] = vec.myItems[r][c];
@@ -44,7 +44,7 @@ MBMatrix<itemType>::MBMatrix(int rows, int columns, const itemType & fillValue)
  myItems(0)
 {
 	resize(rows,columns);
-	
+
 	fillAll(fillValue);
 }
 
@@ -94,11 +94,11 @@ itemType & MBMatrix<itemType>::get (int r, int c)
 	if (r >= myRows || r < 0) {
 		PANIC("Illegal Matrix row.");
 	}
-	
+
 	if (c >= myCols || c < 0) {
 		PANIC("Illegal Matrix column.");
 	}
-	
+
 	return myItems[r][c];
 }
 
@@ -108,11 +108,11 @@ const itemType & MBMatrix<itemType>::get (int r, int c) const
 	if (r >= myRows || r < 0) {
 		PANIC("Illegal Matrix row.");
 	}
-	
+
 	if (c >= myCols || c < 0) {
 		PANIC("Illegal Matrix column.");
 	}
-	
+
 	return myItems[r][c];
 }
 
@@ -122,11 +122,11 @@ void MBMatrix<itemType>::put (int r, int c, const itemType& t)
 	if (r >= myRows || r < 0) {
 		PANIC("Illegal Matrix row.");
 	}
-	
+
 	if (c >= myCols || c < 0) {
 		PANIC("Illegal Matrix column.");
 	}
-	
+
 	myItems[r][c] = t;
 }
 
@@ -142,7 +142,7 @@ void MBMatrix<itemType>::resize(int rows, int cols)
 	if (rows < 0) {
 		PANIC("Illegal Matrix row-size.");
 	}
-	
+
 	if(cols < 0 ) {
 		PANIC("Illegal Matrix col-size.");
 	}
@@ -151,7 +151,7 @@ void MBMatrix<itemType>::resize(int rows, int cols)
 	for(int r=0;r<rows;r++) {
 		myItems[r].resize(cols);
 	}
-	
+
 	myRows = rows;
 	myCols = cols;
 }

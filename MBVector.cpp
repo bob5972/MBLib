@@ -2,7 +2,7 @@
 #define MBVector_CPP_201002052320
 
 #include <stdlib.h>
-#include "MBVector.h"
+#include "MBVector.hpp"
 #include "mbdebug.h"
 #include "mbassert.h"
 #include "mbutil.h"
@@ -17,7 +17,7 @@ MBVector<itemType>::MBVector(const MBVector<itemType>& vec)
 	{
 		myItems[x] = vec.myItems[x];
 	}
-	
+
 	ASSERT(myCapacity > 0);
 }
 
@@ -31,7 +31,7 @@ MBVector<itemType>::MBVector(int size, const itemType & fillValue)
 	{
 		myItems[x] = fillValue;
 	}
-	
+
 	ASSERT(myCapacity > 0);
 }
 
@@ -39,15 +39,15 @@ template <class itemType>
 void MBVector<itemType>::consume(MBVector<itemType> &v)
 {
 	makeEmpty();
-	
+
 	myItems = v.myItems;
 	mySize = v.mySize;
 	myCapacity = v.mySize;
-	
+
 	v.myItems = new itemType[1];
 	v.mySize = 0;
 	v.myCapacity = 1;
-	
+
 	ASSERT(myCapacity > 0);
 	ASSERT(v.myCapacity > 0);
 }
@@ -62,9 +62,9 @@ const MBVector<itemType> &
 			myItems[x] = rhs.myItems[x];
 		}
 	}
-	
+
 	ASSERT(myCapacity > 0);
-	
+
 	return *this;
 }
 
@@ -85,21 +85,21 @@ void MBVector<itemType>::ensureCapacity(int c)
 {
 	int newCap;
 	int minCap;
-	
+
 	ASSERT(myCapacity > 0);
-	
+
 	if (myCapacity >= c) {
 		return;
 	}
-	
+
 	minCap = myCapacity + c;
-	
+
 	newCap = myCapacity;
 	while (newCap < minCap) {
 		newCap = 2 * newCap + 1;
 	}
 	ASSERT(newCap > myCapacity);
-	
+
 	itemType *t = new itemType[newCap];
 	for(int x = 0; x < mySize;x++) {
 		t[x] = myItems[x];
@@ -107,7 +107,7 @@ void MBVector<itemType>::ensureCapacity(int c)
 
 	ASSERT(myItems != NULL);
 	delete [] myItems;
-	
+
 	myCapacity = newCap;
 	ASSERT(myCapacity > 0);
 	myItems = t;
@@ -118,13 +118,13 @@ void MBVector<itemType>::resize(int newSize)
 {
 	if (newSize < 0) {
 		PANIC("Illegal vector size.");
-	}	
+	}
 
 	if (newSize <= myCapacity) {
 		mySize = newSize;
 		return;
 	}
-	
+
 	ensureCapacity(newSize);
 	mySize = newSize;
 }
@@ -135,11 +135,11 @@ void MBVector<itemType>::resize(int newSize,
 {
 	int oldSize = mySize;
 	resize(newSize);
-	
+
 	while (oldSize < mySize) {
 		myItems[oldSize] = fill;
 		oldSize++;
-	}	
+	}
 }
 
 template<class itemType>
@@ -148,23 +148,23 @@ int MBVector<itemType>::trim()
 	if (mySize == myCapacity || myCapacity == 1) {
 		return 0;
 	}
-	
+
 	int oup = myCapacity - mySize;
 	int newCap = mySize;
 	if (newCap == 0) {
 		newCap = 1;
 	}
-	
+
 	itemType *t = new itemType[newCap];
-	
+
 	for(int x = 0;x < mySize;x++) {
 		t[x] = myItems[x];
 	}
-	
+
 	myCapacity = newCap;
 	delete [] myItems;
 	myItems = t;
-	
+
 	return oup;
 }
 

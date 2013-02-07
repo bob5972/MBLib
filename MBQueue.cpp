@@ -1,7 +1,7 @@
 #ifndef MBQueue_CPP_201001091433
 #define MBQueue_CPP_201001091433
 
-#include "MBQueue.h"
+#include "MBQueue.hpp"
 #include "mbdebug.h"
 #include "mbassert.h"
 
@@ -15,7 +15,7 @@ MBQueue<itemType>::MBQueue(const MBQueue &q)
 	if (mySize == 0) {
 		return;
 	}
-	
+
 	myTop = new MBNode(*myTop);
 	MBNode* currentNode(myTop);
 	MBNode* newNode;
@@ -39,12 +39,12 @@ const MBQueue<itemType>& MBQueue<itemType>::operator = (const MBQueue<itemType> 
 		if (mySize == 0) {
 			return *this;
 		}
-		
+
 		myTop = new MBNode(*myTop);
 		MBNode* currentNode(myTop);
 		MBNode* newNode;
 		for (int x=1;x<mySize;x++) {
-	
+
 			newNode = new MBNode(*currentNode->nextNode);
 			currentNode->nextNode = newNode;
 			currentNode = newNode;
@@ -64,14 +64,14 @@ void MBQueue<itemType>::makeEmpty( )
 			tempNode = currentNode;
 			currentNode = tempNode->nextNode;
 			delete tempNode;
-	
+
 		}
 		delete currentNode;
 	}
 	mySize = 0;
 	myTop = NULL;
 	myBottom = NULL;
-}	
+}
 
 
 

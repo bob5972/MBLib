@@ -1,4 +1,4 @@
-#include "Dumper.h"
+#include "Dumper.hpp"
 
 void DumperSocketWrite(void *clientData, const char *c, int size)
 {

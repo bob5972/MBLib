@@ -1,7 +1,7 @@
 #ifndef MBStack_CPP
 #define MBStack_CPP
 
-#include "MBStack.h"
+#include "MBStack.hpp"
 #include "mbdebug.h"
 #include "mbassert.h"
 

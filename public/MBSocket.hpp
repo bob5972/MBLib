@@ -1,5 +1,5 @@
-#ifndef MBSocket_H_201112211636
-#define MBSocket_H_201112211636
+#ifndef MBSocket_HPP_201112211636
+#define MBSocket_HPP_201112211636
 
 #include <stdlib.h>
 #include <string.h>
@@ -10,7 +10,7 @@
 
 #include "mbassert.h"
 #include "mbtypes.h"
-#include "MBString.h"
+#include "MBString.hpp"
 
 class MBSocket
 {
@@ -124,5 +124,5 @@ class MBSocket
         bool haveConnection;
 };
 
-#endif //MBSocket_H_201112211636
+#endif //MBSocket_HPP_201112211636
 

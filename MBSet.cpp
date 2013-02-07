@@ -1,7 +1,7 @@
 #ifndef MBSET_CPP_201001091441
 #define MBSET_CPP_201001091441
 
-#include "MBSet.h"
+#include "MBSet.hpp"
 #include "mbdebug.h"
 
 template<class itemType>
@@ -59,9 +59,9 @@ bool MBSet<itemType>::contains(const itemType&t) const
 {
 	int x = 0;
 	int seen = 0;
-	
+
 	ASSERT(myItems.size() == isUsed.size());
-	
+
 	while (x < myItems.size() && seen < mySize) {
 		if (isUsed[x]) {
 			if(myItems[x] == t) {
@@ -81,13 +81,13 @@ bool MBSet<itemType>::insert(const itemType & t)
 		int length = myItems.size();
 		ASSERT(length == isUsed.size());
 		ASSERT(length > 0);
-		
+
 		if (mySize + 1 >= length) {
 			myItems.resize(length * 2);
 			isUsed.setFillValue(FALSE);
 			isUsed.resize(length * 2);
 		}
-		
+
 		int x = 0;
 		length = myItems.size();
 		ASSERT(mySize + 1 < length);
@@ -126,7 +126,7 @@ bool MBSet<itemType>::remove(const itemType &t)
 		}
 		x++;
 	}
-	return false;	
+	return false;
 }
 
 template<class itemType>

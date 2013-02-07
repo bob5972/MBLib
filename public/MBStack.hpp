@@ -1,8 +1,8 @@
-#ifndef MBStack_H_201001091426
-#define MBStack_H_201001091426
+#ifndef MBStack_HPP_201001091426
+#define MBStack_HPP_201001091426
 
 #include "mbtypes.h"
-#include "MBVector.h"
+#include "MBVector.hpp"
 
 template<class itemType>
 class MBStack
@@ -20,7 +20,7 @@ class MBStack
 // accessors
 	const itemType& top() const;//return top (no pop)
 	const itemType& peek() const;
-	
+
     bool  isEmpty( ) const;      // return true if empty else false
     int   size() const;
 
@@ -30,11 +30,11 @@ class MBStack
     void pop (itemType& item);
     void makeEmpty( );                     // make queue empty
     void trim();  // reduce memory usage
-    
+
 	private:
 		MBVector<itemType> myVector;
 };
 
 #include "../MBStack.cpp"
 
-#endif //MBStack_H_201001091426
+#endif //MBStack_HPP_201001091426
