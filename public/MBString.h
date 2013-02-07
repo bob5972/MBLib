@@ -369,7 +369,6 @@ class MBString {
         static MBString toString(int x) {
             MBString oup;
 
-            MBString_Create(&oup.data);
             MBString_IntToString(&oup.data, x);
             return oup;
         }

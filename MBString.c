@@ -195,6 +195,7 @@ void MBString_PrependStr(MBString *str, const MBString *prefix)
     MBString_Copy(str, prefix);
     MBString_AppendStr(str, &temp);
     ASSERT(MBStringIsNullTerminated(str));
+    MBString_Destroy(&temp);
 }
 
 /*
