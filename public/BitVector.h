@@ -15,8 +15,7 @@ typedef struct BitVector {
 
 typedef BitVector BitVectorData;
 
-typedef enum
-{
+typedef enum BitVectorWriteType {
     BITVECTOR_WRITE_RESET,
     BITVECTOR_WRITE_SET,
     BITVECTOR_WRITE_FLIP,

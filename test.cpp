@@ -7,12 +7,12 @@
 #include "mbassert.h"
 #include "MBVector.hpp"
 #include "MBSet.hpp"
-#include "IntSet.hpp"
 #include "BitVector.hpp"
 #include "mbutil.h"
 #include "random.h"
 #include "MBMap.hpp"
 #include "MBQueue.hpp"
+#include "IntMap.hpp"
 
 DECLARE_MBVECTOR_TYPE(int, IntVector);
 static int seed;
@@ -278,11 +278,11 @@ void testCMBVector(void)
     TEST(!result);
 
     for (int x = 0; x < IntVector_Size(&s); x++) {
-        value = IntVector_Get(&s, x);
+        value = IntVector_GetPtr(&s, x);
         *value = x + seed;
     }
     for (int x = 0; x < IntVector_Size(&s); x++) {
-        value = IntVector_Get(&s, x);
+        value = IntVector_GetPtr(&s, x);
         TEST(*value == x + seed);
     }
 
@@ -290,14 +290,14 @@ void testCMBVector(void)
     result = IntVector_Size(&s);
     TEST(result == 2 * count);
     for (int x = 0; x < IntVector_Size(&s); x++) {
-        value = IntVector_Get(&s, x);
+        value = IntVector_GetPtr(&s, x);
         if (x < count) {
             TEST(*value == x + seed);
         }
         *value = x + seed;
     }
     for (int x = 0; x < IntVector_Size(&s); x++) {
-        value = IntVector_Get(&s, x);
+        value = IntVector_GetPtr(&s, x);
         TEST(*value == x + seed);
     }
 
@@ -305,7 +305,7 @@ void testCMBVector(void)
     result = IntVector_Size(&s);
     TEST(result == count);
     for (int x = 0; x < IntVector_Size(&s); x++) {
-        value = IntVector_Get(&s, x);
+        value = IntVector_GetPtr(&s, x);
         TEST(*value == x + seed);
     }
 
@@ -313,8 +313,9 @@ void testCMBVector(void)
     result = IntVector_Size(&r);
     TEST(result == count);
     for (int x = 0; x < IntVector_Size(&r); x++) {
-        value = IntVector_Get(&r, x);
+        value = IntVector_GetPtr(&r, x);
         TEST(*value == x + seed);
+        TEST(*value == IntVector_GetValue(&r, x));
     }
 
     IntVector_Destroy(&s);
@@ -331,30 +332,6 @@ void testMBSet(void)
     for (int x = 0; x <= count; x++) {
         s.add(x + seed);
         TEST(s.size() == x + 1);
-    }
-
-    for (int x = 0; x <= count; x++) {
-        result = s.contains(x + seed);
-        TEST(result);
-    }
-
-    for (int x = count + 1; x <= count * 2; x++) {
-        result = s.contains(x + seed);
-        TEST(!result);
-    }
-}
-
-void testIntSet(void)
-{
-    int count = 1000;
-    int result;
-
-    IntSet s;
-
-    for (int x = 0; x <= count; x++) {
-        s.add(x + seed);
-        result = s.size();
-        TEST(result == x + 1);
     }
 
     for (int x = 0; x <= count; x++) {
@@ -925,7 +902,6 @@ int main(int argc, char *argv[])
             { 1, 15,   testMBMap        },
             { 1, 20,   testIntMap       },
             { 1, 25,   testRandomIntMap },
-            { 1, 65,   testIntSet       },
             { 1, 2,    testMBSet        },
             { 1, 12,   testBitVector    },
             { 1, 210,  testMBQueue       },

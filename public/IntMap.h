@@ -26,7 +26,7 @@ void IntMap_Create(IntMap *map);
 void IntMap_Destroy(IntMap *map);
 
 bool IntMap_IsEmpty(const IntMap *map);
-bool IntMap_ContainKey(const IntMap *map, int key);
+bool IntMap_ContainsKey(const IntMap *map, int key);
 int IntMap_Size(const IntMap *map);
 int IntMap_Get(const IntMap *map, int key);
 

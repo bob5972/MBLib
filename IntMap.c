@@ -47,7 +47,7 @@ void IntMap_MakeEmpty(IntMap *map)
     map->myFreeSpace = map->mySpace;
 }
 
-bool IntMap_ContainKey(const IntMap *map, int key)
+bool IntMap_ContainsKey(const IntMap *map, int key)
 {
     return IntMapFindKey(map, key) != -1;
 }
@@ -174,6 +174,7 @@ static int IntMapHash(const IntMap *map, int key)
     return hash;
 }
 
+//Returns the index of a valid key, or -1.
 static int IntMapFindKey(const IntMap *map, int key)
 {
     int hashI = IntMapHash(map, key);
@@ -195,6 +196,12 @@ static int IntMapFindKey(const IntMap *map, int key)
     return -1;
 }
 
+/*
+ * Return the index of where this key would be inserted
+ * or -1 if the map is full.
+ * In other words, if the key is in the map, return it,
+ * and if not, return the next free index.
+ */
 static int IntMapGetInsertionIndex(const IntMap *map, int key)
 {
     int hashI = IntMapHash(map, key);
@@ -215,7 +222,7 @@ static int IntMapGetInsertionIndex(const IntMap *map, int key)
     return -1;
 }
 
-
+//Puts a key at the specified index.
 static void IntMapPutHelper(IntMap *map, int index, int key, int value)
 {
     ASSERT(IMPLIES(index == -1, map->myFreeSpace == 0));
@@ -259,6 +266,7 @@ static void IntMapPutHelper(IntMap *map, int index, int key, int value)
     MBIntVector_PutValue(&map->myValues, index, value);
 }
 
+//Make the underlying table larger
 static void IntMapRehash(IntMap *map)
 {
     int newSpace = map->mySpace*2 + 1;

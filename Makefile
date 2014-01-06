@@ -37,9 +37,7 @@ CPP_SOURCES = MBString.cpp \
               MBStack.cpp \
               MBQueue.cpp \
               MBSet.cpp \
-              IntMap.cpp \
               MBMatrix.cpp \
-              IntSet.cpp \
               MBSocket.cpp \
               Parser.cpp \
               Dumper.cpp

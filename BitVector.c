@@ -22,7 +22,7 @@ void BitVector_Create(BitVector *b)
 
 void BitVector_CreateWithSize(BitVector *b, int size)
 {
-    //XXX: This will malloc twice.
+    //XXX: This might malloc twice.
     BitVector_Create(b);
     BitVector_Resize(b, size);
 }

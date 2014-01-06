@@ -1,127 +1,93 @@
-#ifndef IntMap_H_201001201109
-#define IntMap_H_201001201109
+#ifndef IntMap_HPP_201001201109
+#define IntMap_HPP_201001201109
 
-#include "MBVector.hpp"
-#include "BitVector.hpp"
+#ifndef __cplusplus
+#error Including C++ Header in a C file.
+#endif
 
-class IntMap
-{
+#define IntMap IntMapData
+extern "C" {
+#include "IntMap.h"
+}
+#undef IntMap
+
+class IntMap {
 	public:
-		IntMap();
-		explicit IntMap(int space);
-		IntMap(int space, double load);
-		IntMap(const IntMap& m);
+		IntMap() {
+		    IntMap_Create(&data);
+		}
 
-		void makeEmpty();
+		IntMap(const IntMap &m) {
+		    IntMap_Create(&data);
+		    IntMap_InsertAll(&data, &m.data);
+		}
+
+		void makeEmpty() {
+		    IntMap_MakeEmpty(&data);
+		}
 
 		bool containsKey(int key) const
 		{
-			return findKey(key) != -1;
+			return IntMap_ContainsKey(&data, key);
 		}
 
 		bool isEmpty() const {
-			return mySize == 0;
+			return IntMap_IsEmpty(&data);
 		}
 
 		int size() const {
-			return mySize;
+			return IntMap_Size(&data);
 		}
 
 		//defaults to a value of 0 for missing keys
 		int get(int key) const
 		{
-			int i = findKey(key);
-
-			if( i == -1) {
-				return 0;
-			}
-
-			return myValues[i];
+			return IntMap_Get(&data, key);
 		}
 
 
 		//returns the new value
 		int increment(int key) {
-			return increment(key, 1);
+			return IntMap_Increment(&data, key);
 		}
 
 		//returns the new value
 		int decrement(int key) {
-			return decrement(key, 1);
+			return IntMap_Decrement(&data, key);
 		}
 
 		//returns the new value
-		int increment(int key, int amount);
+		int increment(int key, int amount) {
+		    return IntMap_IncrementBy(&data, key, amount);
+		}
 		//returns the new value
-		int decrement(int key, int amount);
+		int decrement(int key, int amount) {
+		    return IntMap_DecrementBy(&data, key, amount);
+		}
 
-		void put(int key, int value);
+		void put(int key, int value) {
+		    IntMap_Put(&data, key, value);
+		}
 
 		//returns true iff the map changed
 		// (Note that deleting an entry of (1,0) will "change"
 		//  the map, even though get(1) will return 0
 		//  before an after the delete call
 		//  (due to the default value of 0)
-		bool remove(int key);
+		bool remove(int key) {
+		    return IntMap_Remove(&data, key);
+		}
 
 		//insert all keys from m into this map
 		//  if the key already exists, use the new value
 		//  linear time to the capacity (NOT size) of m
-		void insertAll(const IntMap &m);
-
-	private:
-		//positive hash value between 0 and tableSize-1
-		int hash(int key) const
-		{
-			uint32 hash;
-            uint32 mix;
-
-            // This seems to help my benchmarking tests
-            // though I'm not sure if it's a real improvement
-            // to the hashing algorithm, or just a quirk
-            // of the particular workload I'm running.
-            mix = 0x45678;
-			mix = key ^ (mix);
-			hash = mix % mySpace;
-
-			ASSERT(hash >= 0);
-			ASSERT(mySpace > 0);
-			ASSERT(hash < (uint32) mySpace);
-
-			return hash;
+		void insertAll(const IntMap &m) {
+		    return IntMap_InsertAll(&data, &m.data);
 		}
 
-        //puts a key at the specified index
-        void putHelper(int index, int key, int value);
-
-		//returns the index of a valid key, or -1
-		int findKey(int key) const;
-
-		//return the index of where this key would be inserted
-		//        or -1 if the map is full
-		// ie if the key is in the map, return it
-		//    if not, return the next free index
-		int getInsertionIndex(int key) const;
-
-		//makes the underlying table larger
-		void rehash();
-
-		MBVector<int> myKeys;
-		MBVector<int> myValues;
-
-		//is the entry "active"
-		BitVector myActiveFlags;
-		//is the entry "full" (for hashing purposes)
-		BitVector myFullFlags;
-
-		int mySize;
-		int mySpace;
-		int myFreeSpace;
-		double myLoad;
+	private:
+		IntMapData data;
 };
 
 
-
-
-
-#endif //IntMap_H_201001201109
+#endif //IntMap_HPP_201001201109
