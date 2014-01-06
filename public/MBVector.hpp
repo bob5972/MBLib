@@ -218,7 +218,7 @@ class MBVector
     private:
         int mySize;
         int myCapacity;
-        itemType * myItems;
+        itemType *myItems;
 };
 
 #include "../MBVector.cpp"

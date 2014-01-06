@@ -20,6 +20,13 @@ void BitVector_Create(BitVector *b)
 	b->bits = malloc(b->arrSize * sizeof(b->bits[0]));
 }
 
+void BitVector_CreateWithSize(BitVector *b, int size)
+{
+    //XXX: This will malloc twice.
+    BitVector_Create(b);
+    BitVector_Resize(b, size);
+}
+
 void BitVector_Destroy(BitVector *b)
 {
 	ASSERT(b != NULL);

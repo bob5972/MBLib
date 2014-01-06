@@ -23,6 +23,7 @@ typedef enum
 } BitVectorWriteType;
 
 void BitVector_Create(BitVector *b);
+void BitVector_CreateWithSize(BitVector *b, int size);
 void BitVector_Destroy(BitVector *b);
 void BitVector_Copy(BitVector *dest, const BitVector *src);
 

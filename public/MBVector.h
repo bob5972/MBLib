@@ -84,7 +84,8 @@ static INLINE void MBVector_MakeEmpty(MBVector *vector)
     MBVector_Resize(vector, 0);
 }
 
-static INLINE void *MBVectorGetHelper(MBVector *vector, int index, int itemSize)
+static INLINE void *
+MBVectorGetHelper(MBVector *vector, int index, int itemSize)
 {
     ASSERT(index >= 0);
     ASSERT(index < vector->size);
@@ -93,7 +94,17 @@ static INLINE void *MBVectorGetHelper(MBVector *vector, int index, int itemSize)
     return ((uint8 *)vector->items) + (index * itemSize);
 }
 
-static INLINE void *MBVector_Get(MBVector *vector, int index)
+static INLINE const void *
+MBVectorGetHelperConst(const MBVector *vector, int index, int itemSize)
+{
+    ASSERT(index >= 0);
+    ASSERT(index < vector->size);
+    ASSERT(itemSize == vector->itemSize);
+
+    return ((uint8 *)vector->items) + (index * itemSize);
+}
+
+static INLINE void *MBVector_GetPtr(MBVector *vector, int index)
 {
     return MBVectorGetHelper(vector, index, vector->itemSize);
 }
@@ -106,6 +117,14 @@ static INLINE void MBVector_Copy(MBVector *dest, const MBVector *src)
     MBVector_EnsureCapacity(dest, src->size);
     MBVector_Resize(dest, src->size);
     memcpy(dest->items, src->items, src->itemSize * src->size);
+}
+
+
+static INLINE void MBVector_Consume(MBVector *dest, MBVector *src)
+{
+    //XXX: This implementation sucks...
+    MBVector_Copy(dest, src);
+    MBVector_MakeEmpty(src);
 }
 
 
@@ -144,15 +163,29 @@ static INLINE void MBVector_Copy(MBVector *dest, const MBVector *src)
     static INLINE void _name ## _MakeEmpty \
     (_name *v) \
     { MBVector_MakeEmpty(&v->v); } \
-    static INLINE _type *_name ## _Get \
+    static INLINE _type *_name ## _GetPtr \
     (_name *v, int index) \
     { return (_type *)MBVectorGetHelper(&v->v, index, sizeof(_type)); } \
+    static INLINE _type _name ## _GetValue \
+    (const _name *v, int index) \
+    { return *(_type *)MBVectorGetHelperConst(&v->v, index, sizeof(_type)); } \
+    static INLINE void _name ## _PutValue \
+    (_name *v, int index, _type value) \
+    { \
+       _type *item = (_type *)MBVectorGetHelper(&v->v, index, sizeof(_type)); \
+      *item = value; \
+    } \
     static INLINE void _name ## _Copy \
     (_name *dest, const _name *src) \
     { MBVector_Copy(&dest->v, &src->v); } \
+    static INLINE void _name ## _Consume \
+    (_name *dest, _name *src) \
+    { MBVector_Consume(&dest->v, &src->v); } \
     static INLINE void _name ## _EnsureCapacity \
     (_name *v, int capacity) \
     { MBVector_EnsureCapacity(&v->v, capacity); }
 
+
+DECLARE_MBVECTOR_TYPE(int, MBIntVector);
 
 #endif // MBVECTOR_H_201202060000

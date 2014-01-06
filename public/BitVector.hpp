@@ -25,8 +25,7 @@ class BitVector
         }
 
         explicit BitVector(int size) {
-            BitVector_Create(&b);
-            BitVector_Resize(&b, size);
+            BitVector_CreateWithSize(&b, size);
         }
 
         BitVector(int size, bool initial) {

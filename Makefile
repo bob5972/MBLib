@@ -48,6 +48,7 @@ C_SOURCES = mbassert.c \
             mbdebug.c \
             random.c \
             BitVector.c \
+            IntMap.c \
             MBString.c \
             MBVector.c
 
