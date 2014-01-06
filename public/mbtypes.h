@@ -17,10 +17,6 @@
 	#define NULL (0)
 #endif
 
-#ifndef null
-	#define null NULL
-#endif
-
 #ifndef FALSE
 	/* This is the naked Truth */
 	#define FALSE (0)
@@ -29,14 +25,6 @@
 #ifndef TRUE
 	/* and this is the Light */
 	#define TRUE (1)
-#endif
-
-#ifndef true
-	#define true TRUE
-#endif
-
-#ifndef false
-	#define false FALSE
 #endif
 
 #if defined(__x86_64__)

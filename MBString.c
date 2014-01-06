@@ -263,7 +263,7 @@ int MBString_Compare(const MBString *lhs, const MBString *rhs)
  */
 void MBString_IntToString(MBString *str, int x)
 {
-    bool negative = false;
+    bool negative = FALSE;
     int digit;
     char c;
     int i;

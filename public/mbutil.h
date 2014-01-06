@@ -26,7 +26,7 @@
 #define INLINE inline
 #define EXTERN extern
 
-#define INLINE_ALWAYS INLINE __attribute__((__always_inline__))
+#define INLINE_ALWAYS inline __attribute__((__always_inline__))
 
 #define NORETURN __attribute__((__noreturn__))
 
@@ -59,6 +59,10 @@
 #define UNROLL_15(_i, _action)   UNROLL_14(_i, _action) ONCE(_i, 14, _action)
 #define UNROLL_16(_i, _action)   UNROLL_15(_i, _action) ONCE(_i, 15, _action)
 
+/*
+ * Use _ignored to avoid unused variable warning if
+ * the loop variable isn't actually used.
+ */
 #define ONCE(_i, _v, _action) {    \
    const unsigned _i = (_v);       \
    unsigned _ignored ;             \
@@ -69,13 +73,13 @@
 
 
 static INLINE bool
-isDigit(char c)
+Util_IsDigit(char c)
 {
     return '0' <= c && c <= '9';
 }
 
 static INLINE bool
-isWhitespace(char c)
+Util_IsWhitespace(char c)
 {
     switch (c) {
         case ' ':
@@ -88,19 +92,19 @@ isWhitespace(char c)
 }
 
 static INLINE void
-zero(void *p, uint size)
+Util_Zero(void *p, uint size)
 {
 	memset(p, 0, size);
 }
 
 static INLINE uint8
-popcount(uint32 x)
+Util_Popcount(uint32 x)
 {
 	return __builtin_popcount(x);
 }
 
 static INLINE uint8
-popcountl(uint64 x)
+Util_Popcountl(uint64 x)
 {
 	return __builtin_popcountl(x);
 }

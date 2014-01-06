@@ -34,7 +34,7 @@ class Parser
 
         Parser(MBSocket &socket)
         {
-            zero(&myInp, sizeof(myInp));
+            Util_Zero(&myInp, sizeof(myInp));
             myInp.clientData = &socket;
             myInp.readChar = ParserSocketReadChar;
 
@@ -57,8 +57,8 @@ class Parser
             while (hasNextChar) {
                 switch (state) {
                 case 0: // bad char
-                    while (nextChar != '-' && !isDigit(nextChar)) {
-                        if ((isWhitespace(nextChar) && shouldEatWhitespace) ||
+                    while (nextChar != '-' && !Util_IsDigit(nextChar)) {
+                        if ((Util_IsWhitespace(nextChar) && shouldEatWhitespace) ||
                              shouldEatGarbage) {
                             fillChar();
                         } else if (shouldPanicOnError) {
@@ -71,7 +71,7 @@ class Parser
                     if (nextChar == '-') {
                         state = 1;
                     } else {
-                        ASSERT(isDigit(nextChar));
+                        ASSERT(Util_IsDigit(nextChar));
                         state = 2;
                     }
                     break;
@@ -81,7 +81,7 @@ class Parser
                     	PANIC("No digits found.\n");
                 	}
 
-                    if (!isDigit(nextChar)) {
+                    if (!Util_IsDigit(nextChar)) {
                         state = 0;
                     } else {
                         state = 2;
@@ -89,7 +89,7 @@ class Parser
                     }
                     break;
                 case 2: // found digit
-                    while (hasNextChar && isDigit(nextChar)) {
+                    while (hasNextChar && Util_IsDigit(nextChar)) {
                         oup *= 10;
                         oup += nextChar - '0';
                         fillChar();
@@ -114,7 +114,7 @@ class Parser
         void eatWhitespace()
         {
             fillChar();
-            while (hasNextChar && isWhitespace(nextChar)) {
+            while (hasNextChar && Util_IsWhitespace(nextChar)) {
                 fillChar();
             }
 
@@ -159,7 +159,7 @@ class Parser
                 PANIC("Premature end of stream reached.\n");
             }
 
-            ASSERT(!hasNextChar || !isWhitespace(nextChar));
+            ASSERT(!hasNextChar || !Util_IsWhitespace(nextChar));
             return nextChar;
         }
 
@@ -171,7 +171,7 @@ class Parser
 
             fillChar();
 
-            while (hasNextChar && !isWhitespace(nextChar)) {
+            while (hasNextChar && !Util_IsWhitespace(nextChar)) {
                 oup.append(nextChar);
                 fillChar();
             }
@@ -224,7 +224,7 @@ class Parser
                     fillChar();
                 }
 
-                if (hasNextChar && isDigit(nextChar)) {
+                if (hasNextChar && Util_IsDigit(nextChar)) {
                     unreadChar();
                     frac = readInt();
                 }

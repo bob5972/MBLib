@@ -23,7 +23,7 @@ void PanicWithMessage(const char *file, int line, const char *fmt, ...)
 	Panic();
 }
 
-void AssertFail(const char *file, int line, const char *cond)
+void PanicAssertFail(const char *file, int line, const char *cond)
 {
 	fprintf(stderr, "%s:%d| ", file, line);
 	fprintf(stderr, "ASSERT: %s\n", cond);

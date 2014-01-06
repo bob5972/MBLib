@@ -27,7 +27,7 @@
 #if MB_ASSERT
 	#define ASSERT(x) do { \
 		if (!(x)) { \
-			AssertFail(__FILE__, __LINE__, #x); \
+			PanicAssertFail(__FILE__, __LINE__, #x); \
 		} \
 	} while (FALSE)
 	
@@ -42,7 +42,7 @@
 #define PANIC(...) PanicWithMessage( __FILE__, __LINE__, __VA_ARGS__)
 
 void PanicWithMessage(const char *file, int line, const char *fmt, ...);
-void AssertFail(const char *file, int line, const char *cond);
+void PanicAssertFail(const char *file, int line, const char *cond);
 void Panic();
 
 #ifdef __cplusplus

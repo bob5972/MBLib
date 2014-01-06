@@ -242,8 +242,11 @@ BitVectorWriteRangePartial(BitVector *b,
     if (CONSTANT(type) && CONSTANT(first) && CONSTANT(last)) {
         int count = last - first + 1;
         ASSERT(count >= 0);
-        UNROLL(16, i,
-                { if (i < (uint) count) { BitVectorWrite(b, first + i, type); } });
+        UNROLL(16, i, {
+            if (i < (uint) count) {
+                BitVectorWrite(b, first + i, type);
+            }
+        });
     } else {
         int x = first;
         while (x <= last) {
@@ -414,7 +417,7 @@ static INLINE int BitVector_PopCount(const BitVector *b)
     cellSize = size / BVUNITBITS;
 
     for (x = 0; x < cellSize; x++) {
-        sum += popcountl(b->bits[x]);
+        sum += Util_Popcountl(b->bits[x]);
     }
 
     strayBitCount = size % BVUNITBITS;
@@ -422,7 +425,7 @@ static INLINE int BitVector_PopCount(const BitVector *b)
 
     ASSERT(cellSize >= 0);
     ASSERT((uint) cellSize < b->arrSize);
-    sum += popcountl(b->bits[cellSize] & strayBitMask);
+    sum += Util_Popcountl(b->bits[cellSize] & strayBitMask);
 
     return sum;
 }
