@@ -122,9 +122,13 @@ static INLINE void MBVector_Copy(MBVector *dest, const MBVector *src)
 
 static INLINE void MBVector_Consume(MBVector *dest, MBVector *src)
 {
-    //XXX: This implementation sucks...
-    MBVector_Copy(dest, src);
-    MBVector_MakeEmpty(src);
+    ASSERT(dest->itemSize == src->itemSize);
+    
+    free(dest->items);
+    dest->items = src->items;
+    dest->size = src->size;
+    dest->capacity = src->capacity;
+    MBVector_CreateEmpty(src, dest->itemSize);
 }
 
 
