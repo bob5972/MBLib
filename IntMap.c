@@ -52,16 +52,6 @@ bool IntMap_ContainsKey(const IntMap *map, int key)
     return IntMapFindKey(map, key) != -1;
 }
 
-bool IntMap_IsEmpty(const IntMap *map)
-{
-    return map->mySize == 0;
-}
-
-int IntMap_Size(const IntMap *map)
-{
-    return map->mySize;
-}
-
 // Defaults to zero for missing keys.
 int IntMap_Get(const IntMap *map, int key)
 {
@@ -71,18 +61,6 @@ int IntMap_Get(const IntMap *map, int key)
     }
 
     return MBIntVector_GetValue(&map->myValues, i);
-}
-
-// Returns the new value.
-int IntMap_Increment(IntMap *map, int key)
-{
-    return IntMap_IncrementBy(map, key, 1);
-}
-
-// Returns the new value.
-int IntMap_Decrement(IntMap *map, int key)
-{
-    return IntMap_DecrementBy(map, key, 1);
 }
 
 // Returns the new value.
@@ -99,12 +77,6 @@ int IntMap_IncrementBy(IntMap *map, int key, int amount)
     value = MBIntVector_GetPtr(&map->myValues, i);
     *value += amount;
     return *value;
-}
-
-// Returns the new value.
-int IntMap_DecrementBy(IntMap *map, int key, int amount)
-{
-    return IntMap_IncrementBy(map, key, -amount);
 }
 
 void IntMap_Put(IntMap *map, int key, int value)

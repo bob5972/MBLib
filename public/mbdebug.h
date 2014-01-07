@@ -32,9 +32,11 @@ void Log(int level, const char *fmt, ...);
 #if MB_DEBUG
 	#define DebugPrint(...) { DebugPrintHelper( __FILE__, __LINE__, __VA_ARGS__); }
 	#define TRACE() { DebugPrintHelper( __FILE__, __LINE__, "TRACE: %s:%d\n", __FUNCTION__, __LINE__); }
+    #define DEBUG_ONLY(x) x
 #else
-	#define DebugPrint(msg) ;
-	#define TRACE() ;
+	#define DebugPrint(msg)
+	#define TRACE()
+    #define DEBUG_ONLY(x)
 #endif
 
 void DebugPrintHelper(const char *file, int line, const char *fmt, ...);
