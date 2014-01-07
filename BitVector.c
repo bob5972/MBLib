@@ -14,6 +14,8 @@
 void BitVector_Create(BitVector *b)
 {
 	ASSERT(b != NULL);
+	ASSERT(sizeof(b->bits[0]) * 8 == BVUNITBITS);
+
 	b->size = 0;
 	b->arrSize = BITVECTOR_DEFAULT_SPACE;
 	b->fill = FALSE;
