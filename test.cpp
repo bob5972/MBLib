@@ -825,8 +825,8 @@ void testRandom(void)
 
     for (x = 0; x < count; x++) {
         double d;
-        UNUSED_VARIABLE(d);
         d = Random_UnitFloat();
+        TEST(d >= 0.0 && d <= 1.0);
     }
 }
 
@@ -895,16 +895,16 @@ int main(int argc, char *argv[])
 
     BenchmarkTest tests[] = {
             // enabled, weight, function
-            { 1, 8000, testMBString     },
-            { 1, 3000, testMBVector     },
-            { 1, 3000, testCMBVector    },
-            { 1, 400,  testMBStack      },
-            { 1, 15,   testMBMap        },
-            { 1, 20,   testIntMap       },
-            { 1, 25,   testRandomIntMap },
-            { 1, 2,    testMBSet        },
-            { 1, 12,   testBitVector    },
-            { 1, 210,  testMBQueue       },
+            { 1, 16000, testMBString    },
+            { 1, 6000, testMBVector     },
+            { 1, 6000, testCMBVector    },
+            { 1, 800,  testMBStack      },
+            { 1, 35,   testMBMap        },
+            { 1, 40,   testIntMap       },
+            { 1, 45,   testRandomIntMap },
+            { 1, 4,    testMBSet        },
+            { 1, 22,   testBitVector    },
+            { 1, 410,  testMBQueue      },
     };
 
     //Functional tests
