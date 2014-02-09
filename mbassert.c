@@ -9,7 +9,7 @@
 #include "mbassert.h"
 #include "mbdebug.h"
 
-void PanicWithMessage(const char *file, int line, const char *fmt, ...)
+NORETURN void PanicWithMessage(const char *file, int line, const char *fmt, ...)
 {
 	va_list args;
 	
@@ -22,14 +22,14 @@ void PanicWithMessage(const char *file, int line, const char *fmt, ...)
 	Panic();
 }
 
-void PanicAssertFail(const char *file, int line, const char *cond)
+NORETURN void PanicAssertFail(const char *file, int line, const char *cond)
 {
 	fprintf(stderr, "%s:%d| ", file, line);
 	fprintf(stderr, "ASSERT: %s\n", cond);
 	Panic();
 }
 
-void Panic(void)
+NORETURN void Panic(void)
 {
 	exit(1);
 }
