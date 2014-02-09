@@ -72,6 +72,9 @@
 }
 
 
+#define MB_TO_BYTES(x) ((x) * 1024 * 1024)
+#define BYTES_TO_MB(x) ((x) / 1024 / 1024)
+
 static INLINE bool
 Util_IsDigit(char c)
 {

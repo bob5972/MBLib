@@ -19,7 +19,6 @@ void PanicWithMessage(const char *file, int line, const char *fmt, ...)
 	vfprintf(stderr, fmt, args);
 	fprintf(stderr, "\n");
 	va_end(args);
-	
 	Panic();
 }
 
@@ -27,11 +26,10 @@ void PanicAssertFail(const char *file, int line, const char *cond)
 {
 	fprintf(stderr, "%s:%d| ", file, line);
 	fprintf(stderr, "ASSERT: %s\n", cond);
-	
 	Panic();
 }
 
-void Panic()
+void Panic(void)
 {
 	exit(1);
 }

@@ -35,6 +35,12 @@
 	#define ASSERT(x)
 #endif
 
+#define VERIFY(x) do { \
+		if (!(x)) { \
+			PanicWithMessage(__FILE__, __LINE__, "VERIFY FAILED"); \
+		} \
+	} while (FALSE)
+
 #define NOT_REACHED() PanicWithMessage( __FILE__, __LINE__, "NOT_REACHED")
 
 #define NOT_IMPLEMENTED() PanicWithMessage( __FILE__, __LINE__, "NOT_IMPLEMENTED")
@@ -43,7 +49,7 @@
 
 void PanicWithMessage(const char *file, int line, const char *fmt, ...);
 void PanicAssertFail(const char *file, int line, const char *cond);
-void Panic();
+void Panic(void);
 
 #ifdef __cplusplus
 	}
