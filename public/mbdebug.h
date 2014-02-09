@@ -27,11 +27,13 @@
 void Warning(const char *fmt, ...);
 void Log(int level, const char *fmt, ...);
 
-#define NOT_TESTED() { DebugPrintHelper( __FILE__, __LINE__, "NOT_TESTED\n"); }
+#define NOT_TESTED() DebugPrintHelper( __FILE__, __LINE__, "NOT_TESTED\n")
+
+#define RTRACE() DebugPrintHelper( __FILE__, __LINE__, "TRACE: %s:%d\n", __FUNCTION__, __LINE__)
 
 #if MB_DEBUG
-	#define DebugPrint(...) { DebugPrintHelper( __FILE__, __LINE__, __VA_ARGS__); }
-	#define TRACE() { DebugPrintHelper( __FILE__, __LINE__, "TRACE: %s:%d\n", __FUNCTION__, __LINE__); }
+	#define DebugPrint(...) DebugPrintHelper( __FILE__, __LINE__, __VA_ARGS__)
+	#define TRACE() RTRACE()
     #define DEBUG_ONLY(x) x
 #else
 	#define DebugPrint(msg)

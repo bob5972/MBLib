@@ -51,8 +51,8 @@ static INLINE bool BitVector_GetRaw(int i, const uint64 *bits)
 #if defined(__GNUC__) && (defined(ARCH_AMD64) || defined(ARCH_x86))
     if (!CONSTANT(i)) {
         uint32 tmp;
-
-        asm("btl  %2, (%1); "
+        asm volatile(
+            "btl  %2, (%1); "
             "sbbl %0, %0"
             : "=r" (tmp)
             : "r" (bits), "r" (i)
@@ -68,9 +68,10 @@ static INLINE void BitVector_SetRaw(int i, uint64 *bits)
 {
 #if defined(__GNUC__) && (defined(ARCH_AMD64) || defined(ARCH_x86))
     if (!CONSTANT(i)) {
-        asm volatile("btsl %1, (%0)"
-                     :: "r" (bits), "r" (i)
-                     : "cc", "memory");
+        asm volatile(
+            "btsl %1, (%0)"
+            :: "r" (bits), "r" (i)
+            : "cc", "memory");
 
         return;
     }
@@ -82,9 +83,10 @@ static INLINE void BitVector_ResetRaw(int i, uint64 *bits)
 {
 #if defined(__GNUC__) && (defined(ARCH_AMD64) || defined(ARCH_x86))
     if (!CONSTANT(i)) {
-        asm volatile("btrl %1, (%0)"
-                     :: "r" (bits), "r" (i)
-                     : "cc", "memory");
+        asm volatile(
+            "btrl %1, (%0)"
+            :: "r" (bits), "r" (i)
+            : "cc", "memory");
         return;
     }
 #endif
@@ -95,9 +97,10 @@ static INLINE void BitVector_FlipRaw(int i, uint64 *bits)
 {
 #if defined(__GNUC__) && (defined(ARCH_AMD64) || defined(ARCH_x86))
     if (!CONSTANT(i)) {
-        asm volatile("btcl %1, (%0)"
-                     :: "r" (bits), "r" (i)
-                     : "cc", "memory");
+        asm volatile(
+            "btcl %1, (%0)"
+            :: "r" (bits), "r" (i)
+            : "cc", "memory");
 
         return;
     }

@@ -20,7 +20,7 @@ static int seed;
 #define TEST(x) \
 do { \
     int cond = (x); \
-    if (!cond) { \
+    if (UNLIKELY(!cond)) { \
         PANIC("Test failure: %s\n", #x); \
     } \
 } while (FALSE)
