@@ -8,6 +8,7 @@
 #include <string.h>
 
 #include "mbtypes.h"
+#include "mbassert.h"
 
 #ifdef __cplusplus
 	extern "C" {
@@ -65,12 +66,14 @@
  */
 #define ONCE(_i, _v, _action) {    \
    const unsigned _i = (_v);       \
-   unsigned _ignored ;             \
+   unsigned _ignored;              \
    _ignored = _i;                  \
    _ignored = _ignored;            \
    _action;                        \
 }
 
+#define KB_TO_BYTES(x) ((x) * 1024)
+#define BYTES_TO_KB(x) ((x) / 1024)
 
 #define MB_TO_BYTES(x) ((x) * 1024 * 1024)
 #define BYTES_TO_MB(x) ((x) / 1024 / 1024)

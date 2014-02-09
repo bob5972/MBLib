@@ -26,7 +26,7 @@
 
 #if MB_ASSERT
 	#define ASSERT(x) do { \
-		if (!(x)) { \
+		if (UNLIKELY(!(x))) { \
 			PanicAssertFail(__FILE__, __LINE__, #x); \
 		} \
 	} while (FALSE)
@@ -36,7 +36,7 @@
 #endif
 
 #define VERIFY(x) do { \
-		if (!(x)) { \
+		if (UNLIKELY(!(x))) { \
 			PanicWithMessage(__FILE__, __LINE__, "VERIFY FAILED"); \
 		} \
 	} while (FALSE)
