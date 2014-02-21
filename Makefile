@@ -23,11 +23,11 @@ $(MBLIB_BUILDDIR)/%.o: $(MBLIB_SRCDIR)/%.c
 #The generated makefiles get source into this file later
 ifeq ($(CC), gcc)
 $(DEPROOT)/%.dpp: $(MBLIB_SRCDIR)/%.cpp Makefile
-	$(CXX) -M -MM -MT "$(MBLIB_BUILDDIR)/$*.opp" \
+	$(CXX) -M -MP -MM -MT "$(MBLIB_BUILDDIR)/$*.opp" \
 	    -MT "$(MBLIB_DEPDIR)/$*.dpp" \
 	    -MF $@ ${CPPFLAGS} $<;
 $(DEPROOT)/%.d: $(MBLIB_SRCDIR)/%.c Makefile
-	$(CC) -M -MM -MT "$(MBLIB_BUILDDIR)/$*.o" \
+	$(CC) -M -MP -MM -MT "$(MBLIB_BUILDDIR)/$*.o" \
 	    -MT "$(MBLIB_DEPDIR)/$*.d" \
 	    -MF $@ ${CPPFLAGS} $<;
 endif
@@ -101,4 +101,3 @@ ifeq ($(CC), gcc)
 -include $(addprefix $(MBLIB_DEPDIR)/,$(subst .cpp,.dpp,$(CPP_SOURCES)))
 -include $(addprefix $(MBLIB_DEPDIR)/,$(subst .c,.d,$(C_SOURCES)))
 endif
-
