@@ -101,6 +101,13 @@ typedef unsigned long ulong;
 	typedef uint8 bool;
 #endif
 
+#define MIN_UINT8 0
+#define MAX_UINT8 255
+#define MIN_UINT16 0
+#define MAX_UINT16 65535
+#define MIN_UINT32 0
+#define MAX_UINT32 4294967295
+
 #ifdef __cplusplus
 	}
 #endif 
