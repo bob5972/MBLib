@@ -222,4 +222,27 @@ static INLINE void MBString_CopyCStr(MBString *dest, const char *cstr)
 }
 
 
+static INLINE void MBString_AppendCStr(MBString *dest, const char *cstr)
+{
+    int len;
+    ASSERT(cstr != NULL);
+    ASSERT(MBStringIsNullTerminated(dest));
+
+    /*
+     * We end up walking cstr twice (once to calculate the length, and
+     * once to copy the data).
+     *
+     * For small strings this should be negligible, and for large strings
+     * it avoids potentially having to do multiple copies if we have to
+     * resize our buffer.
+     */
+    len = strlen(cstr);
+    MBString_EnsureCapacity(dest, dest->length + len + 1);
+
+    memcpy(dest->chars + dest->length, cstr, len + 1);
+    dest->length += len;
+    ASSERT(MBStringIsNullTerminated(dest));
+}
+
+
 #endif //MBString_H_201001091354
