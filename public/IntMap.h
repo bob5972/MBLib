@@ -40,6 +40,12 @@ typedef struct IntMap {
 
 typedef IntMap IntMapData;
 
+typedef struct IntMapIterator {
+    uint32 index;
+    uint32 used;
+    IntMap *map;
+} IntMapIterator;
+
 void IntMap_Create(IntMap *map);
 void IntMap_Destroy(IntMap *map);
 
@@ -52,6 +58,36 @@ void IntMap_Put(IntMap *map, int key, int value);
 bool IntMap_Remove(IntMap *map, int key);
 void IntMap_InsertAll(IntMap *dest, const IntMap *src);
 void IntMap_DebugDump(IntMap *map);
+
+static INLINE void IntMapIterator_Start(IntMapIterator *it, IntMap *map)
+{
+    it->index = 0;
+    it->used = 0;
+    it->map = map;
+}
+
+static INLINE bool IntMapIterator_HasNext(IntMapIterator *it)
+{
+    return it->used < it->map->mySize;
+}
+
+static INLINE int IntMapIterator_GetNext(IntMapIterator *it)
+{
+    uint32 retInd;
+    ASSERT(IntMapIterator_HasNext(it));
+    ASSERT(it->index < it->map->mySpace);
+
+    while (!BitVector_Get(&it->map->myActiveFlags, it->index)) {
+        it->index++;
+        ASSERT(it->index < it->map->mySpace);
+    }
+
+    it->used++;
+    retInd = it->index;
+    it->index++;
+    return MBIntVector_GetValue(&it->map->myKeys, retInd);
+
+}
 
 static INLINE bool IntMap_IsEmpty(const IntMap *map)
 {
