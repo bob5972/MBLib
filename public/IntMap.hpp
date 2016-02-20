@@ -47,32 +47,32 @@ class IntMap {
 
 		bool containsKey(int key) const
 		{
-			return IntMap_ContainsKey(&data, key);
+                    return IntMap_ContainsKey(&data, key);
 		}
 
 		bool isEmpty() const {
-			return IntMap_IsEmpty(&data);
+                    return IntMap_IsEmpty(&data);
 		}
 
 		int size() const {
-			return IntMap_Size(&data);
+                    return IntMap_Size(&data);
 		}
 
 		//defaults to a value of 0 for missing keys
 		int get(int key) const
 		{
-			return IntMap_Get(&data, key);
+                    return IntMap_Get(&data, key);
 		}
 
 
 		//returns the new value
 		int increment(int key) {
-			return IntMap_Increment(&data, key);
+                    return IntMap_Increment(&data, key);
 		}
 
 		//returns the new value
 		int decrement(int key) {
-			return IntMap_Decrement(&data, key);
+                    return IntMap_Decrement(&data, key);
 		}
 
 		//returns the new value

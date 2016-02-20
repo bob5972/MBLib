@@ -796,6 +796,33 @@ void testIntMap()
         result = m.get(num);
         TEST(x == result);
     }
+
+    {
+        /*
+         * Test a problematic key sequence.
+         */
+        int ks[] = {
+            47, 42, 12074, 10, 32, 2592, 791284256, 42, 32, 10784, 84,
+            104, 21608, 706761832, 105, 115, 26995, 32, 102,
+        };
+        IntMap p;
+
+        for (uint32 i = 0; i < ARRAYSIZE(ks); i++) {
+            int v = p.get(ks[i]);
+            p.increment(ks[i], 1);
+            TEST(v + 1 == p.get(ks[i]));
+        }
+
+        for (uint32 i = 0; i < ARRAYSIZE(ks); i++) {
+            if (ks[i] == 42) {
+                TEST(p.get(ks[i]) == 2);
+            } else if (ks[i] == 32) {
+                TEST(p.get(ks[i]) == 3);
+            } else {
+                TEST(p.get(ks[i]) == 1);
+            }
+        }
+    }
 }
 
 void testRandomIntMap()

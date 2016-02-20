@@ -2,27 +2,27 @@
 ## configure -- MBLib
 
 if [ "$BUILDROOT" == "" ]; then
-	BUILDROOT="build";
+    BUILDROOT="build";
 fi;
 
 if [ "$TMPDIR" == "" ]; then
-	TMPDIR="$BUILDROOT/tmp"
+    TMPDIR="$BUILDROOT/tmp"
 fi;
 
 if [ "$DEPROOT" == "" ]; then
-	DEPROOT="$BUILDROOT/deps";
+    DEPROOT="$BUILDROOT/deps";
 fi;
 
 if [ "$MBLIB_BUILDDIR" == "" ]; then
-	MBLIB_BUILDDIR="$BUILDROOT";
+    MBLIB_BUILDDIR="$BUILDROOT";
 fi;
 
 if [ "$MBLIB_DEPDIR" == "" ]; then
-	MBLIB_DEPDIR="$DEPROOT";
+    MBLIB_DEPDIR="$DEPROOT";
 fi;
 
 if [ "$MBLIB_SRCDIR" == "" ]; then
-	MBLIB_SRCDIR=".";
+    MBLIB_SRCDIR=".";
 fi;
 
 mkdir -p "$MBLIB_BUILDDIR"
@@ -43,24 +43,24 @@ echo "MBLIB_DEPDIR=$MBLIB_DEPDIR" >> $CONFIG_MK;
 echo "MBLIB_SRCDIR=$MBLIB_SRCDIR" >> $CONFIG_MK;
 
 if [ `uname -a | cut -c 1-5` == "Linux" ]; then
-	echo '#define LINUX 1' >> $CONFIG_H;
-	echo 'LINUX=1' >> $CONFIG_MK;
+    echo '#define LINUX 1' >> $CONFIG_H;
+    echo 'LINUX=1' >> $CONFIG_MK;
 else
-	echo '#define MACOS 1' >> $CONFIG_H;
-	echo 'MACOS=1' >> $CONFIG_MK;
+    echo '#define MACOS 1' >> $CONFIG_H;
+    echo 'MACOS=1' >> $CONFIG_MK;
 fi;
 
 if [ "$DEBUG" == "" ]; then
-	DEBUG=1;
+    DEBUG=1;
 fi;
 
 echo '#define DEBUG ' $DEBUG >> $CONFIG_H
 echo DEBUG=$DEBUG >> $CONFIG_MK;
 
 if [ "$DEBUG" != "0" ]; then
-	DEFAULT_CFLAGS="${DEFAULT_CFLAGS} -march=native -Werror -Wall -g"
+    DEFAULT_CFLAGS="${DEFAULT_CFLAGS} -march=native -Werror -Wall -g"
 else
-	DEFAULT_CFLAGS="${DEFAULT_CFLAGS} -march=native -O2 -fomit-frame-pointer"
+    DEFAULT_CFLAGS="${DEFAULT_CFLAGS} -march=native -O2 -fomit-frame-pointer"
 fi;
 
 if [ "$USE_CLANG" != "" ]; then

@@ -78,6 +78,7 @@ int IntMap_Get(const IntMap *map, int key)
         return 0;
     }
 
+    ASSERT(MBIntVector_GetValue(&map->myKeys, i) == key);
     return MBIntVector_GetValue(&map->myValues, i);
 }
 
@@ -88,7 +89,8 @@ int IntMap_IncrementBy(IntMap *map, int key, int amount)
     int i = IntMapGetInsertionIndex(map, key);
 
     if (i == -1 || !BitVector_Get(&map->myActiveFlags, i)) {
-        IntMapPutHelper(map, i, key, amount);
+        IntMapPutHelper(map, i, key, 0);
+        i = IntMapGetInsertionIndex(map, key);
     }
 
     ASSERT(MBIntVector_GetValue(&map->myKeys, i) == key);
@@ -254,6 +256,18 @@ static void IntMapPutHelper(IntMap *map, int index, int key, int value)
     ASSERT(BitVector_Get(&map->myActiveFlags, index));
 
     MBIntVector_PutValue(&map->myValues, index, value);
+}
+
+void IntMap_DebugDump(IntMap *map)
+{
+    uint32 i;
+    for (i = 0; i < MBIntVector_Size(&map->myKeys); i++) {
+        if (BitVector_Get(&map->myActiveFlags, i)) {
+            DebugPrint("myKeys[%d]=%d, myValues[%d]=%d\n",
+                       i, MBIntVector_GetValue(&map->myKeys, i),
+                       i, MBIntVector_GetValue(&map->myValues, i));
+        }
+    }
 }
 
 //Make the underlying table larger

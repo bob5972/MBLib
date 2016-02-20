@@ -51,6 +51,7 @@ int IntMap_IncrementBy(IntMap *map, int key, int amount);
 void IntMap_Put(IntMap *map, int key, int value);
 bool IntMap_Remove(IntMap *map, int key);
 void IntMap_InsertAll(IntMap *dest, const IntMap *src);
+void IntMap_DebugDump(IntMap *map);
 
 static INLINE bool IntMap_IsEmpty(const IntMap *map)
 {
