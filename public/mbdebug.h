@@ -19,7 +19,7 @@
 /*
  * mbdebug.h --
  */
- 
+
 #ifndef MBDEBUG_H_201001091239
 #define MBDEBUG_H_201001091239
 
@@ -27,7 +27,7 @@
 
 #ifdef __cplusplus
 	extern "C" {
-#endif 
+#endif
 
 
 //backtraces and logfile not implemented
@@ -54,7 +54,7 @@ void Log(int level, const char *fmt, ...);
 	#define TRACE() RTRACE()
     #define DEBUG_ONLY(x) x
 #else
-	#define DebugPrint(msg)
+	#define DebugPrint(...)
 	#define TRACE()
     #define DEBUG_ONLY(x)
 #endif
@@ -64,6 +64,6 @@ void DebugPrintHelper(const char *file, int line, const char *fmt, ...);
 
 #ifdef __cplusplus
 	}
-#endif 
+#endif
 
 #endif //MBDEBUG_H_201001091239
