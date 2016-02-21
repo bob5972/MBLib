@@ -47,6 +47,13 @@ NORETURN void PanicAssertFail(const char *file, int line, const char *cond)
     Panic();
 }
 
+NORETURN void PanicVerifyFail(const char *file, int line, const char *cond)
+{
+    fprintf(stderr, "%s:%d| ", file, line);
+    fprintf(stderr, "VERIFY: %s\n", cond);
+    Panic();
+}
+
 NORETURN void Panic(void)
 {
     exit(1);

@@ -53,12 +53,21 @@
 #define ASSERT(x)
 #endif
 
+#if MB_DEBUG
 #define VERIFY(x) \
     do { \
         if (UNLIKELY(!(x))) { \
-                PanicWithMessage(__FILE__, __LINE__, "VERIFY FAILED"); \
+            PanicVerifyFail(__FILE__, __LINE__, #x); \
         } \
     } while (FALSE)
+#else
+#define VERIFY(x) \
+    do { \
+        if (UNLIKELY(!(x))) { \
+            PanicVerifyFail(__FILE__, __LINE__, "FAILED"); \
+        } \
+    } while (FALSE)
+#endif
 
 #define NOT_REACHED() \
     PanicWithMessage( __FILE__, __LINE__, "NOT_REACHED")
@@ -68,8 +77,10 @@
 
 #define PANIC(...) PanicWithMessage( __FILE__, __LINE__, __VA_ARGS__)
 
-NORETURN void PanicWithMessage(const char *file, int line, const char *fmt, ...);
+NORETURN void PanicWithMessage(const char *file, int line,
+                               const char *fmt, ...);
 NORETURN void PanicAssertFail(const char *file, int line, const char *cond);
+NORETURN void PanicVerifyFail(const char *file, int line, const char *cond);
 NORETURN void Panic(void);
 
 #ifdef __cplusplus
