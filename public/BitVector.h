@@ -33,7 +33,7 @@ typedef struct BitVector {
     bool fill;
 } BitVector;
 
-typedef BitVector BitVectorData;
+typedef BitVector CBitVector;
 
 typedef enum BitVectorWriteType {
     BITVECTOR_WRITE_RESET,
@@ -128,7 +128,7 @@ static INLINE void BitVector_FlipRaw(int i, uint64 *bits)
     bits[BVINDEX(i)] ^= BVMASK(i);
 }
 
-static INLINE bool BitVector_Get(const BitVector *b, int x)
+static INLINE bool BitVector_Get(const CBitVector *b, int x)
 {
     ASSERT(b != NULL);
     ASSERT(x >= 0);

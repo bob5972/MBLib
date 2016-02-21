@@ -25,7 +25,7 @@
 #include <string.h>
 
 extern "C" {
-#define BitVector BitVectorData
+#define BitVector CBitVector
 #include "BitVector.h"
 #undef BitVector
 }
@@ -137,7 +137,7 @@ class BitVector
         }
 
     private:
-        BitVectorData b;
+        CBitVector b;
 };
 
 #endif // BitVector_HPP_201202062339

@@ -29,8 +29,8 @@
 typedef struct IntMap {
     MBIntVector myKeys;
     MBIntVector myValues;
-    BitVector myActiveFlags;
-    BitVector myFullFlags;
+    CBitVector myActiveFlags;
+    CBitVector myFullFlags;
 
     int mySize;
     int mySpace;
@@ -41,8 +41,8 @@ typedef struct IntMap {
 typedef IntMap IntMapData;
 
 typedef struct IntMapIterator {
-    uint32 index;
-    uint32 used;
+    int index;
+    int used;
     IntMap *map;
 } IntMapIterator;
 
