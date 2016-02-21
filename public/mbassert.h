@@ -60,9 +60,11 @@
         } \
     } while (FALSE)
 
-#define NOT_REACHED() PanicWithMessage( __FILE__, __LINE__, "NOT_REACHED")
+#define NOT_REACHED() \
+    PanicWithMessage( __FILE__, __LINE__, "NOT_REACHED")
 
-#define NOT_IMPLEMENTED() PanicWithMessage( __FILE__, __LINE__, "NOT_IMPLEMENTED")
+#define NOT_IMPLEMENTED() \
+    PanicWithMessage( __FILE__, __LINE__, "NOT_IMPLEMENTED")
 
 #define PANIC(...) PanicWithMessage( __FILE__, __LINE__, __VA_ARGS__)
 

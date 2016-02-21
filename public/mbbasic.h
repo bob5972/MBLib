@@ -1,6 +1,6 @@
 /*
  * This file is part of MBLib.
- * Copyright (c) 2015 Michael Banack <bob5972@banack.net>
+ * Copyright (c) 2015-2016 Michael Banack <bob5972@banack.net>
  *
  * MBLib is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@
 /*
  * mbbasic.h --
  */
- 
+
 #ifndef _MBBASIC_H_201402091412
 #define _MBBASIC_H_201402091412
 
@@ -29,8 +29,13 @@
 	extern "C" {
 #endif
 
+#ifndef MIN
 #define MIN(x, y) ( (x) < (y) ? (x) : (y))
+#endif
+
+#ifndef MAX
 #define MAX(x, y) ( (x) > (y) ? (x) : (y))
+#endif
 
 #define IMPLIES(x, y) (!(x) || (y))
 #define EQUIVALENT(x, y) (!!(x) == !!(y))
@@ -56,7 +61,7 @@
 #define UNUSED_VARIABLE(x) (x) = (x)
 
 // Unroll a for loop from 0 to (n - 1).
-#define UNROLL(_n, _i, _action) { UNROLL_ ## _n (_i, _action)   } 
+#define UNROLL(_n, _i, _action) { UNROLL_ ## _n (_i, _action)   }
 #define UNROLL_0(_i, _action)
 #define UNROLL_1(_i, _action)   UNROLL_0(_i, _action) ONCE(_i, 0, _action)
 #define UNROLL_2(_i, _action)   UNROLL_1(_i, _action) ONCE(_i, 1, _action)
@@ -95,6 +100,6 @@
 
 #ifdef __cplusplus
 	}
-#endif 
+#endif
 
 #endif //_MBBASIC_H_201402091412
