@@ -43,7 +43,7 @@
 #endif
 
 #if MB_ASSERT
-#define ASSERT(x)
+#define ASSERT(x) \
     do { \
         if (UNLIKELY(!(x))) { \
                 PanicAssertFail(__FILE__, __LINE__, #x); \
