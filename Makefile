@@ -58,11 +58,13 @@ OBJECTS=$(addprefix $(MBLIB_BUILDDIR)/, \
             $(subst .c,.o, $(C_SOURCES)))
 
 #The config check is to test if we've been configured
-all: $(BUILDROOT)/config.h $(MBLIB_BUILDDIR)/MBLib.a
+all: $(BUILDROOT)/config.h $(MBLIB_BUILDDIR)/MBLib.a testbin benchmark
 
 .PHONY: all clean distclean dist
 
-test: $(MBLIB_BUILDDIR)/test.bin
+testbin: $(MBLIB_BUILDDIR)/test.bin
+
+test: testbin
 	$(MBLIB_BUILDDIR)/test.bin
 
 benchmark: $(MBLIB_BUILDDIR)/benchmark
