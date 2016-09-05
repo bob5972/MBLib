@@ -50,8 +50,6 @@ C_SOURCES = mbassert.c \
             MBString.c \
             MBVector.c
 
-SOURCES = $(CPP_SOURCES) $(C_SOURCES)
-
 OBJECTS=$(addprefix $(MBLIB_BUILDDIR)/, \
             $(subst .cpp,.opp, $(CPP_SOURCES))) \
         $(addprefix $(MBLIB_BUILDDIR)/, \
