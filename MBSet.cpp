@@ -1,6 +1,6 @@
 /*
  * This file is part of MBLib.
- * Copyright (c) 2015 Michael Banack <bob5972@banack.net>
+ * Copyright (c) 2015-2019 Michael Banack <bob5972@banack.net>
  *
  * MBLib is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,11 +45,11 @@ MBSet<itemType>::~MBSet()
 }
 
 template<class itemType>
-const MBSet<itemType>& MBSet<itemType>::operator = (const MBSet & set)
+const MBSet<itemType>& MBSet<itemType>::operator = (const MBSet &rhs)
 {
-	myItems = set.myItems;
-	mySize = set.mySize;
-	isUsed(set.isUsed);
+	myItems = rhs.myItems;
+	mySize = rhs.mySize;
+	isUsed = rhs.isUsed;
     return *this;
 }
 

@@ -1,6 +1,6 @@
 /*
  * This file is part of MBLib.
- * Copyright (c) 2015 Michael Banack <bob5972@banack.net>
+ * Copyright (c) 2015-2019 Michael Banack <bob5972@banack.net>
  *
  * MBLib is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,7 +33,7 @@ class MBSet
 
         ~MBSet();
 
-        const MBSet & operator =(const MBSet & set);
+        const MBSet & operator =(const MBSet &rhs);
 
         //Accessors
         void makeEmpty();

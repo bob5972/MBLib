@@ -1,6 +1,6 @@
 /*
  * This file is part of MBLib.
- * Copyright (c) 2015 Michael Banack <bob5972@banack.net>
+ * Copyright (c) 2015-2019 Michael Banack <bob5972@banack.net>
  *
  * MBLib is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -126,6 +126,11 @@ class BitVector
 
         bool operator [](int x) const {
             return BitVector_Get(&b, x);
+        }
+
+        const BitVector &operator =(const BitVector & rhs) {
+            BitVector_Copy(&b, &rhs.b);
+            return *this;
         }
 
         void consume(BitVector &src) {
