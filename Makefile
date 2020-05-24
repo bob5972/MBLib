@@ -39,7 +39,6 @@ CPP_SOURCES = MBString.cpp \
               MBSet.cpp \
               MBMatrix.cpp \
               MBSocket.cpp \
-              Parser.cpp \
               Dumper.cpp
 
 C_SOURCES = mbassert.c \
