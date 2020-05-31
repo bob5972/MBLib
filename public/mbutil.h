@@ -60,6 +60,20 @@ Util_Zero(void *p, uint size)
 	memset(p, 0, size);
 }
 
+static INLINE bool
+Util_IsZero(void *p, uint size)
+{
+	uint8 *byte = (uint8 *)p;
+    while (size > 0) {
+        if (*byte != 0) {
+            return FALSE;
+        }
+        byte++;
+        size--;
+    }
+    return TRUE;
+}
+
 static INLINE uint8
 Util_Popcount(uint32 x)
 {
