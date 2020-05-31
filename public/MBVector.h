@@ -156,6 +156,11 @@ static INLINE void MBVector_Consume(MBVector *dest, MBVector *src)
     MBVector_CreateEmpty(src, dest->itemSize);
 }
 
+static INLINE void *MBVector_GetCArray(MBVector *vector)
+{
+    return vector->items;
+}
+
 
 #define DECLARE_MBVECTOR_TYPE(_type, _name) \
     typedef struct _name { \
@@ -192,6 +197,9 @@ static INLINE void MBVector_Consume(MBVector *dest, MBVector *src)
     static INLINE void _name ## _MakeEmpty \
     (_name *v) \
     { MBVector_MakeEmpty(&v->v); } \
+    static INLINE _type *_name ## _GetCArray \
+    (_name *v) \
+    { return (_type *)MBVector_GetCArray(&v->v); } \
     static INLINE _type *_name ## _GetPtr \
     (_name *v, int index) \
     { return (_type *)MBVectorGetHelper(&v->v, index, sizeof(_type)); } \
