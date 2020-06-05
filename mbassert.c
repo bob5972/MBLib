@@ -26,6 +26,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <execinfo.h>
 
 #include "mbassert.h"
 #include "mbdebug.h"
@@ -55,5 +56,18 @@ NORETURN void PanicVerifyFail(const char *file, int line, const char *cond)
 
 NORETURN void PanicExit()
 {
+    int nptrs;
+    void *buffer[100];
+    char **symbols;
+
+    nptrs = backtrace(buffer, ARRAYSIZE(buffer));
+    symbols = backtrace_symbols(buffer, nptrs);
+
+    Warning("\n");
+    Warning("Backtrace:\n");
+    for (uint32 i = 0; i < nptrs; i++) {
+        Warning("\t%s\n", symbols[i]);
+    }
+
     exit(1);
 }
