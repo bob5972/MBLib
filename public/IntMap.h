@@ -39,6 +39,7 @@ typedef struct IntMap {
     int mySpace;
     int myFreeSpace;
     double myLoad;
+    int myEmptyValue;
 } IntMap;
 
 typedef IntMap IntMapData;
@@ -52,8 +53,11 @@ typedef struct IntMapIterator {
 void IntMap_Create(IntMap *map);
 void IntMap_Destroy(IntMap *map);
 
+void IntMap_SetEmptyValue(IntMap *map, int emptyValue);
+
 bool IntMap_ContainsKey(const IntMap *map, int key);
 int IntMap_Get(const IntMap *map, int key);
+bool IntMap_Lookup(const IntMap *map, int key, int *value);
 
 void IntMap_MakeEmpty(IntMap *map);
 int IntMap_IncrementBy(IntMap *map, int key, int amount);

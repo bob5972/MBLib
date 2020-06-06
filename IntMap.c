@@ -50,6 +50,9 @@ void IntMap_Create(IntMap *map)
     map->mySpace = DEFAULT_SPACE;
     map->myFreeSpace = DEFAULT_SPACE;
     map->myLoad = DEFAULT_LOAD;
+
+    // Zero is the default emptyValue.
+    map->myEmptyValue = 0;
 }
 
 void IntMap_Destroy(IntMap *map)
@@ -58,6 +61,11 @@ void IntMap_Destroy(IntMap *map)
     MBIntVector_Destroy(&map->myValues);
     BitVector_Destroy(&map->myActiveFlags);
     BitVector_Destroy(&map->myFullFlags);
+}
+
+void IntMap_SetEmptyValue(IntMap *map, int emptyValue)
+{
+    map->myEmptyValue = emptyValue;
 }
 
 void IntMap_MakeEmpty(IntMap *map)
@@ -76,13 +84,30 @@ bool IntMap_ContainsKey(const IntMap *map, int key)
 // Defaults to zero for missing keys.
 int IntMap_Get(const IntMap *map, int key)
 {
+    int value;
+    IntMap_Lookup(map, key, &value);
+    return value;
+}
+
+bool IntMap_Lookup(const IntMap *map, int key, int *value)
+{
+    int v;
+    bool found;
+
     int i = IntMapFindKey(map, key);
     if (i == -1) {
-        return 0;
+        v = map->myEmptyValue;
+        found = FALSE;
+    } else {
+        ASSERT(MBIntVector_GetValue(&map->myKeys, i) == key);
+        v = MBIntVector_GetValue(&map->myValues, i);
     }
 
-    ASSERT(MBIntVector_GetValue(&map->myKeys, i) == key);
-    return MBIntVector_GetValue(&map->myValues, i);
+    if (value != NULL) {
+        *value = v;
+    }
+
+    return found;
 }
 
 // Returns the new value.
@@ -92,7 +117,7 @@ int IntMap_IncrementBy(IntMap *map, int key, int amount)
     int i = IntMapGetInsertionIndex(map, key);
 
     if (i == -1 || !BitVector_Get(&map->myActiveFlags, i)) {
-        IntMapPutHelper(map, i, key, 0);
+        IntMapPutHelper(map, i, key, map->myEmptyValue);
         i = IntMapGetInsertionIndex(map, key);
     }
 

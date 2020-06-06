@@ -826,6 +826,17 @@ void testIntMap()
             }
         }
     }
+
+    {
+        /*
+         * Test EmptyValue
+         */
+        CIntMap map;
+        IntMap_Create(&map);
+        IntMap_SetEmptyValue(&map, -1);
+        TEST(IntMap_Get(&map, 0) == -1);
+        IntMap_Destroy(&map);
+    }
 }
 
 void testRandomIntMap()
