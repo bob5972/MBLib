@@ -60,6 +60,10 @@ NORETURN void PanicExit()
     void *buffer[100];
     char **symbols;
 
+    /*
+     * The project may need to be linked with -rdynamic in order to get
+     * symbolic backtraces to work.
+     */
     nptrs = backtrace(buffer, ARRAYSIZE(buffer));
     symbols = backtrace_symbols(buffer, nptrs);
 
