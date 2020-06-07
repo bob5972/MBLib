@@ -93,10 +93,20 @@ static INLINE void MBVector_GrowBy(MBVector *vector, int increment)
     MBVector_Resize(vector, vector->size + increment);
 }
 
+static INLINE void MBVector_Grow(MBVector *vector)
+{
+    MBVector_GrowBy(vector, 1);
+}
+
 static INLINE void MBVector_ShrinkBy(MBVector *vector, int decrement)
 {
     ASSERT(decrement >= 0);
     MBVector_Resize(vector, vector->size - decrement);
+}
+
+static INLINE void MBVector_Shrink(MBVector *vector)
+{
+    MBVector_ShrinkBy(vector, 1);
 }
 
 static INLINE bool MBVector_IsEmpty(const MBVector *vector)
@@ -188,9 +198,15 @@ static INLINE void *MBVector_GetCArray(MBVector *vector)
     static INLINE void _name ## _GrowBy \
     (_name *v, int increment) \
     { MBVector_GrowBy(&v->v, increment); } \
+    static INLINE void _name ## _Grow \
+    (_name *v) \
+    { MBVector_Grow(&v->v); } \
     static INLINE void _name ## _ShrinkBy \
     (_name *v, int decrement) \
     { MBVector_ShrinkBy(&v->v, decrement); } \
+    static INLINE void _name ## _Shrink \
+    (_name *v) \
+    { MBVector_Shrink(&v->v); } \
     static INLINE bool _name ## _IsEmpty \
     (_name *v) \
     { return MBVector_IsEmpty(&v->v); } \
