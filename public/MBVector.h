@@ -144,6 +144,17 @@ static INLINE void *MBVector_GetPtr(MBVector *vector, int index)
     return MBVectorGetHelper(vector, index, vector->itemSize);
 }
 
+static INLINE void *MBVectorGetLastPtrHelper(MBVector *vector, int itemSize)
+{
+    ASSERT(vector->size > 0);
+    return MBVectorGetHelper(vector, vector->size - 1, itemSize);
+}
+
+static INLINE void *MBVector_GetLastPtr(MBVector *vector)
+{
+    return MBVectorGetLastPtrHelper(vector, vector->itemSize);
+}
+
 static INLINE void MBVector_Copy(MBVector *dest, const MBVector *src)
 {
     ASSERT(dest->itemSize == src->itemSize);
@@ -219,6 +230,9 @@ static INLINE void *MBVector_GetCArray(MBVector *vector)
     static INLINE _type *_name ## _GetPtr \
     (_name *v, int index) \
     { return (_type *)MBVectorGetHelper(&v->v, index, sizeof(_type)); } \
+    static INLINE _type *_name ## _GetLastPtr \
+    (_name *v) \
+    { return (_type *)MBVectorGetLastPtrHelper(&v->v, sizeof(_type)); } \
     static INLINE _type _name ## _GetValue \
     (const _name *v, int index) \
     { return *(_type *)MBVectorGetHelperConst(&v->v, index, sizeof(_type)); } \
