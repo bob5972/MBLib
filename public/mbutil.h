@@ -36,13 +36,13 @@
 #endif
 
 static INLINE bool
-Util_IsDigit(char c)
+MBUtil_IsDigit(char c)
 {
     return '0' <= c && c <= '9';
 }
 
 static INLINE bool
-Util_IsWhitespace(char c)
+MBUtil_IsWhitespace(char c)
 {
     switch (c) {
         case ' ':
@@ -55,13 +55,13 @@ Util_IsWhitespace(char c)
 }
 
 static INLINE void
-Util_Zero(void *p, uint size)
+MBUtil_Zero(void *p, uint size)
 {
 	memset(p, 0, size);
 }
 
 static INLINE bool
-Util_IsZero(void *p, uint size)
+MBUtil_IsZero(void *p, uint size)
 {
 	uint8 *byte = (uint8 *)p;
     while (size > 0) {
@@ -75,13 +75,13 @@ Util_IsZero(void *p, uint size)
 }
 
 static INLINE uint8
-Util_Popcount(uint32 x)
+MBUtil_Popcount(uint32 x)
 {
 	return __builtin_popcount(x);
 }
 
 static INLINE uint8
-Util_Popcountl(uint64 x)
+MBUtil_Popcountl(uint64 x)
 {
 	return __builtin_popcountl(x);
 }

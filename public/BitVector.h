@@ -445,7 +445,7 @@ static INLINE int BitVector_PopCount(const BitVector *b)
     cellSize = size / BVUNITBITS;
 
     for (x = 0; x < cellSize; x++) {
-        sum += Util_Popcountl(b->bits[x]);
+        sum += MBUtil_Popcountl(b->bits[x]);
     }
 
     strayBitCount = size % BVUNITBITS;
@@ -453,7 +453,7 @@ static INLINE int BitVector_PopCount(const BitVector *b)
 
     ASSERT(cellSize >= 0);
     ASSERT((uint) cellSize < b->arrSize);
-    sum += Util_Popcountl(b->bits[cellSize] & strayBitMask);
+    sum += MBUtil_Popcountl(b->bits[cellSize] & strayBitMask);
 
     return sum;
 }

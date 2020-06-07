@@ -52,7 +52,7 @@ class Dumper {
 
         Dumper(MBSocket &s)
         {
-            Util_Zero(&myOup, sizeof(myOup));
+            MBUtil_Zero(&myOup, sizeof(myOup));
 
             myOup.clientData = &s;
             myOup.write = DumperSocketWrite;

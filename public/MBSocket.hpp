@@ -66,7 +66,7 @@ class MBSocket
             sockaddr_in serv_addr;
             int err;
 
-            Util_Zero((char *) &serv_addr, sizeof(serv_addr));
+            MBUtil_Zero((char *) &serv_addr, sizeof(serv_addr));
             serv_addr.sin_family = AF_INET;
             serv_addr.sin_addr.s_addr = INADDR_ANY;
             serv_addr.sin_port = htons(port);
