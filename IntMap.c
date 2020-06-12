@@ -49,6 +49,7 @@ void IntMap_Create(IntMap *map)
     map->mySize = 0;
     map->mySpace = DEFAULT_SPACE;
     map->myFreeSpace = DEFAULT_SPACE;
+    map->myFullSpace = 0;
     map->myLoad = DEFAULT_LOAD;
 
     // Zero is the default emptyValue.
@@ -73,6 +74,7 @@ void IntMap_MakeEmpty(IntMap *map)
     BitVector_ResetAll(&map->myFullFlags);
     BitVector_ResetAll(&map->myActiveFlags);
     map->mySize = 0;
+    map->myFullSpace = 0;
     map->myFreeSpace = map->mySpace;
 }
 
@@ -136,9 +138,9 @@ void IntMap_Put(IntMap *map, int key, int value)
 /*
  * Returns true iff the map changed.
  *
- * Note that removing an entry of (1, 0) will "change" the map,
- * even though Get(1) will return 0 before and after the Remove call, due
- * to the default value of zero.
+ * Note that removing an entry of (1, DEFAULT) will "change" the map,
+ * even though Get(1) will return DEFAULT before and after the Remove call, due
+ * to the default value of DEFAULT.
  */
 bool IntMap_Remove(IntMap *map, int key)
 {
@@ -227,6 +229,8 @@ static int IntMapGetInsertionIndex(const IntMap *map, int key)
     int hashI = IntMapHash(map, key);
     int x = hashI;
 
+    ASSERT(hashI % map->mySpace == hashI);
+
     do {
         if (!BitVector_Get(&map->myFullFlags, x)) {
             return x;
@@ -236,6 +240,7 @@ static int IntMapGetInsertionIndex(const IntMap *map, int key)
 
         x += SEARCH_INCR;
         x %= map->mySpace;
+
     } while (x != hashI);
 
     //We've been through the whole table without finding a free spot.
@@ -245,8 +250,12 @@ static int IntMapGetInsertionIndex(const IntMap *map, int key)
 //Puts a key at the specified index.
 static void IntMapPutHelper(IntMap *map, int index, int key, int value)
 {
-    ASSERT(IMPLIES(index == -1, map->myFreeSpace == 0));
-    if (index == -1 || ((double)map->mySize+1)/map->mySpace >= map->myLoad) {
+    ASSERT(index == -1 || index >= 0);
+    if (index == -1) {
+        ASSERT(map->myFreeSpace == 0 || map->myFullSpace == map->mySpace);
+    }
+
+    if (index == -1 || ((double)map->myFullSpace+1)/map->mySpace >= map->myLoad) {
         IntMapRehash(map);
         ASSERT(map->mySpace % SEARCH_INCR == 1);
 
@@ -268,6 +277,7 @@ static void IntMapPutHelper(IntMap *map, int index, int key, int value)
 
         if (!BitVector_Get(&map->myFullFlags, index)) {
             map->myFreeSpace--;
+            map->myFullSpace++;
             BitVector_Set(&map->myFullFlags, index);
         }
 
@@ -289,11 +299,15 @@ static void IntMapPutHelper(IntMap *map, int index, int key, int value)
 void IntMap_DebugDump(IntMap *map)
 {
     uint32 i;
+    DebugPrint("mySize=%d, mySpace=%d, myFreeSpace=%d\n",
+               map->mySize, map->mySpace, map->myFreeSpace);
     for (i = 0; i < MBIntVector_Size(&map->myKeys); i++) {
         if (BitVector_Get(&map->myActiveFlags, i)) {
             DebugPrint("myKeys[%d]=%d, myValues[%d]=%d\n",
                        i, MBIntVector_GetValue(&map->myKeys, i),
                        i, MBIntVector_GetValue(&map->myValues, i));
+        } else if (BitVector_Get(&map->myFullFlags, i)) {
+            DebugPrint("myKeys[%d]=full\n", i);
         }
     }
 }
@@ -333,6 +347,7 @@ static void IntMapRehash(IntMap *map)
 
     map->mySpace = newSpace;
     map->mySize = 0;
+    map->myFullSpace = 0;
     map->myFreeSpace = map->mySpace;
 
     for (x = 0; x < MBIntVector_Size(&oldKeys); x++) {

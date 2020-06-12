@@ -837,6 +837,50 @@ void testIntMap()
         TEST(IntMap_Get(&map, 0) == -1);
         IntMap_Destroy(&map);
     }
+
+    {
+        /*
+         * Test Put/Remove
+         */
+        CIntMap map;
+        IntMap_Create(&map);
+        IntMap_SetEmptyValue(&map, -1);
+
+        IntMap_Put(&map,   2, 1);
+        IntMap_Put(&map,   7, 1);
+        IntMap_Put(&map,   8, 1);
+        IntMap_Put(&map,  10, 1);
+        IntMap_Remove(&map, 8);
+
+        IntMap_Put(&map,  10, 2);
+        IntMap_Remove(&map, 10);
+        IntMap_Put(&map,  12, 1);
+        IntMap_Remove(&map, 12);
+        IntMap_Put(&map,  18, 1);
+        IntMap_Remove(&map, 18);
+        IntMap_Put(&map,  22, 1);
+        IntMap_Remove(&map, 22);
+        IntMap_Put(&map,  26, 1);
+        IntMap_Remove(&map, 26);
+        IntMap_Put(&map,  29, 1);
+        IntMap_Remove(&map, 29);
+        IntMap_Put(&map,  31, 1);
+        IntMap_Remove(&map, 31);
+        IntMap_Put(&map,  33, 1);
+        IntMap_Remove(&map, 33);
+        IntMap_Put(&map,  36, 1);
+        IntMap_Remove(&map, 36);
+        IntMap_Put(&map,  38, 1);
+        IntMap_Remove(&map, 38);
+        IntMap_Put(&map,  41, 1);
+        IntMap_Remove(&map, 41);
+        IntMap_Put(&map,  43, 1);
+        IntMap_Remove(&map, 43);
+
+        IntMap_Put(&map,  45, 1);
+
+        IntMap_Destroy(&map);
+    }
 }
 
 void testRandomIntMap()

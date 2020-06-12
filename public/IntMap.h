@@ -38,6 +38,7 @@ typedef struct IntMap {
     int mySize;
     int mySpace;
     int myFreeSpace;
+    int myFullSpace;
     double myLoad;
     int myEmptyValue;
 } IntMap;
