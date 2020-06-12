@@ -37,6 +37,8 @@ typedef struct MBOption {
 void MBOpt_Init(MBOption *opts, int numOpts, int argc, char **argv);
 void MBOpt_Exit(void);
 
+void MBOpt_PrintHelpText(void);
+
 bool MBOpt_IsPresent(const char *option);
 
 #endif //MBOpt_H_202006121333

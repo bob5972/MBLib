@@ -84,6 +84,18 @@ void MBOpt_Exit(void)
     mbopt.initialized = FALSE;
 }
 
+void MBOpt_PrintHelpText(void)
+{
+    Warning("\n");
+    Warning("%s Usage:\n", mbopt.arg0);
+    for (uint32 i = 0; i < mbopt.numOpts; i++) {
+        Warning("\t%s, %s: %s\n",
+                mbopt.values[i].opt.shortOpt,
+                mbopt.values[i].opt.longOpt,
+                mbopt.values[i].opt.helpText);
+    }
+}
+
 
 bool MBOpt_IsPresent(const char *option)
 {
