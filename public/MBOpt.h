@@ -31,6 +31,7 @@
 typedef struct MBOption {
     const char *shortOpt;
     const char *longOpt;
+    bool extraArg;
     const char *helpText;
 } MBOption;
 
@@ -40,5 +41,7 @@ void MBOpt_Exit(void);
 void MBOpt_PrintHelpText(void);
 
 bool MBOpt_IsPresent(const char *option);
+const char *MBOpt_GetString(const char *option);
+int MBOpt_GetInt(const char *option);
 
 #endif //MBOpt_H_202006121333

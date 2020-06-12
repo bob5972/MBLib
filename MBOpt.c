@@ -32,6 +32,7 @@
 typedef struct MBOptionValue {
     MBOption opt;
     bool present;
+    const char *string;
 } MBOptionValue;
 
 typedef struct MBOptGlobalData {
@@ -53,6 +54,8 @@ void MBOpt_Init(MBOption *opts, int numOpts, int argc, char **argv)
     mbopt.values = malloc(numOpts * sizeof(mbopt.values[0]));
     mbopt.numOpts = numOpts;
     for (uint32 i = 0; i < numOpts; i++) {
+        MBUtil_Zero(&mbopt.values[i], sizeof(mbopt.values[i]));
+
         mbopt.values[i].opt = opts[i];
         mbopt.values[i].present = FALSE;
 
@@ -71,6 +74,12 @@ void MBOpt_Init(MBOption *opts, int numOpts, int argc, char **argv)
             if (strcmp(argv[i], mbopt.values[o].opt.shortOpt) == 0 ||
                 strcmp(argv[i], mbopt.values[o].opt.longOpt) == 0) {
                 mbopt.values[o].present = TRUE;
+
+                if (i + 1 < argc) {
+                    mbopt.values[o].string = argv[i+1];
+                } else {
+                    PANIC("Option %s expected an argument\n", argv[i]);
+                }
             }
         }
     }
@@ -102,6 +111,38 @@ bool MBOpt_IsPresent(const char *option)
     for (uint32 i = 0; i < mbopt.numOpts; i++) {
         if (strcmp(option, &mbopt.values[i].opt.longOpt[2]) == 0) {
             return mbopt.values[i].present;
+        }
+    }
+
+    PANIC("Unknown Option: %s\n", option);
+}
+
+const char *MBOpt_GetString(const char *option)
+{
+    for (uint32 i = 0; i < mbopt.numOpts; i++) {
+        if (strcmp(option, &mbopt.values[i].opt.longOpt[2]) == 0) {
+            ASSERT(mbopt.values[i].opt.extraArg);
+            if (mbopt.values[i].present) {
+                return mbopt.values[i].string;
+            } else {
+                return NULL;
+            }
+        }
+    }
+
+    PANIC("Unknown Option: %s\n", option);
+}
+
+int MBOpt_GetInt(const char *option)
+{
+    for (uint32 i = 0; i < mbopt.numOpts; i++) {
+        if (strcmp(option, &mbopt.values[i].opt.longOpt[2]) == 0) {
+            ASSERT(mbopt.values[i].opt.extraArg);
+            if (mbopt.values[i].present) {
+                return atoi(mbopt.values[i].string);
+            } else {
+                return 0;
+            }
         }
     }
 
