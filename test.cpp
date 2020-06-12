@@ -38,6 +38,7 @@
 #include "MBMap.hpp"
 #include "MBQueue.hpp"
 #include "IntMap.hpp"
+#include "MBRegistry.hpp"
 
 DECLARE_MBVECTOR_TYPE(int, IntVector);
 static int seed;
@@ -959,6 +960,34 @@ void testMBQueue(void)
     }
 }
 
+
+void testMBRegistry(void)
+{
+    MBRegistry cppreg;
+    CMBRegistry mreg;
+    const char *s;
+
+    cppreg.put("Hello", "World");
+    TEST(strcmp(cppreg.get("Hello"), "World") == 0);
+
+    MBRegistry_Create(&mreg);
+    MBRegistry_Destroy(&mreg);
+
+    MBRegistry_Create(&mreg);
+    MBRegistry_Put(&mreg, "key", "value");
+    TEST(strcmp(MBRegistry_Get(&mreg, "key"), "value") == 0);
+    s = "OtherValue";
+    MBRegistry_Put(&mreg, "OtherKey", s);
+    TEST(MBRegistry_Get(&mreg, "OtherKey") == s);
+    MBRegistry_Put(&mreg, "key", s);
+    TEST(MBRegistry_Get(&mreg, "key") == s);
+    MBRegistry_Remove(&mreg, "key");
+    MBRegistry_Remove(&mreg, "OtherKey");
+    TEST(MBRegistry_Get(&mreg, "key") == NULL);
+    TEST(MBRegistry_Get(&mreg, "OtherKey") == NULL);
+    MBRegistry_Destroy(&mreg);
+}
+
 typedef struct
 {
         bool enabled;
@@ -1012,6 +1041,7 @@ int main(int argc, char *argv[])
             { 1, 4,    testMBSet        },
             { 1, 22,   testBitVector    },
             { 1, 410,  testMBQueue      },
+            { 1, 4,    testMBRegistry   },
     };
 
     //Functional tests
