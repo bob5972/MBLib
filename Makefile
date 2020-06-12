@@ -41,14 +41,15 @@ CPP_SOURCES = MBString.cpp \
               MBSocket.cpp \
               Dumper.cpp
 
-C_SOURCES = mbassert.c \
-            mbdebug.c \
-            random.c \
-            BitVector.c \
+C_SOURCES = BitVector.c \
             IntMap.c \
+            mbassert.c \
+            mbdebug.c \
+            MBOpt.c \
             MBRegistry.c \
             MBString.c \
-            MBVector.c
+            MBVector.c \
+            random.c
 
 OBJECTS=$(addprefix $(MBLIB_BUILDDIR)/, \
             $(subst .cpp,.opp, $(CPP_SOURCES))) \

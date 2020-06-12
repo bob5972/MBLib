@@ -95,3 +95,12 @@ const char *MBRegistry_Remove(MBRegistry *mreg, const char *key)
 
     return NULL;
 }
+
+void MBRegistry_DebugDump(MBRegistry *mreg)
+{
+    ASSERT(mreg != NULL);
+    for (uint32 i = 0; i < MBVector_Size(&mreg->data); i++) {
+        MBRegistryNode *n = MBVector_GetPtr(&mreg->data, i);
+        DebugPrint("\t%s => %s\n", n->key, n->value);
+    }
+}

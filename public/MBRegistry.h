@@ -42,6 +42,7 @@ typedef struct MBRegistry {
 
 void MBRegistry_Create(MBRegistry *mreg);
 void MBRegistry_Destroy(MBRegistry *mreg);
+void MBRegistry_DebugDump(MBRegistry *mreg);
 
 void MBRegistry_Put(MBRegistry *mreg, const char *key, const char *value);
 const char *MBRegistry_Get(MBRegistry *mreg, const char *key);
