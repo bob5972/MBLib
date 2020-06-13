@@ -27,6 +27,7 @@
 #define _MBUTIL_H_201106111445
 
 #include <string.h>
+#include <stdlib.h>
 
 #include "mbbasic.h"
 #include "mbtypes.h"
@@ -63,7 +64,7 @@ MBUtil_Zero(void *p, uint size)
 static INLINE bool
 MBUtil_IsZero(void *p, uint size)
 {
-	uint8 *byte = (uint8 *)p;
+    uint8 *byte = (uint8 *)p;
     while (size > 0) {
         if (*byte != 0) {
             return FALSE;
@@ -72,6 +73,12 @@ MBUtil_IsZero(void *p, uint size)
         size--;
     }
     return TRUE;
+}
+
+static INLINE void *
+MBUtil_ZAlloc(uint size)
+{
+    return calloc(1, size);
 }
 
 static INLINE uint8
