@@ -242,6 +242,13 @@ static INLINE void *MBVector_GetCArray(MBVector *vector)
        _type *item = (_type *)MBVectorGetHelper(&v->v, index, sizeof(_type)); \
       *item = value; \
     } \
+    static INLINE void _name ## _AppendValue \
+    (_name *v, _type value) \
+    { \
+       MBVector_Grow(&v->v); \
+       _type *item = (_type *)MBVectorGetLastPtrHelper(&v->v, sizeof(_type)); \
+       *item = value; \
+    } \
     static INLINE void _name ## _Copy \
     (_name *dest, const _name *src) \
     { MBVector_Copy(&dest->v, &src->v); } \
