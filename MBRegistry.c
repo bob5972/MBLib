@@ -104,3 +104,36 @@ void MBRegistry_DebugDump(MBRegistry *mreg)
         DebugPrint("\t%s => %s\n", n->key, n->value);
     }
 }
+
+int MBRegistry_GetInt(MBRegistry *mreg, const char *key)
+{
+    const char *str = MBRegistry_GetCStr(mreg, key);
+    if (str == NULL) {
+        return 0;
+    }
+
+    return atoi(str);
+}
+
+bool MBRegistry_GetBool(MBRegistry *mreg, const char *key)
+{
+    const char *str = MBRegistry_GetCStr(mreg, key);
+    if (str == NULL) {
+        return FALSE;
+    }
+
+    if (strcmp(str, "TRUE") == 0 ||
+        strcmp(str, "true") == 0 ||
+        strcmp(str, "1") == 0) {
+        return TRUE;
+    }
+
+    if (strcmp(str, "FALSE") == 0 ||
+        strcmp(str, "false") == 0 ||
+        strcmp(str, "0") == 0) {
+        return FALSE;
+    }
+
+    PANIC("MBRegistry key is not a bool (key=%s, value=%s)\n",
+          key, str);
+}

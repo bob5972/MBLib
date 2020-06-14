@@ -42,11 +42,32 @@ typedef struct MBRegistry {
 
 void MBRegistry_Create(MBRegistry *mreg);
 void MBRegistry_Destroy(MBRegistry *mreg);
+
 void MBRegistry_DebugDump(MBRegistry *mreg);
 
 void MBRegistry_Put(MBRegistry *mreg, const char *key, const char *value);
 const char *MBRegistry_Get(MBRegistry *mreg, const char *key);
+int MBRegistry_GetInt(MBRegistry *mreg, const char *key);
+bool MBRegistry_GetBool(MBRegistry *mreg, const char *key);
 const char *MBRegistry_Remove(MBRegistry *mreg, const char *key);
+
+static INLINE const char *MBRegistry_GetCStr(MBRegistry *mreg, const char *key)
+{
+    return MBRegistry_Get(mreg, key);
+}
+
+static INLINE MBRegistry *MBRegistry_Alloc(void)
+{
+    MBRegistry *mreg = (MBRegistry *)malloc(sizeof(MBRegistry));
+    MBRegistry_Create(mreg);
+    return mreg;
+}
+
+static INLINE void MBRegistry_Free(MBRegistry *mreg)
+{
+    MBRegistry_Destroy(mreg);
+    free(mreg);
+}
 
 
 #endif //MBRegistry_H_202006121226
