@@ -142,13 +142,9 @@ bool MBOpt_IsPresent(const char *option)
     }
 
     if (DEBUG) {
-        for (uint32 i = 0; i < mbopt.numOpts; i++) {
-            if (strcmp(option, &mbopt.values[i].opt.longOpt[2]) == 0) {
-                ASSERT(!mbopt.values[i].present);
-            }
+        if (!MBOpt_IsValid(option)) {
+            PANIC("Unknown Option: %s\n", option);
         }
-
-        PANIC("Unknown Option: %s\n", option);
     }
 
     return FALSE;
