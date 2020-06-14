@@ -75,11 +75,14 @@ void MBOpt_Init(MBOption *opts, int numOpts, int argc, char **argv)
                 strcmp(argv[i], mbopt.values[o].opt.longOpt) == 0) {
                 mbopt.values[o].present = TRUE;
 
-                if (i + 1 < argc) {
-                    mbopt.values[o].string = argv[i+1];
-                } else {
-                    PANIC("Option %s expected an argument\n", argv[i]);
+                if (mbopt.values[o].opt.extraArg) {
+                    if (i + 1 < argc) {
+                        mbopt.values[o].string = argv[i+1];
+                    } else {
+                        PANIC("Option %s expected an argument\n", argv[i]);
+                    }
                 }
+                break;
             }
         }
     }
