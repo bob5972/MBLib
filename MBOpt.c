@@ -28,6 +28,7 @@
 #include "MBOpt.h"
 #include "mbtypes.h"
 #include "mbassert.h"
+#include "MBRegistry.h"
 
 typedef struct MBOptionValue {
     MBOption opt;
@@ -39,6 +40,7 @@ typedef struct MBOptGlobalData {
     bool initialized;
     const char *arg0;
 
+    MBRegistry mreg;
     MBOptionValue *values;
     uint32 numOpts;
 } MBOptGlobalData;
@@ -47,9 +49,12 @@ static MBOptGlobalData mbopt;
 
 void MBOpt_Init(MBOption *opts, int numOpts, int argc, char **argv)
 {
+    ASSERT(MBUtil_IsZero(&mbopt, sizeof(mbopt)));
     ASSERT(!mbopt.initialized);
     ASSERT(numOpts >= 0);
     ASSERT(numOpts < MAX_INT32);
+
+    MBRegistry_Create(&mbopt.mreg);
 
     mbopt.values = malloc(numOpts * sizeof(mbopt.values[0]));
     mbopt.numOpts = numOpts;
@@ -74,6 +79,7 @@ void MBOpt_Init(MBOption *opts, int numOpts, int argc, char **argv)
             if (strcmp(argv[i], mbopt.values[o].opt.shortOpt) == 0 ||
                 strcmp(argv[i], mbopt.values[o].opt.longOpt) == 0) {
                 mbopt.values[o].present = TRUE;
+                mbopt.values[o].string = "TRUE";
 
                 if (mbopt.values[o].opt.extraArg) {
                     if (i + 1 < argc) {
@@ -82,6 +88,9 @@ void MBOpt_Init(MBOption *opts, int numOpts, int argc, char **argv)
                         PANIC("Option %s expected an argument\n", argv[i]);
                     }
                 }
+
+                MBRegistry_Put(&mbopt.mreg, &mbopt.values[o].opt.longOpt[2],
+                               mbopt.values[o].string);
                 break;
             }
         }
@@ -93,6 +102,7 @@ void MBOpt_Init(MBOption *opts, int numOpts, int argc, char **argv)
 void MBOpt_Exit(void)
 {
     ASSERT(mbopt.initialized);
+    MBRegistry_Destroy(&mbopt.mreg);
     mbopt.initialized = FALSE;
 }
 
@@ -109,45 +119,70 @@ void MBOpt_PrintHelpText(void)
 }
 
 
-bool MBOpt_IsPresent(const char *option)
+bool MBOpt_IsValid(const char *option)
 {
+    if (MBRegistry_ContainsKey(&mbopt.mreg, option)) {
+        return TRUE;
+    }
+
     for (uint32 i = 0; i < mbopt.numOpts; i++) {
         if (strcmp(option, &mbopt.values[i].opt.longOpt[2]) == 0) {
-            return mbopt.values[i].present;
+            return TRUE;
         }
     }
 
-    PANIC("Unknown Option: %s\n", option);
+    return FALSE;
+}
+
+
+bool MBOpt_IsPresent(const char *option)
+{
+    if (MBRegistry_ContainsKey(&mbopt.mreg, option)) {
+        return TRUE;
+    }
+
+    if (DEBUG) {
+        for (uint32 i = 0; i < mbopt.numOpts; i++) {
+            if (strcmp(option, &mbopt.values[i].opt.longOpt[2]) == 0) {
+                ASSERT(!mbopt.values[i].present);
+            }
+        }
+
+        PANIC("Unknown Option: %s\n", option);
+    }
+
+    return FALSE;
 }
 
 const char *MBOpt_GetString(const char *option)
 {
-    for (uint32 i = 0; i < mbopt.numOpts; i++) {
-        if (strcmp(option, &mbopt.values[i].opt.longOpt[2]) == 0) {
-            ASSERT(mbopt.values[i].opt.extraArg);
-            if (mbopt.values[i].present) {
-                return mbopt.values[i].string;
-            } else {
-                return NULL;
-            }
+    if (DEBUG) {
+        if (!MBOpt_IsValid(option)) {
+            PANIC("Unknown Option: %s\n", option);
         }
     }
 
-    PANIC("Unknown Option: %s\n", option);
+    return MBRegistry_GetCStr(&mbopt.mreg, option);
 }
 
 int MBOpt_GetInt(const char *option)
 {
-    for (uint32 i = 0; i < mbopt.numOpts; i++) {
-        if (strcmp(option, &mbopt.values[i].opt.longOpt[2]) == 0) {
-            ASSERT(mbopt.values[i].opt.extraArg);
-            if (mbopt.values[i].present) {
-                return atoi(mbopt.values[i].string);
-            } else {
-                return 0;
-            }
+    if (DEBUG) {
+        if (!MBOpt_IsValid(option)) {
+            PANIC("Unknown Option: %s\n", option);
         }
     }
 
-    PANIC("Unknown Option: %s\n", option);
+    return MBRegistry_GetInt(&mbopt.mreg, option);
+}
+
+bool MBOpt_GetBool(const char *option)
+{
+    if (DEBUG) {
+        if (!MBOpt_IsValid(option)) {
+            PANIC("Unknown Option: %s\n", option);
+        }
+    }
+
+    return MBRegistry_GetBool(&mbopt.mreg, option);
 }

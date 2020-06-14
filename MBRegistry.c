@@ -43,6 +43,19 @@ void MBRegistry_Destroy(MBRegistry *mreg)
     MBVector_Destroy(&mreg->data);
 }
 
+bool MBRegistry_ContainsKey(MBRegistry *mreg, const char *key)
+{
+    ASSERT(mreg != NULL);
+    for (uint32 i = 0; i < MBVector_Size(&mreg->data); i++) {
+        MBRegistryNode *n = MBVector_GetPtr(&mreg->data, i);
+        if (strcmp(n->key, key) == 0) {
+            return TRUE;
+        }
+    }
+
+    return FALSE;
+}
+
 const char *MBRegistry_Get(MBRegistry *mreg, const char *key)
 {
     ASSERT(mreg != NULL);
@@ -105,21 +118,23 @@ void MBRegistry_DebugDump(MBRegistry *mreg)
     }
 }
 
-int MBRegistry_GetInt(MBRegistry *mreg, const char *key)
+int MBRegistry_GetIntD(MBRegistry *mreg, const char *key, int defValue)
 {
     const char *str = MBRegistry_GetCStr(mreg, key);
     if (str == NULL) {
-        return 0;
+        return defValue;
     }
+
+    //XXX ASSERT it's a number ?
 
     return atoi(str);
 }
 
-bool MBRegistry_GetBool(MBRegistry *mreg, const char *key)
+bool MBRegistry_GetBoolD(MBRegistry *mreg, const char *key, bool defValue)
 {
     const char *str = MBRegistry_GetCStr(mreg, key);
     if (str == NULL) {
-        return FALSE;
+        return defValue;
     }
 
     if (strcmp(str, "TRUE") == 0 ||
@@ -134,6 +149,5 @@ bool MBRegistry_GetBool(MBRegistry *mreg, const char *key)
         return FALSE;
     }
 
-    PANIC("MBRegistry key is not a bool (key=%s, value=%s)\n",
-          key, str);
+    PANIC("MBRegistry key is not a bool (key=%s, value=%s)\n", key, str);
 }

@@ -46,15 +46,11 @@ void MBRegistry_Destroy(MBRegistry *mreg);
 void MBRegistry_DebugDump(MBRegistry *mreg);
 
 void MBRegistry_Put(MBRegistry *mreg, const char *key, const char *value);
+bool MBRegistry_ContainsKey(MBRegistry *mreg, const char *key);
 const char *MBRegistry_Get(MBRegistry *mreg, const char *key);
-int MBRegistry_GetInt(MBRegistry *mreg, const char *key);
-bool MBRegistry_GetBool(MBRegistry *mreg, const char *key);
+int MBRegistry_GetIntD(MBRegistry *mreg, const char *key, int defValue);
+bool MBRegistry_GetBoolD(MBRegistry *mreg, const char *key, bool defValue);
 const char *MBRegistry_Remove(MBRegistry *mreg, const char *key);
-
-static INLINE const char *MBRegistry_GetCStr(MBRegistry *mreg, const char *key)
-{
-    return MBRegistry_Get(mreg, key);
-}
 
 static INLINE MBRegistry *MBRegistry_Alloc(void)
 {
@@ -69,5 +65,27 @@ static INLINE void MBRegistry_Free(MBRegistry *mreg)
     free(mreg);
 }
 
+static INLINE const char *
+MBRegistry_GetCStrD(MBRegistry *mreg, const char *key, const char *defValue)
+{
+    const char *str = MBRegistry_Get(mreg, key);
+    if (str == NULL) {
+        return defValue;
+    }
+    return str;
+}
+
+static INLINE const char *MBRegistry_GetCStr(MBRegistry *mreg, const char *key)
+{
+    return MBRegistry_GetCStrD(mreg, key, NULL);
+}
+static INLINE bool MBRegistry_GetBool(MBRegistry *mreg, const char *key)
+{
+    return MBRegistry_GetBoolD(mreg, key, FALSE);
+}
+static INLINE int MBRegistry_GetInt(MBRegistry *mreg, const char *key)
+{
+    return MBRegistry_GetIntD(mreg, key, 0);
+}
 
 #endif //MBRegistry_H_202006121226

@@ -40,8 +40,10 @@ void MBOpt_Exit(void);
 
 void MBOpt_PrintHelpText(void);
 
+bool MBOpt_IsValid(const char *option);
 bool MBOpt_IsPresent(const char *option);
 const char *MBOpt_GetString(const char *option);
 int MBOpt_GetInt(const char *option);
+bool MBOpt_GetBool(const char *option);
 
 #endif //MBOpt_H_202006121333
