@@ -34,6 +34,7 @@ typedef struct MBVector {
     int size;
     int capacity;
     int itemSize;
+    int pinCount;
     void *items;
 } MBVector;
 
@@ -52,7 +53,7 @@ static INLINE void MBVector_Create(MBVector *vector, int itemSize,
     vector->size = size;
     vector->capacity = capacity;
     vector->itemSize = itemSize;
-
+    vector->pinCount = 0;
     vector->items = malloc(itemSize * vector->capacity);
 }
 
@@ -69,8 +70,24 @@ static INLINE void MBVector_CreateWithSize(MBVector *vector, int itemSize,
 
 static INLINE void MBVector_Destroy(MBVector *vector)
 {
+    ASSERT(vector->pinCount == 0);
     free(vector->items);
     vector->items = NULL;
+}
+
+static INLINE void MBVector_Pin(MBVector *vector)
+{
+    if (DEBUG) {
+        vector->pinCount++;
+    }
+}
+
+static INLINE void MBVector_Unpin(MBVector *vector)
+{
+    if (DEBUG) {
+        ASSERT(vector->pinCount > 0);
+        vector->pinCount--;
+    }
 }
 
 static INLINE int MBVector_Size(const MBVector *vector)
@@ -200,6 +217,12 @@ static INLINE void *MBVector_GetCArray(MBVector *vector)
     static INLINE void _name ## _Destroy \
     (_name *v) \
     { MBVector_Destroy(&v->v); } \
+    static INLINE void _name ## _Pin \
+    (_name *v) \
+    { MBVector_Pin(&v->v); } \
+    static INLINE void _name ## _Unpin \
+    (_name *v) \
+    { MBVector_Unpin(&v->v); } \
     static INLINE int _name ## _Size \
     (_name *v) \
     { return MBVector_Size(&v->v); } \

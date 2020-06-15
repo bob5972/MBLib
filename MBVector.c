@@ -42,6 +42,8 @@ void MBVector_EnsureCapacity(MBVector *vector, int capacity)
         newCap *= 2;
     }
     ASSERT(newCap > vector->capacity);
+    vector->capacity = newCap;
 
+    ASSERT(vector->pinCount == 0);
     vector->items = realloc(vector->items, vector->itemSize * newCap);
 }
