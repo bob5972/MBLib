@@ -186,16 +186,36 @@ static INLINE void MBVector_Copy(MBVector *dest, const MBVector *src)
 static INLINE void MBVector_Consume(MBVector *dest, MBVector *src)
 {
     ASSERT(dest->itemSize == src->itemSize);
+
+    /*
+     * We could technically leave the src pinned, but if
+     * you're using Consume with pinned arrays, confirm
+     * this is what you were expecting to happen.
+     */
+    ASSERT(dest->pinCount == 0);
+    ASSERT(src->pinCount == 0);
     
     free(dest->items);
     dest->items = src->items;
     dest->size = src->size;
     dest->capacity = src->capacity;
+
+    /*
+     * We just ASSERTed these were both zero, so this shouldn't
+     * be necessary, but Valgrind is complaining that this isn't
+     * initialized sometimes, and I'm hypothesizing that this
+     * might fix it.
+     */
+    dest->pinCount = src->pinCount;
+
     MBVector_CreateEmpty(src, dest->itemSize);
 }
 
 static INLINE void *MBVector_GetCArray(MBVector *vector)
 {
+    /*
+     * Consider pinning the array if you're using this function.
+     */
     return vector->items;
 }
 
