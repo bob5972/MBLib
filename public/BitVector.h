@@ -71,6 +71,28 @@ void BitVectorFlipRangeGeneric(BitVector *b, int first, int last);
 #define BVINDEX(x) (x / BVUNITBITS)
 #define BVMASK(x)  ( ((uint64)1) << (x % BVUNITBITS))
 
+static INLINE bool BitVector_GetRaw16(int i, uint16 bits)
+{
+    ASSERT(i >= 0);
+    ASSERT(i < 16);
+    return (bits & BVMASK(i)) != 0;
+}
+
+
+static INLINE bool BitVector_GetRaw32(int i, uint32 bits)
+{
+    ASSERT(i >= 0);
+    ASSERT(i < 32);
+    return (bits & BVMASK(i)) != 0;
+}
+
+static INLINE bool BitVector_GetRaw64(int i, uint64 bits)
+{
+    ASSERT(i >= 0);
+    ASSERT(i < 64);
+    return (bits & BVMASK(i)) != 0;
+}
+
 static INLINE bool BitVector_GetRaw(int i, const uint64 *bits)
 {
 #if defined(__GNUC__) && (defined(ARCH_AMD64) || defined(ARCH_x86))
@@ -103,6 +125,29 @@ static INLINE void BitVector_SetRaw(int i, uint64 *bits)
 #endif
     bits[BVINDEX(i)] |= BVMASK(i);
 }
+
+
+static INLINE void BitVector_SetRaw64(int i, uint64 *bits)
+{
+    ASSERT(i >= 0);
+    ASSERT(i < 64);
+    BitVector_SetRaw(i, bits);
+}
+
+static INLINE void BitVector_SetRaw32(int i, uint32 *bits)
+{
+    ASSERT(i >= 0);
+    ASSERT(i < 32);
+    BitVector_SetRaw(i, (uint64 *)bits);
+}
+
+static INLINE void BitVector_SetRaw16(int i, uint16 *bits)
+{
+    ASSERT(i >= 0);
+    ASSERT(i < 16);
+    BitVector_SetRaw(i, (uint64 *)bits);
+}
+
 
 static INLINE void BitVector_ResetRaw(int i, uint64 *bits)
 {
