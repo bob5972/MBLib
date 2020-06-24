@@ -131,21 +131,21 @@ static INLINE void BitVector_SetRaw64(int i, uint64 *bits)
 {
     ASSERT(i >= 0);
     ASSERT(i < 64);
-    BitVector_SetRaw(i, bits);
+    *bits |= BVMASK(i);
 }
 
 static INLINE void BitVector_SetRaw32(int i, uint32 *bits)
 {
     ASSERT(i >= 0);
     ASSERT(i < 32);
-    BitVector_SetRaw(i, (uint64 *)bits);
+    *bits |= BVMASK(i);
 }
 
 static INLINE void BitVector_SetRaw16(int i, uint16 *bits)
 {
     ASSERT(i >= 0);
     ASSERT(i < 16);
-    BitVector_SetRaw(i, (uint64 *)bits);
+    *bits |= BVMASK(i);
 }
 
 
