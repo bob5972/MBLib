@@ -49,6 +49,7 @@
 #define EXTERN extern
 
 #define INLINE_ALWAYS inline __attribute__((__always_inline__))
+#define NOINLINE inline __attribute__((__noinline__))
 
 #define NORETURN __attribute__((__noreturn__))
 
