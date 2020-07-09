@@ -111,6 +111,13 @@ typedef unsigned long ulong;
 #define MAX_INT32  0x7FFFFFFF
 #define MIN_INT32  (-2147483648)
 
+#if (WORD_BIT == 32)
+#define MAX_UINT MAX_UINT32
+#define MIN_UINT MIN_UINT32
+#else
+	#error Unknown word size
+#endif
+
 #ifdef __cplusplus
     }
 #endif

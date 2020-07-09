@@ -137,8 +137,12 @@ int64 MBRegistry_GetInt64D(MBRegistry *mreg, const char *key, int64 defValue)
 
     //XXX ASSERT it's a number ?
     int base = 0;
-    if (str[0] == '0') {
-        if (str[1] != 'x' && str[1] != 'X') {
+    int x = 0;
+    if (str[0] == '-' || str[0] == '+') {
+        x++;
+    }
+    if (str[x] == '0') {
+        if (str[x+1] != 'x' && str[x+1] != 'X') {
             // Avoid using octal consts... nobody wants those.
             base = 10;
         }
@@ -146,6 +150,40 @@ int64 MBRegistry_GetInt64D(MBRegistry *mreg, const char *key, int64 defValue)
 
     ASSERT(sizeof(long long) == sizeof(int64));
     return strtoll(str, NULL, base);
+}
+
+uint MBRegistry_GetUintD(MBRegistry *mreg, const char *key, uint defValue)
+{
+    uint64 val = MBRegistry_GetUint64D(mreg, key, defValue);
+
+    ASSERT(val <= MAX_UINT);
+    ASSERT(val >= MIN_UINT);
+
+    return val;
+}
+
+uint64 MBRegistry_GetUint64D(MBRegistry *mreg, const char *key, uint64 defValue)
+{
+    const char *str = MBRegistry_GetCStr(mreg, key);
+    if (str == NULL) {
+        return defValue;
+    }
+
+    //XXX ASSERT it's a number ?
+    int base = 0;
+    int x = 0;
+    if (str[0] == '-' || str[0] == '+') {
+        x++;
+    }
+    if (str[x] == '0') {
+        if (str[x+1] != 'x' && str[x+1] != 'X') {
+            // Avoid using octal consts... nobody wants those.
+            base = 10;
+        }
+    }
+
+    ASSERT(sizeof(unsigned long long) == sizeof(uint64));
+    return strtoull(str, NULL, base);
 }
 
 bool MBRegistry_GetBoolD(MBRegistry *mreg, const char *key, bool defValue)

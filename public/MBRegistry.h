@@ -50,6 +50,8 @@ bool MBRegistry_ContainsKey(MBRegistry *mreg, const char *key);
 const char *MBRegistry_Get(MBRegistry *mreg, const char *key);
 int MBRegistry_GetIntD(MBRegistry *mreg, const char *key, int defValue);
 int64 MBRegistry_GetInt64D(MBRegistry *mreg, const char *key, int64 defValue);
+uint MBRegistry_GetUintD(MBRegistry *mreg, const char *key, uint defValue);
+uint64 MBRegistry_GetUint64D(MBRegistry *mreg, const char *key, uint64 defValue);
 bool MBRegistry_GetBoolD(MBRegistry *mreg, const char *key, bool defValue);
 const char *MBRegistry_Remove(MBRegistry *mreg, const char *key);
 
@@ -91,6 +93,14 @@ static INLINE int MBRegistry_GetInt(MBRegistry *mreg, const char *key)
 static INLINE int64 MBRegistry_GetInt64(MBRegistry *mreg, const char *key)
 {
     return MBRegistry_GetInt64D(mreg, key, 0);
+}
+static INLINE uint MBRegistry_GetUint(MBRegistry *mreg, const char *key)
+{
+    return MBRegistry_GetUintD(mreg, key, 0);
+}
+static INLINE uint64 MBRegistry_GetUint64(MBRegistry *mreg, const char *key)
+{
+    return MBRegistry_GetUint64D(mreg, key, 0);
 }
 
 #endif //MBRegistry_H_202006121226
