@@ -27,15 +27,39 @@
 #define _RANDOM_H_201103252317
 
 #ifdef __cplusplus
-	extern "C" {
-#endif 
+    extern "C" {
+#endif
 
 #include "mbtypes.h"
 
+typedef struct RandomState {
+    uint64 value;
+    uint64 seed;
+    uint32 bitBucket;
+    int bitBucketSize;
+} RandomState;
+
 typedef struct EnumDistribution {
-	int value;
-	float probability;
+    int value;
+    float probability;
 } EnumDistribution;
+
+void RandomState_Create(RandomState *r);
+void RandomState_CreateWithSeed(RandomState *r, uint64 seed);
+void RandomState_Destroy(RandomState *r);
+void RandomState_GenerateSeed(RandomState *r);
+uint64 RandomState_GetSeed(RandomState *r);
+void RandomState_SetSeed(RandomState *r, uint64 seed);
+bool RandomState_Flip(RandomState *r, float trueProb);
+bool RandomState_Bit(RandomState *r);
+int RandomState_Int(RandomState *r, int min, int max);
+float RandomState_Float(RandomState *r, float min, float max);
+uint32 RandomState_Uint32(RandomState *r);
+uint64 RandomState_Uint64(RandomState *r);
+float RandomState_UnitFloat(RandomState *r);
+int RandomState_Enum(RandomState *r, EnumDistribution *dst,
+                     int numValues);
+int RandomState_DiceSum(RandomState *r, int numDice, int diceMax);
 
 void Random_Init(void);
 void Random_Exit(void);
@@ -74,6 +98,6 @@ int Random_DiceSum(int numDice, int diceMax);
 
 #ifdef __cplusplus
 	}
-#endif 
+#endif
 
 #endif //_RANDOM_H_201103252317

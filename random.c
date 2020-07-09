@@ -34,46 +34,33 @@
 
 typedef struct RandomGlobalData {
     bool initialized;
-
     bool haveSeed;
     uint64 seed;
 
-    uint64 value;
-
-    uint32 bitBucket;
-    int bitBucketSize;
+    RandomState rs;
 } RandomGlobalData;
-
 
 static RandomGlobalData randomData;
 
-/*
- * Initializes the random module.
- * This will generate a random seed if one has not
- * been previously set.
- */
-void Random_Init(void)
+
+void RandomState_Create(RandomState *r)
 {
-    ASSERT(!randomData.initialized);
-
-    randomData.initialized = TRUE;
-
-    if (!randomData.haveSeed) {
-        Random_GenerateSeed();
-        ASSERT(randomData.haveSeed);
-    }
+    MBUtil_Zero(r, sizeof(*r));
+    RandomState_GenerateSeed(r);
 }
 
-void Random_Exit(void)
+void RandomState_CreateWithSeed(RandomState *r, uint64 seed)
 {
-    randomData.initialized = FALSE;
-    randomData.haveSeed = FALSE;
+    MBUtil_Zero(r, sizeof(*r));
+    RandomState_SetSeed(r, seed);
 }
 
-/*
- * Generate a random seed for the module.
- */
-void Random_GenerateSeed()
+void RandomState_Destroy(RandomState *r)
+{
+    // Nothing to do...
+}
+
+void RandomState_GenerateSeed(RandomState *r)
 {
     uint64 seed;
 
@@ -95,79 +82,62 @@ void Random_GenerateSeed()
     if (!haveSeed) {
         pid_t pid = getpid();
         seed = time(0) * pid + pid;
-        Random_SetSeed(seed);
+        RandomState_SetSeed(r, seed);
 
-        seed = Random_Uint64();
+        RandomState_Uint64(r);
+        seed = RandomState_Uint64(r);
         haveSeed = TRUE;
     }
 
-    randomData.bitBucket = 0;
-    randomData.bitBucketSize = 0;
+    r->bitBucket = 0;
+    r->bitBucketSize = 0;
 
     ASSERT(haveSeed);
-    Random_SetSeed(seed);
+    RandomState_SetSeed(r, seed);
 }
 
-/*
- * Returns the seed being used for this run.
- * (At least since the last time it was set...)
- */
-uint64 Random_GetSeed()
+uint64 RandomState_GetSeed(RandomState *r)
 {
-    ASSERT(randomData.haveSeed);
-    return randomData.seed;
+    return r->seed;
 }
 
-/*
- * May be called before or after initialization.
- * Calling this before initialization prevents init from
- * attempting to generate a seed.
- */
-void Random_SetSeed(uint64 seed)
+void RandomState_SetSeed(RandomState *r, uint64 seed)
 {
-    randomData.seed = seed;
-    randomData.haveSeed = TRUE;
-    randomData.value = randomData.seed;
+    r->seed = seed;
+    r->value = r->seed;
 }
 
-/*
- * The Workhorse of the entire module.
- */
-uint32 Random_Uint32(void)
+uint32 RandomState_Uint32(RandomState *r)
 {
     static const uint64 constA = 2862933555777941757ULL;
     static const uint64 constB = 3037000493ULL;
 
-    ASSERT(randomData.initialized);
-    ASSERT(randomData.haveSeed);
-
-    randomData.value = constA * randomData.value + constB;
-    return randomData.value >> 32;
+    r->value = constA * r->value + constB;
+    return r->value >> 32;
 }
 
-bool Random_Bit(void)
+bool RandomState_Bit(RandomState *r)
 {
     bool val;
 
-    ASSERT(randomData.initialized);
-    ASSERT(randomData.bitBucketSize >= 0);
-    ASSERT(randomData.bitBucketSize <= 32);
+    ASSERT(r->bitBucketSize >= 0);
+    ASSERT(r->bitBucketSize <= 32);
 
-    if (randomData.bitBucketSize == 0) {
-        randomData.bitBucket = Random_Uint32();
-        randomData.bitBucketSize = 32;
+    if (r->bitBucketSize == 0) {
+        r->bitBucket = RandomState_Uint32(r);
+        r->bitBucketSize = 32;
     }
 
-    ASSERT(randomData.bitBucketSize > 0);
-    randomData.bitBucketSize--;
-    val = randomData.bitBucket & 0x1;
-    randomData.bitBucket >>= 1;
+    ASSERT(r->bitBucketSize > 0);
+    r->bitBucketSize--;
+    val = r->bitBucket & 0x1;
+    r->bitBucket >>= 1;
 
     ASSERT(val == TRUE || val == FALSE);
     return val;
 }
 
-bool Random_Flip(float trueProb)
+bool RandomState_Flip(RandomState *r, float trueProb)
 {
     //XXX: Naive implementation.
 
@@ -185,21 +155,20 @@ bool Random_Flip(float trueProb)
         return TRUE;
     }
 
-    if (Random_UnitFloat() <= trueProb) {
+    if (RandomState_UnitFloat(r) <= trueProb) {
         return TRUE;
     } else {
         return FALSE;
     }
 }
 
-float Random_Float(float min, float max)
+float RandomState_Float(RandomState *r, float min, float max)
 {
     double rval;
     double range;
     double dmin;
     double dmax;
 
-    ASSERT(randomData.initialized);
     ASSERT(max >= min);
 
     //This might work, but I'm too lazy to figure out signs right now.
@@ -211,7 +180,7 @@ float Random_Float(float min, float max)
     }
 
     // Uniform randomData from [0, 1).
-    rval = Random_UnitFloat();
+    rval = RandomState_UnitFloat(r);
 
     if (min == 0.0 && max == 1.0) {
         //Let's not screw up the obvious case here.
@@ -230,14 +199,15 @@ float Random_Float(float min, float max)
 }
 
 
-int Random_Enum(EnumDistribution *dist, int numValues)
+int RandomState_Enum(RandomState *r,
+                     EnumDistribution *dist, int numValues)
 {
     float cumulative;
     float rval;
     int x;
     ASSERT(numValues > 0);
 
-    rval = Random_UnitFloat();
+    rval = RandomState_UnitFloat(r);
 
     cumulative = 0.0;
     for (x = 0; x < numValues; x++) {
@@ -254,13 +224,13 @@ int Random_Enum(EnumDistribution *dist, int numValues)
     return dist[numValues - 1].value;
 }
 
-uint64 Random_Uint64(void)
+uint64 RandomState_Uint64(RandomState *r)
 {
     uint64 a;
     uint32 b;
 
-    a = Random_Uint32();
-    b = Random_Uint32();
+    a = RandomState_Uint32(r);
+    b = RandomState_Uint32(r);
 
     return (a << 32) | b;
 }
@@ -270,7 +240,7 @@ uint64 Random_Uint64(void)
  *   Returns a uniformly distributed int in the range [min, max] (inclusive).
  *   XXX: Not verified for negative values or ranges near max int.
  */
-int Random_Int(int min, int max)
+int RandomState_Int(RandomState *r, int min, int max)
 {
     int range;
     int rval;
@@ -278,7 +248,7 @@ int Random_Int(int min, int max)
     ASSERT(max >= min);
 
     range = (max - min) + 1;
-    rval = Random_Uint32();
+    rval = RandomState_Uint32(r);
     rval &= ~(1 << 31);
 
     ASSERT(rval >= 0);
@@ -294,11 +264,11 @@ int Random_Int(int min, int max)
  * Random_UnitFloat --
  *     Returns a uniformly distributed float in the range [0, 1).
  */
-float Random_UnitFloat(void)
+float RandomState_UnitFloat(RandomState *r)
 {
     float rval;
 
-    rval = ((float) Random_Uint32()) / (float) ((uint32) -1);
+    rval = ((float) RandomState_Uint32(r)) / (float) ((uint32) -1);
 
     return rval;
 }
@@ -306,7 +276,7 @@ float Random_UnitFloat(void)
 /*
  * Sum numDice random die, between 1 and diceMax, inclusive.
  */
-int Random_DiceSum(int numDice, int diceMax)
+int RandomState_DiceSum(RandomState *r, int numDice, int diceMax)
 {
     int x;
     int oup = 0;
@@ -314,9 +284,124 @@ int Random_DiceSum(int numDice, int diceMax)
     ASSERT(numDice >= 0 );
 
     for (x = 0; x < numDice; x++) {
-        oup += Random_Int(1, diceMax);
+        oup += RandomState_Int(r, 1, diceMax);
     }
 
     return oup;
 }
 
+/*
+ * Initializes the random module.
+ * This will generate a random seed if one has not
+ * been previously set.
+ */
+void Random_Init(void)
+{
+    ASSERT(!randomData.initialized);
+    randomData.initialized = TRUE;
+
+    if (!randomData.haveSeed) {
+        Random_GenerateSeed();
+        ASSERT(randomData.haveSeed == TRUE);
+    }
+}
+
+void Random_Exit(void)
+{
+    randomData.initialized = FALSE;
+    randomData.haveSeed = FALSE;
+}
+
+/*
+ * Generate a random seed for the module.
+ */
+void Random_GenerateSeed()
+{
+    RandomState_GenerateSeed(&randomData.rs);
+    randomData.haveSeed = TRUE;
+}
+
+/*
+ * Returns the seed being used for this run.
+ * (At least since the last time it was set...)
+ */
+uint64 Random_GetSeed()
+{
+    ASSERT(randomData.haveSeed);
+    return RandomState_GetSeed(&randomData.rs);
+}
+
+/*
+ * May be called before or after initialization.
+ * Calling this before initialization prevents init from
+ * attempting to generate a seed.
+ */
+void Random_SetSeed(uint64 seed)
+{
+    RandomState_SetSeed(&randomData.rs, seed);
+    randomData.haveSeed = TRUE;
+}
+
+/*
+ * The Workhorse of the entire module.
+ */
+uint32 Random_Uint32(void)
+{
+    ASSERT(randomData.initialized);
+    ASSERT(randomData.haveSeed);
+    return RandomState_Uint32(&randomData.rs);
+}
+
+bool Random_Bit(void)
+{
+    return RandomState_Bit(&randomData.rs);
+}
+
+bool Random_Flip(float trueProb)
+{
+    return RandomState_Flip(&randomData.rs, trueProb);
+}
+
+float Random_Float(float min, float max)
+{
+    ASSERT(randomData.initialized);
+    return RandomState_Float(&randomData.rs, min, max);
+}
+
+
+int Random_Enum(EnumDistribution *dist, int numValues)
+{
+    return RandomState_Enum(&randomData.rs, dist, numValues);
+}
+
+uint64 Random_Uint64(void)
+{
+    return RandomState_Uint64(&randomData.rs);
+}
+
+/*
+ * Random_Int --
+ *   Returns a uniformly distributed int in the range [min, max] (inclusive).
+ *   XXX: Not verified for negative values or ranges near max int.
+ */
+int Random_Int(int min, int max)
+{
+    return RandomState_Int(&randomData.rs, min, max);
+}
+
+/*
+ * Random_UnitFloat --
+ *     Returns a uniformly distributed float in the range [0, 1).
+ */
+float Random_UnitFloat(void)
+{
+    return RandomState_UnitFloat(&randomData.rs);
+}
+
+/*
+ * Sum numDice random die, between 1 and diceMax, inclusive.
+ */
+int Random_DiceSum(int numDice, int diceMax)
+{
+    return RandomState_DiceSum(&randomData.rs, numDice, diceMax);
+}
