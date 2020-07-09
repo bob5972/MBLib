@@ -109,10 +109,10 @@ typedef unsigned long ulong;
 #define MIN_UINT32 0
 #define MAX_UINT32 0xFFFFFFFF
 #define MAX_INT32  0x7FFFFFFF
+#define MIN_INT32  (-2147483648)
 
 #ifdef __cplusplus
     }
 #endif
 
 #endif //_MBTYPES_H_200910301741
-

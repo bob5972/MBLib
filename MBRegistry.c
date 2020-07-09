@@ -120,14 +120,12 @@ void MBRegistry_DebugDump(MBRegistry *mreg)
 
 int MBRegistry_GetIntD(MBRegistry *mreg, const char *key, int defValue)
 {
-    const char *str = MBRegistry_GetCStr(mreg, key);
-    if (str == NULL) {
-        return defValue;
-    }
+    int64 val = MBRegistry_GetInt64D(mreg, key, defValue);
 
-    //XXX ASSERT it's a number ?
+    ASSERT(val <= MAX_INT32);
+    ASSERT(val >= MIN_INT32);
 
-    return atoi(str);
+    return val;
 }
 
 int64 MBRegistry_GetInt64D(MBRegistry *mreg, const char *key, int64 defValue)
@@ -138,9 +136,16 @@ int64 MBRegistry_GetInt64D(MBRegistry *mreg, const char *key, int64 defValue)
     }
 
     //XXX ASSERT it's a number ?
+    int base = 0;
+    if (str[0] == '0') {
+        if (str[1] != 'x' && str[1] != 'X') {
+            // Avoid using octal consts... nobody wants those.
+            base = 10;
+        }
+    }
 
     ASSERT(sizeof(long long) == sizeof(int64));
-    return atoll(str);
+    return strtoll(str, NULL, base);
 }
 
 bool MBRegistry_GetBoolD(MBRegistry *mreg, const char *key, bool defValue)
