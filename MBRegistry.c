@@ -130,6 +130,19 @@ int MBRegistry_GetIntD(MBRegistry *mreg, const char *key, int defValue)
     return atoi(str);
 }
 
+int64 MBRegistry_GetInt64D(MBRegistry *mreg, const char *key, int64 defValue)
+{
+    const char *str = MBRegistry_GetCStr(mreg, key);
+    if (str == NULL) {
+        return defValue;
+    }
+
+    //XXX ASSERT it's a number ?
+
+    ASSERT(sizeof(long long) == sizeof(int64));
+    return atoll(str);
+}
+
 bool MBRegistry_GetBoolD(MBRegistry *mreg, const char *key, bool defValue)
 {
     const char *str = MBRegistry_GetCStr(mreg, key);

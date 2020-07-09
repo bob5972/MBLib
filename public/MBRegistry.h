@@ -49,6 +49,7 @@ void MBRegistry_Put(MBRegistry *mreg, const char *key, const char *value);
 bool MBRegistry_ContainsKey(MBRegistry *mreg, const char *key);
 const char *MBRegistry_Get(MBRegistry *mreg, const char *key);
 int MBRegistry_GetIntD(MBRegistry *mreg, const char *key, int defValue);
+int64 MBRegistry_GetInt64D(MBRegistry *mreg, const char *key, int64 defValue);
 bool MBRegistry_GetBoolD(MBRegistry *mreg, const char *key, bool defValue);
 const char *MBRegistry_Remove(MBRegistry *mreg, const char *key);
 
@@ -86,6 +87,10 @@ static INLINE bool MBRegistry_GetBool(MBRegistry *mreg, const char *key)
 static INLINE int MBRegistry_GetInt(MBRegistry *mreg, const char *key)
 {
     return MBRegistry_GetIntD(mreg, key, 0);
+}
+static INLINE int64 MBRegistry_GetInt64(MBRegistry *mreg, const char *key)
+{
+    return MBRegistry_GetInt64D(mreg, key, 0);
 }
 
 #endif //MBRegistry_H_202006121226
