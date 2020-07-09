@@ -184,6 +184,30 @@ int64 MBOpt_GetInt64(const char *option)
     return MBRegistry_GetInt64(&mbopt.mreg, option);
 }
 
+uint MBOpt_GetUint(const char *option)
+{
+    if (DEBUG) {
+        if (!MBOpt_IsValid(option)) {
+            PANIC("Unknown Option: %s\n", option);
+        }
+    }
+
+    return MBRegistry_GetUint(&mbopt.mreg, option);
+}
+
+
+uint64 MBOpt_GetUint64(const char *option)
+{
+    if (DEBUG) {
+        if (!MBOpt_IsValid(option)) {
+            PANIC("Unknown Option: %s\n", option);
+        }
+    }
+
+    return MBRegistry_GetUint64(&mbopt.mreg, option);
+}
+
+
 bool MBOpt_GetBool(const char *option)
 {
     if (DEBUG) {

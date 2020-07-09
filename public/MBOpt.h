@@ -45,6 +45,8 @@ bool MBOpt_IsPresent(const char *option);
 const char *MBOpt_GetString(const char *option);
 int MBOpt_GetInt(const char *option);
 int64 MBOpt_GetInt64(const char *option);
+uint MBOpt_GetUint(const char *option);
+uint64 MBOpt_GetUint64(const char *option);
 bool MBOpt_GetBool(const char *option);
 
 #endif //MBOpt_H_202006121333
