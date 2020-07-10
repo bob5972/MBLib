@@ -63,6 +63,13 @@ static INLINE MBRegistry *MBRegistry_Alloc(void)
     return mreg;
 }
 
+static INLINE MBRegistry *MBRegistry_AllocCopy(MBRegistry *toCopy)
+{
+    MBRegistry *mreg = (MBRegistry *)malloc(sizeof(MBRegistry));
+    MBRegistry_CreateCopy(mreg, toCopy);
+    return mreg;
+}
+
 static INLINE void MBRegistry_Free(MBRegistry *mreg)
 {
     MBRegistry_Destroy(mreg);
