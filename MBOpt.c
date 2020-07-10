@@ -150,7 +150,7 @@ bool MBOpt_IsPresent(const char *option)
     return FALSE;
 }
 
-const char *MBOpt_GetString(const char *option)
+const char *MBOpt_GetCStr(const char *option)
 {
     if (DEBUG) {
         if (!MBOpt_IsValid(option)) {
