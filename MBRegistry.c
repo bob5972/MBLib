@@ -37,6 +37,13 @@ void MBRegistry_Create(MBRegistry *mreg)
     MBVector_CreateEmpty(&mreg->data, sizeof(MBRegistryNode));
 
 }
+void MBRegistry_CreateCopy(MBRegistry *mreg, MBRegistry *toCopy)
+{
+    ASSERT(mreg != NULL);
+    MBRegistry_Create(mreg);
+    MBVector_Copy(&mreg->data, &toCopy->data);
+}
+
 void MBRegistry_Destroy(MBRegistry *mreg)
 {
     ASSERT(mreg != NULL);
