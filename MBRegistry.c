@@ -214,3 +214,14 @@ bool MBRegistry_GetBoolD(MBRegistry *mreg, const char *key, bool defValue)
 
     PANIC("MBRegistry key is not a bool (key=%s, value=%s)\n", key, str);
 }
+
+float MBRegistry_GetFloatD(MBRegistry *mreg,
+                           const char *key, float defValue)
+{
+    const char *str = MBRegistry_GetCStr(mreg, key);
+    if (str == NULL) {
+        return defValue;
+    }
+
+    return strtof(str, NULL);
+}

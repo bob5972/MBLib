@@ -54,6 +54,8 @@ int64 MBRegistry_GetInt64D(MBRegistry *mreg, const char *key, int64 defValue);
 uint MBRegistry_GetUintD(MBRegistry *mreg, const char *key, uint defValue);
 uint64 MBRegistry_GetUint64D(MBRegistry *mreg, const char *key, uint64 defValue);
 bool MBRegistry_GetBoolD(MBRegistry *mreg, const char *key, bool defValue);
+float MBRegistry_GetFloatD(MBRegistry *mreg, const char *key, float defValue);
+
 const char *MBRegistry_Remove(MBRegistry *mreg, const char *key);
 
 static INLINE MBRegistry *MBRegistry_Alloc(void)
@@ -109,6 +111,11 @@ static INLINE uint MBRegistry_GetUint(MBRegistry *mreg, const char *key)
 static INLINE uint64 MBRegistry_GetUint64(MBRegistry *mreg, const char *key)
 {
     return MBRegistry_GetUint64D(mreg, key, 0);
+}
+
+static INLINE float MBRegistry_GetFloat(MBRegistry *mreg, const char *key)
+{
+    return MBRegistry_GetFloatD(mreg, key, 0.0f);
 }
 
 #endif //MBRegistry_H_202006121226
