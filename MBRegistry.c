@@ -23,7 +23,22 @@
  * SOFTWARE.
  */
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdint.h>
+
 #include "MBRegistry.h"
+#include "MBVector.h"
+#include "MBString.h"
+
+#define MBREGISTRY_MAGIC 0x1122334455667788
+
+typedef struct MBRegistry {
+    uint64 magic;
+    MBVector data;
+    MBVector freeList;
+} MBRegistry;
+
 
 typedef struct MBRegistryNode {
     const char *key;
@@ -31,23 +46,60 @@ typedef struct MBRegistryNode {
 } MBRegistryNode;
 
 
-void MBRegistry_Create(MBRegistry *mreg)
+MBRegistry *MBRegistry_Alloc()
 {
+    MBRegistry *mreg = malloc(sizeof(*mreg));
     ASSERT(mreg != NULL);
+    mreg->magic = ((uintptr_t)mreg) ^ MBREGISTRY_MAGIC;
     MBVector_CreateEmpty(&mreg->data, sizeof(MBRegistryNode));
-
+    MBVector_CreateEmpty(&mreg->freeList, sizeof(char *));
+    return mreg;
 }
-void MBRegistry_CreateCopy(MBRegistry *mreg, MBRegistry *toCopy)
+MBRegistry *MBRegistry_AllocCopy(MBRegistry *toCopy)
 {
-    ASSERT(mreg != NULL);
-    MBRegistry_Create(mreg);
+    MBRegistry *mreg = MBRegistry_Alloc();
     MBVector_Copy(&mreg->data, &toCopy->data);
+
+    uint ksize = MBVector_Size(&mreg->data);
+    uint fsize = MBVector_Size(&toCopy->freeList);
+    MBVector_Resize(&mreg->freeList, fsize);
+    for (uint i = 0; i < fsize; i++) {
+        char **p = MBVector_GetPtr(&toCopy->freeList, i);
+        char *s = strdup(*p);
+        char **n = MBVector_GetPtr(&mreg->freeList, i);
+        *n = s;
+
+        for (uint x = 0; x < ksize; x++) {
+            MBRegistryNode *node = MBVector_GetPtr(&mreg->data, x);
+            if (node->key == *p) {
+                node->key = s;
+            }
+            if (node->value == *p) {
+                node->value = s;
+            }
+        }
+    }
+
+    return mreg;
 }
 
-void MBRegistry_Destroy(MBRegistry *mreg)
+void MBRegistry_Free(MBRegistry *mreg)
 {
     ASSERT(mreg != NULL);
+    ASSERT(mreg->magic == ((uintptr_t)mreg ^ MBREGISTRY_MAGIC));
+
     MBVector_Destroy(&mreg->data);
+
+    uint fsize = MBVector_Size(&mreg->freeList);
+    for (uint i = 0; i < fsize; i++) {
+        char *s;
+        char **p = MBVector_GetPtr(&mreg->freeList, i);
+        s = *p;
+        free(s);
+    }
+
+    MBVector_Destroy(&mreg->freeList);
+    free(mreg);
 }
 
 bool MBRegistry_ContainsKey(MBRegistry *mreg, const char *key)
@@ -114,6 +166,60 @@ const char *MBRegistry_Remove(MBRegistry *mreg, const char *key)
     }
 
     return NULL;
+}
+
+static void MBRegistryAddToFreeList(MBRegistry *mreg, char *s)
+{
+    char **p;
+    MBVector_Grow(&mreg->freeList);
+    p = MBVector_GetLastPtr(&mreg->freeList);
+    *p = s;
+}
+
+void MBRegistry_Load(MBRegistry *mreg, const char *filename)
+{
+    FILE *file;
+    char *line = NULL;
+    size_t len = 0;
+    uint read;
+    MBString key;
+    MBString value;
+
+    ASSERT(mreg != NULL);
+
+    MBString_Create(&key);
+    MBString_Create(&value);
+
+
+    file = fopen(filename, "r");
+    VERIFY(file != NULL);
+
+    while ((read = getline(&line, &len, file)) != -1) {
+        Warning("%s:%d line = %s\n", __FUNCTION__, __LINE__, line);//XXX bob5972
+
+        char *d = strstr(line, "=");
+        ASSERT(d != NULL);
+        ASSERT(strstr(d + 1, "=") == NULL);
+
+        MBString_CopyCStr(&key, line);
+        MBString_CopyCStr(&value, d + 1);
+
+        MBString_StripWS(&key);
+        MBString_StripWS(&value);
+
+        char *ckey = MBString_DupCStr(&key);
+        char *cvalue = MBString_DupCStr(&value);
+
+        MBRegistryAddToFreeList(mreg, ckey);
+        MBRegistryAddToFreeList(mreg, cvalue);
+        MBRegistry_Put(mreg, ckey, cvalue);
+    }
+
+    MBString_Destroy(&key);
+    MBString_Destroy(&value);
+
+    free(line);
+    fclose(file);
 }
 
 void MBRegistry_DebugDump(MBRegistry *mreg)
@@ -224,4 +330,15 @@ float MBRegistry_GetFloatD(MBRegistry *mreg,
     }
 
     return strtof(str, NULL);
+}
+
+const char *
+MBRegistry_GetCStrD(MBRegistry *mreg, const char *key,
+                    const char *defValue)
+{
+    const char *str = MBRegistry_Get(mreg, key);
+    if (str == NULL) {
+        return defValue;
+    }
+    return str;
 }

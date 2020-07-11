@@ -26,24 +26,17 @@
 #ifndef MBRegistry_H_202006121226
 #define MBRegistry_H_202006121226
 
-#ifdef __cplusplus
-#include "MBVector.hpp"
-#else
-#include "MBVector.h"
-#endif
+#include "mbtypes.h"
+#include "mbbasic.h"
 
-typedef struct MBRegistry {
-#ifdef __cplusplus
-    CMBVector data;
-#else
-    MBVector data;
-#endif
-} MBRegistry;
+struct MBRegistry;
+typedef struct MBRegistry MBRegistry;
 
-void MBRegistry_Create(MBRegistry *mreg);
-void MBRegistry_CreateCopy(MBRegistry *mreg, MBRegistry *toCopy);
-void MBRegistry_Destroy(MBRegistry *mreg);
+MBRegistry *MBRegistry_Alloc();
+MBRegistry *MBRegistry_AllocCopy(MBRegistry *toCopy);
+void MBRegistry_Free(MBRegistry *mreg);
 
+void MBRegistry_Load(MBRegistry *mreg, const char *filename);
 void MBRegistry_DebugDump(MBRegistry *mreg);
 
 void MBRegistry_Put(MBRegistry *mreg, const char *key, const char *value);
@@ -58,37 +51,15 @@ float MBRegistry_GetFloatD(MBRegistry *mreg, const char *key, float defValue);
 
 const char *MBRegistry_Remove(MBRegistry *mreg, const char *key);
 
-static INLINE MBRegistry *MBRegistry_Alloc(void)
-{
-    MBRegistry *mreg = (MBRegistry *)malloc(sizeof(MBRegistry));
-    MBRegistry_Create(mreg);
-    return mreg;
-}
+MBRegistry *MBRegistry_Alloc(void);
+MBRegistry *MBRegistry_AllocCopy(MBRegistry *toCopy);
+void MBRegistry_Free(MBRegistry *mreg);
 
-static INLINE MBRegistry *MBRegistry_AllocCopy(MBRegistry *toCopy)
-{
-    MBRegistry *mreg = (MBRegistry *)malloc(sizeof(MBRegistry));
-    MBRegistry_CreateCopy(mreg, toCopy);
-    return mreg;
-}
-
-static INLINE void MBRegistry_Free(MBRegistry *mreg)
-{
-    MBRegistry_Destroy(mreg);
-    free(mreg);
-}
+const char *MBRegistry_GetCStrD(MBRegistry *mreg, const char *key,
+                                const char *defValue);
 
 static INLINE const char *
-MBRegistry_GetCStrD(MBRegistry *mreg, const char *key, const char *defValue)
-{
-    const char *str = MBRegistry_Get(mreg, key);
-    if (str == NULL) {
-        return defValue;
-    }
-    return str;
-}
-
-static INLINE const char *MBRegistry_GetCStr(MBRegistry *mreg, const char *key)
+MBRegistry_GetCStr(MBRegistry *mreg, const char *key)
 {
     return MBRegistry_GetCStrD(mreg, key, NULL);
 }

@@ -40,7 +40,7 @@ typedef struct MBOptGlobalData {
     bool initialized;
     const char *arg0;
 
-    MBRegistry mreg;
+    MBRegistry *mreg;
     MBOptionValue *values;
     uint32 numOpts;
 } MBOptGlobalData;
@@ -54,7 +54,7 @@ void MBOpt_Init(MBOption *opts, int numOpts, int argc, char **argv)
     ASSERT(numOpts >= 0);
     ASSERT(numOpts < MAX_INT32);
 
-    MBRegistry_Create(&mbopt.mreg);
+    mbopt.mreg = MBRegistry_Alloc();
 
     mbopt.values = malloc(numOpts * sizeof(mbopt.values[0]));
     mbopt.numOpts = numOpts;
@@ -89,7 +89,7 @@ void MBOpt_Init(MBOption *opts, int numOpts, int argc, char **argv)
                     }
                 }
 
-                MBRegistry_Put(&mbopt.mreg, &mbopt.values[o].opt.longOpt[2],
+                MBRegistry_Put(mbopt.mreg, &mbopt.values[o].opt.longOpt[2],
                                mbopt.values[o].string);
                 break;
             }
@@ -102,7 +102,8 @@ void MBOpt_Init(MBOption *opts, int numOpts, int argc, char **argv)
 void MBOpt_Exit(void)
 {
     ASSERT(mbopt.initialized);
-    MBRegistry_Destroy(&mbopt.mreg);
+    MBRegistry_Free(mbopt.mreg);
+    mbopt.mreg = NULL;
     mbopt.initialized = FALSE;
 }
 
@@ -121,7 +122,7 @@ void MBOpt_PrintHelpText(void)
 
 bool MBOpt_IsValid(const char *option)
 {
-    if (MBRegistry_ContainsKey(&mbopt.mreg, option)) {
+    if (MBRegistry_ContainsKey(mbopt.mreg, option)) {
         return TRUE;
     }
 
@@ -137,7 +138,7 @@ bool MBOpt_IsValid(const char *option)
 
 bool MBOpt_IsPresent(const char *option)
 {
-    if (MBRegistry_ContainsKey(&mbopt.mreg, option)) {
+    if (MBRegistry_ContainsKey(mbopt.mreg, option)) {
         return TRUE;
     }
 
@@ -158,7 +159,7 @@ const char *MBOpt_GetCStr(const char *option)
         }
     }
 
-    return MBRegistry_GetCStr(&mbopt.mreg, option);
+    return MBRegistry_GetCStr(mbopt.mreg, option);
 }
 
 int MBOpt_GetInt(const char *option)
@@ -169,7 +170,7 @@ int MBOpt_GetInt(const char *option)
         }
     }
 
-    return MBRegistry_GetInt(&mbopt.mreg, option);
+    return MBRegistry_GetInt(mbopt.mreg, option);
 }
 
 
@@ -181,7 +182,7 @@ int64 MBOpt_GetInt64(const char *option)
         }
     }
 
-    return MBRegistry_GetInt64(&mbopt.mreg, option);
+    return MBRegistry_GetInt64(mbopt.mreg, option);
 }
 
 uint MBOpt_GetUint(const char *option)
@@ -192,7 +193,7 @@ uint MBOpt_GetUint(const char *option)
         }
     }
 
-    return MBRegistry_GetUint(&mbopt.mreg, option);
+    return MBRegistry_GetUint(mbopt.mreg, option);
 }
 
 
@@ -204,7 +205,7 @@ uint64 MBOpt_GetUint64(const char *option)
         }
     }
 
-    return MBRegistry_GetUint64(&mbopt.mreg, option);
+    return MBRegistry_GetUint64(mbopt.mreg, option);
 }
 
 
@@ -216,5 +217,5 @@ bool MBOpt_GetBool(const char *option)
         }
     }
 
-    return MBRegistry_GetBool(&mbopt.mreg, option);
+    return MBRegistry_GetBool(mbopt.mreg, option);
 }

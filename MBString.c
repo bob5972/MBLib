@@ -168,6 +168,39 @@ void MBString_ToLower(MBString *str)
     }
 }
 
+void MBString_StripWS(MBString *str)
+{
+    int myLength = str->length;
+    char *myChars = str->chars;
+    uint x;
+
+    ASSERT(MBStringIsNullTerminated(str));
+
+    x = 0;
+    while (x < myLength && MBUtil_IsWhitespace(myChars[x])) {
+        x++;
+    }
+
+    if (x == myLength) {
+        MBString_MakeEmpty(str);
+        return;
+    }
+
+    str->length = myLength - x;
+    memmove(myChars, &myChars[x], str->length + 1);
+    ASSERT(MBStringIsNullTerminated(str));
+
+    myLength = str->length;
+    x = myLength - 1;
+    ASSERT(!MBUtil_IsWhitespace(myChars[0]));
+    while (x > 0 && MBUtil_IsWhitespace(myChars[x])) {
+        x--;
+    }
+    str->length = x + 1;
+    myChars[x + 1] = '\0';
+    ASSERT(MBStringIsNullTerminated(str));
+}
+
 void MBString_AppendStr(MBString *str, const MBString *suffix)
 {
     int myLength = str->length;

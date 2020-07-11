@@ -36,31 +36,32 @@ class MBRegistry {
     public:
         MBRegistry()
         {
-            MBRegistry_Create(&myReg);
+            myReg = MBRegistry_Alloc();
         }
 
         ~MBRegistry()
         {
-            MBRegistry_Destroy(&myReg);
+            MBRegistry_Free(myReg);
+            myReg = NULL;
         }
 
         const char *get(const char *key)
         {
-            return MBRegistry_Get(&myReg, key);
+            return MBRegistry_Get(myReg, key);
         }
 
         const char *remove(const char *key)
         {
-            return MBRegistry_Remove(&myReg, key);
+            return MBRegistry_Remove(myReg, key);
         }
 
         void put(const char *key, const char *value)
         {
-            MBRegistry_Put(&myReg, key, value);
+            MBRegistry_Put(myReg, key, value);
         }
 
     private:
-        CMBRegistry myReg;
+        CMBRegistry *myReg;
 };
 
 #endif // MBRegistry_HPP_202006121304

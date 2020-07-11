@@ -964,28 +964,28 @@ void testMBQueue(void)
 void testMBRegistry(void)
 {
     MBRegistry cppreg;
-    CMBRegistry mreg;
+    CMBRegistry *mreg;
     const char *s;
 
     cppreg.put("Hello", "World");
     TEST(strcmp(cppreg.get("Hello"), "World") == 0);
 
-    MBRegistry_Create(&mreg);
-    MBRegistry_Destroy(&mreg);
+    mreg = MBRegistry_Alloc();
+    MBRegistry_Free(mreg);
 
-    MBRegistry_Create(&mreg);
-    MBRegistry_Put(&mreg, "key", "value");
-    TEST(strcmp(MBRegistry_Get(&mreg, "key"), "value") == 0);
+    mreg = MBRegistry_Alloc();
+    MBRegistry_Put(mreg, "key", "value");
+    TEST(strcmp(MBRegistry_Get(mreg, "key"), "value") == 0);
     s = "OtherValue";
-    MBRegistry_Put(&mreg, "OtherKey", s);
-    TEST(MBRegistry_Get(&mreg, "OtherKey") == s);
-    MBRegistry_Put(&mreg, "key", s);
-    TEST(MBRegistry_Get(&mreg, "key") == s);
-    MBRegistry_Remove(&mreg, "key");
-    MBRegistry_Remove(&mreg, "OtherKey");
-    TEST(MBRegistry_Get(&mreg, "key") == NULL);
-    TEST(MBRegistry_Get(&mreg, "OtherKey") == NULL);
-    MBRegistry_Destroy(&mreg);
+    MBRegistry_Put(mreg, "OtherKey", s);
+    TEST(MBRegistry_Get(mreg, "OtherKey") == s);
+    MBRegistry_Put(mreg, "key", s);
+    TEST(MBRegistry_Get(mreg, "key") == s);
+    MBRegistry_Remove(mreg, "key");
+    MBRegistry_Remove(mreg, "OtherKey");
+    TEST(MBRegistry_Get(mreg, "key") == NULL);
+    TEST(MBRegistry_Get(mreg, "OtherKey") == NULL);
+    MBRegistry_Free(mreg);
 }
 
 typedef struct
@@ -1103,4 +1103,3 @@ int main(int argc, char *argv[])
 
     return 0;
 }
-

@@ -50,6 +50,7 @@ void MBString_CopySubstr(MBString *dest, const MBString *str,
 
 void MBString_ToUpper(MBString *str);
 void MBString_ToLower(MBString *str);
+void MBString_StripWS(MBString *str);
 
 void MBString_AppendStr(MBString *str, const MBString *suffix);
 void MBString_PrependChar(MBString *str, char c);
@@ -116,6 +117,17 @@ static INLINE const char *MBString_GetCStr(const MBString *str)
     ASSERT(str != NULL);
     ASSERT(MBStringIsNullTerminated(str));
     return str->chars;
+}
+
+/*
+ * Return this string as a NUL-termianted C-string.
+ * The returned string must be freed by the caller.
+ */
+static INLINE char *MBString_DupCStr(const MBString *str)
+{
+    ASSERT(str != NULL);
+    ASSERT(MBStringIsNullTerminated(str));
+    return strdup(str->chars);
 }
 
 static INLINE void MBString_CreateWithCapacity(MBString *str, int cap)
