@@ -198,8 +198,8 @@ MBRegistryLoad(MBRegistry *mreg, const char *filename,
 
     while ((read = getline(&line, &len, file)) != -1) {
         char *d = strstr(line, "=");
-        ASSERT(d != NULL);
-        ASSERT(strstr(d + 1, "=") == NULL);
+        VERIFY(d != NULL);
+        VERIFY(strstr(d + 1, "=") == NULL);
         *d = '\0';
 
         MBString_CopyCStr(&key, line);
