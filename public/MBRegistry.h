@@ -37,6 +37,7 @@ MBRegistry *MBRegistry_AllocCopy(MBRegistry *toCopy);
 void MBRegistry_Free(MBRegistry *mreg);
 
 void MBRegistry_Load(MBRegistry *mreg, const char *filename);
+void MBRegistry_LoadSubset(MBRegistry *mreg, const char *filename);
 void MBRegistry_DebugDump(MBRegistry *mreg);
 
 void MBRegistry_Put(MBRegistry *mreg, const char *key, const char *value);

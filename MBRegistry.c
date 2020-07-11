@@ -176,7 +176,9 @@ static void MBRegistryAddToFreeList(MBRegistry *mreg, char *s)
     *p = s;
 }
 
-void MBRegistry_Load(MBRegistry *mreg, const char *filename)
+static void
+MBRegistryLoad(MBRegistry *mreg, const char *filename,
+               bool subset)
 {
     FILE *file;
     char *line = NULL;
@@ -195,11 +197,10 @@ void MBRegistry_Load(MBRegistry *mreg, const char *filename)
     VERIFY(file != NULL);
 
     while ((read = getline(&line, &len, file)) != -1) {
-        Warning("%s:%d line = %s\n", __FUNCTION__, __LINE__, line);//XXX bob5972
-
         char *d = strstr(line, "=");
         ASSERT(d != NULL);
         ASSERT(strstr(d + 1, "=") == NULL);
+        *d = '\0';
 
         MBString_CopyCStr(&key, line);
         MBString_CopyCStr(&value, d + 1);
@@ -212,6 +213,11 @@ void MBRegistry_Load(MBRegistry *mreg, const char *filename)
 
         MBRegistryAddToFreeList(mreg, ckey);
         MBRegistryAddToFreeList(mreg, cvalue);
+
+        if (subset) {
+            ASSERT(MBRegistry_ContainsKey(mreg, ckey));
+        }
+
         MBRegistry_Put(mreg, ckey, cvalue);
     }
 
@@ -220,6 +226,16 @@ void MBRegistry_Load(MBRegistry *mreg, const char *filename)
 
     free(line);
     fclose(file);
+}
+
+void MBRegistry_Load(MBRegistry *mreg, const char *filename)
+{
+    MBRegistryLoad(mreg, filename, FALSE);
+}
+
+void MBRegistry_LoadSubset(MBRegistry *mreg, const char *filename)
+{
+    MBRegistryLoad(mreg, filename, TRUE);
 }
 
 void MBRegistry_DebugDump(MBRegistry *mreg)
