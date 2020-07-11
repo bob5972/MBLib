@@ -58,6 +58,9 @@ MBRegistry *MBRegistry_Alloc()
 MBRegistry *MBRegistry_AllocCopy(MBRegistry *toCopy)
 {
     MBRegistry *mreg = MBRegistry_Alloc();
+    ASSERT(mreg->magic == ((uintptr_t)mreg ^ MBREGISTRY_MAGIC));
+    ASSERT(toCopy->magic == ((uintptr_t)toCopy ^ MBREGISTRY_MAGIC));
+
     MBVector_Copy(&mreg->data, &toCopy->data);
 
     uint ksize = MBVector_Size(&mreg->data);
@@ -87,6 +90,7 @@ void MBRegistry_Free(MBRegistry *mreg)
 {
     ASSERT(mreg != NULL);
     ASSERT(mreg->magic == ((uintptr_t)mreg ^ MBREGISTRY_MAGIC));
+    mreg->magic = 0;
 
     MBVector_Destroy(&mreg->data);
 
