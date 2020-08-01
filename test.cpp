@@ -1019,6 +1019,8 @@ int main(int argc, char *argv[])
         }
     }
 
+    printf("\nStarting %s ...\n", benchmark ? "Benchmark" : "Tests");
+
     /*
      * Make benchmark mode deterministic.
      */
@@ -1096,10 +1098,8 @@ int main(int argc, char *argv[])
 
     Random_Exit();
 
-    if (!benchmark) {
-        printf("\nTests successful!\n\n");
-        printf("Done.\n");
-    }
+    printf("\n%s successful!\n\n", benchmark ? "Benchmark" : "Tests");
 
+    printf("Done.\n");
     return 0;
 }
