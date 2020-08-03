@@ -40,59 +40,63 @@ extern "C" {
 class IntMap {
 	public:
 		IntMap() {
-		    IntMap_Create(&data);
+		    IntMap_Create(&myData);
 		}
 
 		IntMap(const IntMap &m) {
-		    IntMap_Create(&data);
-		    IntMap_InsertAll(&data, &m.data);
+		    IntMap_Create(&myData);
+		    IntMap_InsertAll(&myData, &m.myData);
 		}
 
+		void setEmptyValue(int emptyValue) {
+            IntMap_SetEmptyValue(&myData, emptyValue);
+        }
+
 		void makeEmpty() {
-		    IntMap_MakeEmpty(&data);
+		    IntMap_MakeEmpty(&myData);
 		}
 
 		bool containsKey(int key) const
 		{
-            return IntMap_ContainsKey(&data, key);
+            return IntMap_ContainsKey(&myData, key);
 		}
 
 		bool isEmpty() const {
-            return IntMap_IsEmpty(&data);
+            return IntMap_IsEmpty(&myData);
 		}
 
 		int size() const {
-            return IntMap_Size(&data);
+            return IntMap_Size(&myData);
 		}
 
 		//defaults to a value of 0 for missing keys
 		int get(int key) const
 		{
-            return IntMap_Get(&data, key);
+            return IntMap_Get(&myData, key);
 		}
 
 
 		//returns the new value
 		int increment(int key) {
-            return IntMap_Increment(&data, key);
+            return IntMap_Increment(&myData, key);
 		}
 
 		//returns the new value
 		int decrement(int key) {
-            return IntMap_Decrement(&data, key);
+            return IntMap_Decrement(&myData, key);
 		}
 
 		//returns the new value
 		int increment(int key, int amount) {
-		    return IntMap_IncrementBy(&data, key, amount);
+		    return IntMap_IncrementBy(&myData, key, amount);
 		}
 		//returns the new value
 		int decrement(int key, int amount) {
-		    return IntMap_DecrementBy(&data, key, amount);
+		    return IntMap_DecrementBy(&myData, key, amount);
 		}
 
 		void put(int key, int value) {
-		    IntMap_Put(&data, key, value);
+		    IntMap_Put(&myData, key, value);
 		}
 
 		//returns true iff the map changed
@@ -101,18 +105,18 @@ class IntMap {
 		//  before an after the delete call
 		//  (due to the default value of 0)
 		bool remove(int key) {
-		    return IntMap_Remove(&data, key);
+		    return IntMap_Remove(&myData, key);
 		}
 
 		//insert all keys from m into this map
 		//  if the key already exists, use the new value
 		//  linear time to the capacity (NOT size) of m
 		void insertAll(const IntMap &m) {
-		    return IntMap_InsertAll(&data, &m.data);
+		    return IntMap_InsertAll(&myData, &m.myData);
 		}
 
 	private:
-		CIntMap data;
+		CIntMap myData;
 };
 
 
