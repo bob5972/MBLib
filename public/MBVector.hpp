@@ -47,7 +47,7 @@ class MBVector
 
         //Constructors
         MBVector()
-        : mySize(0), myCapacity(1), myItems(new itemType[1])
+        : mySize(0), myCapacity(1), myPinCount(0), myItems(new itemType[1])
         {
             ASSERT(myCapacity > 0);
         }
@@ -57,6 +57,7 @@ class MBVector
         //Default Vector of length size
         explicit MBVector(int size)
         {
+            myPinCount = 0;
             mySize = size;
             ASSERT(mySize >= 0);
 
@@ -77,6 +78,7 @@ class MBVector
         //Destructor
         ~MBVector()
         {
+            ASSERT(myPinCount == 0);
             delete[] myItems;
         }
 
@@ -214,6 +216,18 @@ class MBVector
             return myItems[mySize];
         }
 
+        void pin()
+        {
+            myPinCount++;
+        }
+
+        void unpin()
+        {
+            ASSERT(myPinCount > 0);
+            myPinCount--;
+        }
+
+
         //This is a weird function.
         //It empties this vector, copies over everything from
         //  v, and then empties v.
@@ -241,6 +255,7 @@ class MBVector
     private:
         int mySize;
         int myCapacity;
+        int myPinCount;
         itemType *myItems;
 };
 

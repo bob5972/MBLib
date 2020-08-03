@@ -36,6 +36,7 @@ template<class itemType>
 MBVector<itemType>::MBVector(const MBVector<itemType>& vec)
 :mySize(vec.mySize),
  myCapacity(mySize),
+ myPinCount(0),
  myItems(new itemType[mySize])
 {
 	for (int x=0;x < vec.mySize;x++)
@@ -50,6 +51,7 @@ template<class itemType>
 MBVector<itemType>::MBVector(int size, const itemType & fillValue)
 :mySize(size),
  myCapacity(size),
+ myPinCount(0),
  myItems(new itemType[size])
 {
 	for (int x=0;x<size;x++)
@@ -63,6 +65,9 @@ MBVector<itemType>::MBVector(int size, const itemType & fillValue)
 template <class itemType>
 void MBVector<itemType>::consume(MBVector<itemType> &v)
 {
+    ASSERT(myPinCount == 0);
+    ASSERT(v.myPinCount == 0);
+
 	makeEmpty();
 
 	myItems = v.myItems;
@@ -116,6 +121,8 @@ void MBVector<itemType>::ensureCapacity(int c)
 	if (myCapacity >= c) {
 		return;
 	}
+
+	ASSERT(myPinCount == 0);
 
 	minCap = myCapacity + c;
 
@@ -173,6 +180,8 @@ int MBVector<itemType>::trim()
 	if (mySize == myCapacity || myCapacity == 1) {
 		return 0;
 	}
+
+	ASSERT(myPinCount == 0);
 
 	int oup = myCapacity - mySize;
 	int newCap = mySize;
