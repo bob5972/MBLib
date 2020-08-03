@@ -832,10 +832,10 @@ void testIntMap()
          * Test EmptyValue
          */
         CIntMap map;
-        IntMap_Create(&map);
-        IntMap_SetEmptyValue(&map, -1);
-        TEST(IntMap_Get(&map, 0) == -1);
-        IntMap_Destroy(&map);
+        CIntMap_Create(&map);
+        CIntMap_SetEmptyValue(&map, -1);
+        TEST(CIntMap_Get(&map, 0) == -1);
+        CIntMap_Destroy(&map);
     }
 
     {
@@ -843,43 +843,43 @@ void testIntMap()
          * Test Put/Remove
          */
         CIntMap map;
-        IntMap_Create(&map);
-        IntMap_SetEmptyValue(&map, -1);
+        CIntMap_Create(&map);
+        CIntMap_SetEmptyValue(&map, -1);
 
-        IntMap_Put(&map,   2, 1);
-        IntMap_Put(&map,   7, 1);
-        IntMap_Put(&map,   8, 1);
-        IntMap_Put(&map,  10, 1);
-        IntMap_Remove(&map, 8);
+        CIntMap_Put(&map,   2, 1);
+        CIntMap_Put(&map,   7, 1);
+        CIntMap_Put(&map,   8, 1);
+        CIntMap_Put(&map,  10, 1);
+        CIntMap_Remove(&map, 8);
 
-        IntMap_Put(&map,  10, 2);
-        IntMap_Remove(&map, 10);
-        IntMap_Put(&map,  12, 1);
-        IntMap_Remove(&map, 12);
-        IntMap_Put(&map,  18, 1);
-        IntMap_Remove(&map, 18);
-        IntMap_Put(&map,  22, 1);
-        IntMap_Remove(&map, 22);
-        IntMap_Put(&map,  26, 1);
-        IntMap_Remove(&map, 26);
-        IntMap_Put(&map,  29, 1);
-        IntMap_Remove(&map, 29);
-        IntMap_Put(&map,  31, 1);
-        IntMap_Remove(&map, 31);
-        IntMap_Put(&map,  33, 1);
-        IntMap_Remove(&map, 33);
-        IntMap_Put(&map,  36, 1);
-        IntMap_Remove(&map, 36);
-        IntMap_Put(&map,  38, 1);
-        IntMap_Remove(&map, 38);
-        IntMap_Put(&map,  41, 1);
-        IntMap_Remove(&map, 41);
-        IntMap_Put(&map,  43, 1);
-        IntMap_Remove(&map, 43);
+        CIntMap_Put(&map,  10, 2);
+        CIntMap_Remove(&map, 10);
+        CIntMap_Put(&map,  12, 1);
+        CIntMap_Remove(&map, 12);
+        CIntMap_Put(&map,  18, 1);
+        CIntMap_Remove(&map, 18);
+        CIntMap_Put(&map,  22, 1);
+        CIntMap_Remove(&map, 22);
+        CIntMap_Put(&map,  26, 1);
+        CIntMap_Remove(&map, 26);
+        CIntMap_Put(&map,  29, 1);
+        CIntMap_Remove(&map, 29);
+        CIntMap_Put(&map,  31, 1);
+        CIntMap_Remove(&map, 31);
+        CIntMap_Put(&map,  33, 1);
+        CIntMap_Remove(&map, 33);
+        CIntMap_Put(&map,  36, 1);
+        CIntMap_Remove(&map, 36);
+        CIntMap_Put(&map,  38, 1);
+        CIntMap_Remove(&map, 38);
+        CIntMap_Put(&map,  41, 1);
+        CIntMap_Remove(&map, 41);
+        CIntMap_Put(&map,  43, 1);
+        CIntMap_Remove(&map, 43);
 
-        IntMap_Put(&map,  45, 1);
+        CIntMap_Put(&map,  45, 1);
 
-        IntMap_Destroy(&map);
+        CIntMap_Destroy(&map);
     }
 }
 

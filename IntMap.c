@@ -29,14 +29,14 @@
 #define DEFAULT_LOAD  (0.60)
 #define SEARCH_INCR   2
 
-static int IntMapFindKey(const IntMap *map, int key);
-static int IntMapGetInsertionIndex(const IntMap *map, int key);
-static int IntMapHash(const IntMap *map, int key);
-static void IntMapPutHelper(IntMap *map, int index, int key, int value);
-static void IntMapRehash(IntMap *map);
+static int CIntMapFindKey(const CIntMap *map, int key);
+static int CIntMapGetInsertionIndex(const CIntMap *map, int key);
+static int CIntMapHash(const CIntMap *map, int key);
+static void CIntMapPutHelper(CIntMap *map, int index, int key, int value);
+static void CIntMapRehash(CIntMap *map);
 
 
-void IntMap_Create(IntMap *map)
+void CIntMap_Create(CIntMap *map)
 {
     CMBIntVec_CreateWithSize(&map->myKeys, DEFAULT_SPACE);
     CMBIntVec_CreateWithSize(&map->myValues, DEFAULT_SPACE);
@@ -56,7 +56,7 @@ void IntMap_Create(IntMap *map)
     map->myEmptyValue = 0;
 }
 
-void IntMap_Destroy(IntMap *map)
+void CIntMap_Destroy(CIntMap *map)
 {
     CMBIntVec_Destroy(&map->myKeys);
     CMBIntVec_Destroy(&map->myValues);
@@ -64,12 +64,12 @@ void IntMap_Destroy(IntMap *map)
     BitVector_Destroy(&map->myFullFlags);
 }
 
-void IntMap_SetEmptyValue(IntMap *map, int emptyValue)
+void CIntMap_SetEmptyValue(CIntMap *map, int emptyValue)
 {
     map->myEmptyValue = emptyValue;
 }
 
-void IntMap_MakeEmpty(IntMap *map)
+void CIntMap_MakeEmpty(CIntMap *map)
 {
     BitVector_ResetAll(&map->myFullFlags);
     BitVector_ResetAll(&map->myActiveFlags);
@@ -78,25 +78,25 @@ void IntMap_MakeEmpty(IntMap *map)
     map->myFreeSpace = map->mySpace;
 }
 
-bool IntMap_ContainsKey(const IntMap *map, int key)
+bool CIntMap_ContainsKey(const CIntMap *map, int key)
 {
-    return IntMapFindKey(map, key) != -1;
+    return CIntMapFindKey(map, key) != -1;
 }
 
 // Defaults to zero for missing keys.
-int IntMap_Get(const IntMap *map, int key)
+int CIntMap_Get(const CIntMap *map, int key)
 {
     int value;
-    IntMap_Lookup(map, key, &value);
+    CIntMap_Lookup(map, key, &value);
     return value;
 }
 
-bool IntMap_Lookup(const IntMap *map, int key, int *value)
+bool CIntMap_Lookup(const CIntMap *map, int key, int *value)
 {
     int v;
     bool found;
 
-    int i = IntMapFindKey(map, key);
+    int i = CIntMapFindKey(map, key);
     if (i == -1) {
         v = map->myEmptyValue;
         found = FALSE;
@@ -113,14 +113,14 @@ bool IntMap_Lookup(const IntMap *map, int key, int *value)
 }
 
 // Returns the new value.
-int IntMap_IncrementBy(IntMap *map, int key, int amount)
+int CIntMap_IncrementBy(CIntMap *map, int key, int amount)
 {
     int *value;
-    int i = IntMapGetInsertionIndex(map, key);
+    int i = CIntMapGetInsertionIndex(map, key);
 
     if (i == -1 || !BitVector_Get(&map->myActiveFlags, i)) {
-        IntMapPutHelper(map, i, key, map->myEmptyValue);
-        i = IntMapGetInsertionIndex(map, key);
+        CIntMapPutHelper(map, i, key, map->myEmptyValue);
+        i = CIntMapGetInsertionIndex(map, key);
     }
 
     ASSERT(CMBIntVec_GetValue(&map->myKeys, i) == key);
@@ -129,10 +129,10 @@ int IntMap_IncrementBy(IntMap *map, int key, int amount)
     return *value;
 }
 
-void IntMap_Put(IntMap *map, int key, int value)
+void CIntMap_Put(CIntMap *map, int key, int value)
 {
-    int i = IntMapGetInsertionIndex(map, key);
-    IntMapPutHelper(map, i, key, value);
+    int i = CIntMapGetInsertionIndex(map, key);
+    CIntMapPutHelper(map, i, key, value);
 }
 
 /*
@@ -142,9 +142,9 @@ void IntMap_Put(IntMap *map, int key, int value)
  * even though Get(1) will return DEFAULT before and after the Remove call, due
  * to the default value of DEFAULT.
  */
-bool IntMap_Remove(IntMap *map, int key)
+bool CIntMap_Remove(CIntMap *map, int key)
 {
-    int i = IntMapFindKey(map, key);
+    int i = CIntMapFindKey(map, key);
     if (i == -1) {
         return FALSE;
     }
@@ -159,7 +159,7 @@ bool IntMap_Remove(IntMap *map, int key)
     return TRUE;
 }
 
-void IntMap_InsertAll(IntMap *dest, const IntMap *src)
+void CIntMap_InsertAll(CIntMap *dest, const CIntMap *src)
 {
     int i = 0;
     int count = 0;
@@ -168,7 +168,7 @@ void IntMap_InsertAll(IntMap *dest, const IntMap *src)
         ASSERT(i < src->mySpace);
 
         if (BitVector_Get(&src->myActiveFlags, i)) {
-            IntMap_Put(dest, CMBIntVec_GetValue(&src->myKeys, i),
+            CIntMap_Put(dest, CMBIntVec_GetValue(&src->myKeys, i),
                        CMBIntVec_GetValue(&src->myValues, i));
             count++;
         }
@@ -176,7 +176,7 @@ void IntMap_InsertAll(IntMap *dest, const IntMap *src)
     }
 }
 
-static int IntMapHash(const IntMap *map, int key)
+static int CIntMapHash(const CIntMap *map, int key)
 {
     uint32 hash;
     uint32 mix;
@@ -197,9 +197,9 @@ static int IntMapHash(const IntMap *map, int key)
 }
 
 //Returns the index of a valid key, or -1.
-static int IntMapFindKey(const IntMap *map, int key)
+static int CIntMapFindKey(const CIntMap *map, int key)
 {
-    int hashI = IntMapHash(map, key);
+    int hashI = CIntMapHash(map, key);
     int x = hashI;
 
     do {
@@ -224,9 +224,9 @@ static int IntMapFindKey(const IntMap *map, int key)
  * In other words, if the key is in the map, return it,
  * and if not, return the next free index.
  */
-static int IntMapGetInsertionIndex(const IntMap *map, int key)
+static int CIntMapGetInsertionIndex(const CIntMap *map, int key)
 {
-    int hashI = IntMapHash(map, key);
+    int hashI = CIntMapHash(map, key);
     int x = hashI;
 
     ASSERT(hashI % map->mySpace == hashI);
@@ -248,7 +248,7 @@ static int IntMapGetInsertionIndex(const IntMap *map, int key)
 }
 
 //Puts a key at the specified index.
-static void IntMapPutHelper(IntMap *map, int index, int key, int value)
+static void CIntMapPutHelper(CIntMap *map, int index, int key, int value)
 {
     ASSERT(index == -1 || index >= 0);
     if (index == -1) {
@@ -256,10 +256,10 @@ static void IntMapPutHelper(IntMap *map, int index, int key, int value)
     }
 
     if (index == -1 || ((double)map->myFullSpace+1)/map->mySpace >= map->myLoad) {
-        IntMapRehash(map);
+        CIntMapRehash(map);
         ASSERT(map->mySpace % SEARCH_INCR == 1);
 
-        index = IntMapGetInsertionIndex(map, key);
+        index = CIntMapGetInsertionIndex(map, key);
     }
 
     //we are guaranteed to have an empty spot
@@ -296,7 +296,7 @@ static void IntMapPutHelper(IntMap *map, int index, int key, int value)
     CMBIntVec_PutValue(&map->myValues, index, value);
 }
 
-void IntMap_DebugDump(IntMap *map)
+void CIntMap_DebugDump(CIntMap *map)
 {
     uint32 i;
     DebugPrint("mySize=%d, mySpace=%d, myFreeSpace=%d\n",
@@ -313,7 +313,7 @@ void IntMap_DebugDump(IntMap *map)
 }
 
 //Make the underlying table larger
-static void IntMapRehash(IntMap *map)
+static void CIntMapRehash(CIntMap *map)
 {
     int newSpace = map->mySpace*2 + 1;
     BitVector oldFull;
@@ -352,7 +352,7 @@ static void IntMapRehash(IntMap *map)
 
     for (x = 0; x < CMBIntVec_Size(&oldKeys); x++) {
         if (BitVector_Get(&oldFull,x) && BitVector_Get(&oldActive, x)) {
-            IntMap_Put(map, CMBIntVec_GetValue(&oldKeys, x),
+            CIntMap_Put(map, CMBIntVec_GetValue(&oldKeys, x),
                        CMBIntVec_GetValue(&oldValues, x));
         }
     }

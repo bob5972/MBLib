@@ -29,7 +29,7 @@
 #include "MBVector.h"
 #include "BitVector.h"
 
-typedef struct IntMap {
+typedef struct CIntMap {
     CMBIntVec myKeys;
     CMBIntVec myValues;
     CBitVector myActiveFlags;
@@ -41,48 +41,46 @@ typedef struct IntMap {
     int myFullSpace;
     double myLoad;
     int myEmptyValue;
-} IntMap;
+} CIntMap;
 
-typedef IntMap IntMapData;
-
-typedef struct IntMapIterator {
+typedef struct CIntMapIterator {
     int index;
     int used;
-    IntMap *map;
-} IntMapIterator;
+    CIntMap *map;
+} CIntMapIterator;
 
-void IntMap_Create(IntMap *map);
-void IntMap_Destroy(IntMap *map);
+void CIntMap_Create(CIntMap *map);
+void CIntMap_Destroy(CIntMap *map);
 
-void IntMap_SetEmptyValue(IntMap *map, int emptyValue);
+void CIntMap_SetEmptyValue(CIntMap *map, int emptyValue);
 
-bool IntMap_ContainsKey(const IntMap *map, int key);
-int IntMap_Get(const IntMap *map, int key);
-bool IntMap_Lookup(const IntMap *map, int key, int *value);
+bool CIntMap_ContainsKey(const CIntMap *map, int key);
+int CIntMap_Get(const CIntMap *map, int key);
+bool CIntMap_Lookup(const CIntMap *map, int key, int *value);
 
-void IntMap_MakeEmpty(IntMap *map);
-int IntMap_IncrementBy(IntMap *map, int key, int amount);
-void IntMap_Put(IntMap *map, int key, int value);
-bool IntMap_Remove(IntMap *map, int key);
-void IntMap_InsertAll(IntMap *dest, const IntMap *src);
-void IntMap_DebugDump(IntMap *map);
+void CIntMap_MakeEmpty(CIntMap *map);
+int CIntMap_IncrementBy(CIntMap *map, int key, int amount);
+void CIntMap_Put(CIntMap *map, int key, int value);
+bool CIntMap_Remove(CIntMap *map, int key);
+void CIntMap_InsertAll(CIntMap *dest, const CIntMap *src);
+void CIntMap_DebugDump(CIntMap *map);
 
-static INLINE void IntMapIterator_Start(IntMapIterator *it, IntMap *map)
+static INLINE void CIntMapIterator_Start(CIntMapIterator *it, CIntMap *map)
 {
     it->index = 0;
     it->used = 0;
     it->map = map;
 }
 
-static INLINE bool IntMapIterator_HasNext(IntMapIterator *it)
+static INLINE bool CIntMapIterator_HasNext(CIntMapIterator *it)
 {
     return it->used < it->map->mySize;
 }
 
-static INLINE int IntMapIterator_GetNext(IntMapIterator *it)
+static INLINE int CIntMapIterator_GetNext(CIntMapIterator *it)
 {
     uint32 retInd;
-    ASSERT(IntMapIterator_HasNext(it));
+    ASSERT(CIntMapIterator_HasNext(it));
     ASSERT(it->index < it->map->mySpace);
 
     while (!BitVector_Get(&it->map->myActiveFlags, it->index)) {
@@ -97,32 +95,32 @@ static INLINE int IntMapIterator_GetNext(IntMapIterator *it)
 
 }
 
-static INLINE bool IntMap_IsEmpty(const IntMap *map)
+static INLINE bool CIntMap_IsEmpty(const CIntMap *map)
 {
     return map->mySize == 0;
 }
 
-static INLINE int IntMap_Size(const IntMap *map)
+static INLINE int CIntMap_Size(const CIntMap *map)
 {
     return map->mySize;
 }
 
 // Returns the new value.
-static INLINE int IntMap_DecrementBy(IntMap *map, int key, int amount)
+static INLINE int CIntMap_DecrementBy(CIntMap *map, int key, int amount)
 {
-    return IntMap_IncrementBy(map, key, -amount);
+    return CIntMap_IncrementBy(map, key, -amount);
 }
 
 // Returns the new value.
-static INLINE int IntMap_Increment(IntMap *map, int key)
+static INLINE int CIntMap_Increment(CIntMap *map, int key)
 {
-    return IntMap_IncrementBy(map, key, 1);
+    return CIntMap_IncrementBy(map, key, 1);
 }
 
 // Returns the new value.
-static INLINE int IntMap_Decrement(IntMap *map, int key)
+static INLINE int CIntMap_Decrement(CIntMap *map, int key)
 {
-    return IntMap_DecrementBy(map, key, 1);
+    return CIntMap_DecrementBy(map, key, 1);
 }
 
 #endif // _INTMAP_H_20140106
