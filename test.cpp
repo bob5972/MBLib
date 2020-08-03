@@ -40,7 +40,6 @@
 #include "IntMap.hpp"
 #include "MBRegistry.hpp"
 
-DECLARE_MBVECTOR_TYPE(int, IntVector);
 static int seed;
 
 #define TEST(x) \
@@ -262,90 +261,90 @@ void testMBVector(void)
 void testCMBVector(void)
 {
     int result;
-    IntVector s;
-    IntVector r;
+    CMBIntVec s;
+    CMBIntVec r;
     int sizes[] = {
         0, 1, 10, 100, 200, 300,
     };
     int *value;
     int count = 100;
 
-    IntVector_CreateEmpty(&s);
-    IntVector_CreateEmpty(&r);
+    CMBIntVec_CreateEmpty(&s);
+    CMBIntVec_CreateEmpty(&r);
 
     for (unsigned y = 0; y < ARRAYSIZE(sizes); y++) {
-        IntVector_MakeEmpty(&s);
-        result = IntVector_Size(&s);
+        CMBIntVec_MakeEmpty(&s);
+        result = CMBIntVec_Size(&s);
         TEST(result == 0);
 
         for (unsigned x = y; x < ARRAYSIZE(sizes); x++) {
-            IntVector_Resize(&s, sizes[y]);
-            result = IntVector_Size(&s);
+            CMBIntVec_Resize(&s, sizes[y]);
+            result = CMBIntVec_Size(&s);
             TEST(result == sizes[y]);
-            IntVector_Resize(&s, sizes[x]);
-            result = IntVector_Size(&s);
+            CMBIntVec_Resize(&s, sizes[x]);
+            result = CMBIntVec_Size(&s);
             TEST(result == sizes[x]);
-            IntVector_Resize(&s, sizes[y]);
-            result = IntVector_Size(&s);
+            CMBIntVec_Resize(&s, sizes[y]);
+            result = CMBIntVec_Size(&s);
             TEST(result == sizes[y]);
 
-            IntVector_MakeEmpty(&s);
-            result = IntVector_Size(&s);
+            CMBIntVec_MakeEmpty(&s);
+            result = CMBIntVec_Size(&s);
             TEST(result == 0);
-            result = IntVector_IsEmpty(&s);
+            result = CMBIntVec_IsEmpty(&s);
             TEST(result);
         }
     }
 
-    IntVector_Resize(&s, count);
-    result = IntVector_Size(&s);
+    CMBIntVec_Resize(&s, count);
+    result = CMBIntVec_Size(&s);
     TEST(result == count);
-    result = IntVector_IsEmpty(&s);
+    result = CMBIntVec_IsEmpty(&s);
     TEST(!result);
 
-    for (int x = 0; x < IntVector_Size(&s); x++) {
-        value = IntVector_GetPtr(&s, x);
+    for (int x = 0; x < CMBIntVec_Size(&s); x++) {
+        value = CMBIntVec_GetPtr(&s, x);
         *value = x + seed;
     }
-    for (int x = 0; x < IntVector_Size(&s); x++) {
-        value = IntVector_GetPtr(&s, x);
+    for (int x = 0; x < CMBIntVec_Size(&s); x++) {
+        value = CMBIntVec_GetPtr(&s, x);
         TEST(*value == x + seed);
     }
 
-    IntVector_GrowBy(&s, count);
-    result = IntVector_Size(&s);
+    CMBIntVec_GrowBy(&s, count);
+    result = CMBIntVec_Size(&s);
     TEST(result == 2 * count);
-    for (int x = 0; x < IntVector_Size(&s); x++) {
-        value = IntVector_GetPtr(&s, x);
+    for (int x = 0; x < CMBIntVec_Size(&s); x++) {
+        value = CMBIntVec_GetPtr(&s, x);
         if (x < count) {
             TEST(*value == x + seed);
         }
         *value = x + seed;
     }
-    for (int x = 0; x < IntVector_Size(&s); x++) {
-        value = IntVector_GetPtr(&s, x);
+    for (int x = 0; x < CMBIntVec_Size(&s); x++) {
+        value = CMBIntVec_GetPtr(&s, x);
         TEST(*value == x + seed);
     }
 
-    IntVector_ShrinkBy(&s, count);
-    result = IntVector_Size(&s);
+    CMBIntVec_ShrinkBy(&s, count);
+    result = CMBIntVec_Size(&s);
     TEST(result == count);
-    for (int x = 0; x < IntVector_Size(&s); x++) {
-        value = IntVector_GetPtr(&s, x);
+    for (int x = 0; x < CMBIntVec_Size(&s); x++) {
+        value = CMBIntVec_GetPtr(&s, x);
         TEST(*value == x + seed);
     }
 
-    IntVector_Copy(&r, &s);
-    result = IntVector_Size(&r);
+    CMBIntVec_Copy(&r, &s);
+    result = CMBIntVec_Size(&r);
     TEST(result == count);
-    for (int x = 0; x < IntVector_Size(&r); x++) {
-        value = IntVector_GetPtr(&r, x);
+    for (int x = 0; x < CMBIntVec_Size(&r); x++) {
+        value = CMBIntVec_GetPtr(&r, x);
         TEST(*value == x + seed);
-        TEST(*value == IntVector_GetValue(&r, x));
+        TEST(*value == CMBIntVec_GetValue(&r, x));
     }
 
-    IntVector_Destroy(&s);
-    IntVector_Destroy(&r);
+    CMBIntVec_Destroy(&s);
+    CMBIntVec_Destroy(&r);
 }
 
 void testMBSet(void)

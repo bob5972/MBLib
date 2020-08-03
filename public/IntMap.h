@@ -30,8 +30,8 @@
 #include "BitVector.h"
 
 typedef struct IntMap {
-    MBIntVector myKeys;
-    MBIntVector myValues;
+    CMBIntVec myKeys;
+    CMBIntVec myValues;
     CBitVector myActiveFlags;
     CBitVector myFullFlags;
 
@@ -93,7 +93,7 @@ static INLINE int IntMapIterator_GetNext(IntMapIterator *it)
     it->used++;
     retInd = it->index;
     it->index++;
-    return MBIntVector_GetValue(&it->map->myKeys, retInd);
+    return CMBIntVec_GetValue(&it->map->myKeys, retInd);
 
 }
 

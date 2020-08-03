@@ -38,8 +38,8 @@ static void IntMapRehash(IntMap *map);
 
 void IntMap_Create(IntMap *map)
 {
-    MBIntVector_CreateWithSize(&map->myKeys, DEFAULT_SPACE);
-    MBIntVector_CreateWithSize(&map->myValues, DEFAULT_SPACE);
+    CMBIntVec_CreateWithSize(&map->myKeys, DEFAULT_SPACE);
+    CMBIntVec_CreateWithSize(&map->myValues, DEFAULT_SPACE);
 
     BitVector_CreateWithSize(&map->myActiveFlags, DEFAULT_SPACE);
     ASSERT(BitVector_GetFillValue(&map->myActiveFlags) == FALSE);
@@ -58,8 +58,8 @@ void IntMap_Create(IntMap *map)
 
 void IntMap_Destroy(IntMap *map)
 {
-    MBIntVector_Destroy(&map->myKeys);
-    MBIntVector_Destroy(&map->myValues);
+    CMBIntVec_Destroy(&map->myKeys);
+    CMBIntVec_Destroy(&map->myValues);
     BitVector_Destroy(&map->myActiveFlags);
     BitVector_Destroy(&map->myFullFlags);
 }
@@ -101,8 +101,8 @@ bool IntMap_Lookup(const IntMap *map, int key, int *value)
         v = map->myEmptyValue;
         found = FALSE;
     } else {
-        ASSERT(MBIntVector_GetValue(&map->myKeys, i) == key);
-        v = MBIntVector_GetValue(&map->myValues, i);
+        ASSERT(CMBIntVec_GetValue(&map->myKeys, i) == key);
+        v = CMBIntVec_GetValue(&map->myValues, i);
     }
 
     if (value != NULL) {
@@ -123,8 +123,8 @@ int IntMap_IncrementBy(IntMap *map, int key, int amount)
         i = IntMapGetInsertionIndex(map, key);
     }
 
-    ASSERT(MBIntVector_GetValue(&map->myKeys, i) == key);
-    value = MBIntVector_GetPtr(&map->myValues, i);
+    ASSERT(CMBIntVec_GetValue(&map->myKeys, i) == key);
+    value = CMBIntVec_GetPtr(&map->myValues, i);
     *value += amount;
     return *value;
 }
@@ -151,7 +151,7 @@ bool IntMap_Remove(IntMap *map, int key)
 
     ASSERT(BitVector_Get(&map->myActiveFlags, i));
     ASSERT(BitVector_Get(&map->myFullFlags, i));
-    ASSERT(MBIntVector_GetValue(&map->myKeys, i) == key);
+    ASSERT(CMBIntVec_GetValue(&map->myKeys, i) == key);
 
     BitVector_Reset(&map->myActiveFlags, i);
     map->mySize--;
@@ -168,8 +168,8 @@ void IntMap_InsertAll(IntMap *dest, const IntMap *src)
         ASSERT(i < src->mySpace);
 
         if (BitVector_Get(&src->myActiveFlags, i)) {
-            IntMap_Put(dest, MBIntVector_GetValue(&src->myKeys, i),
-                       MBIntVector_GetValue(&src->myValues, i));
+            IntMap_Put(dest, CMBIntVec_GetValue(&src->myKeys, i),
+                       CMBIntVec_GetValue(&src->myValues, i));
             count++;
         }
         i++;
@@ -205,7 +205,7 @@ static int IntMapFindKey(const IntMap *map, int key)
     do {
         if (!BitVector_Get(&map->myFullFlags, x)) {
             return -1;
-        } else if (MBIntVector_GetValue(&map->myKeys, x) == key &&
+        } else if (CMBIntVec_GetValue(&map->myKeys, x) == key &&
                    BitVector_Get(&map->myActiveFlags, x)) {
             return x;
         }
@@ -234,7 +234,7 @@ static int IntMapGetInsertionIndex(const IntMap *map, int key)
     do {
         if (!BitVector_Get(&map->myFullFlags, x)) {
             return x;
-        } else if (MBIntVector_GetValue(&map->myKeys, x) == key) {
+        } else if (CMBIntVec_GetValue(&map->myKeys, x) == key) {
             return x;
         }
 
@@ -270,7 +270,7 @@ static void IntMapPutHelper(IntMap *map, int index, int key, int value)
     ASSERT(index >= 0);
     ASSERT(index < map->mySpace);
     ASSERT(!BitVector_Get(&map->myActiveFlags, index) ||
-           MBIntVector_GetValue(&map->myKeys, index) == key);
+           CMBIntVec_GetValue(&map->myKeys, index) == key);
 
     if (!BitVector_Get(&map->myActiveFlags, index)) {
         map->mySize++;
@@ -282,18 +282,18 @@ static void IntMapPutHelper(IntMap *map, int index, int key, int value)
         }
 
         BitVector_Set(&map->myActiveFlags, index);
-        MBIntVector_PutValue(&map->myKeys, index, key);
+        CMBIntVec_PutValue(&map->myKeys, index, key);
     } else {
-        ASSERT(MBIntVector_GetValue(&map->myKeys, index) == key);
+        ASSERT(CMBIntVec_GetValue(&map->myKeys, index) == key);
         ASSERT(BitVector_Get(&map->myFullFlags, index));
         ASSERT(BitVector_Get(&map->myActiveFlags, index));
     }
 
-    ASSERT(MBIntVector_GetValue(&map->myKeys, index) == key);
+    ASSERT(CMBIntVec_GetValue(&map->myKeys, index) == key);
     ASSERT(BitVector_Get(&map->myFullFlags, index));
     ASSERT(BitVector_Get(&map->myActiveFlags, index));
 
-    MBIntVector_PutValue(&map->myValues, index, value);
+    CMBIntVec_PutValue(&map->myValues, index, value);
 }
 
 void IntMap_DebugDump(IntMap *map)
@@ -301,11 +301,11 @@ void IntMap_DebugDump(IntMap *map)
     uint32 i;
     DebugPrint("mySize=%d, mySpace=%d, myFreeSpace=%d\n",
                map->mySize, map->mySpace, map->myFreeSpace);
-    for (i = 0; i < MBIntVector_Size(&map->myKeys); i++) {
+    for (i = 0; i < CMBIntVec_Size(&map->myKeys); i++) {
         if (BitVector_Get(&map->myActiveFlags, i)) {
             DebugPrint("myKeys[%d]=%d, myValues[%d]=%d\n",
-                       i, MBIntVector_GetValue(&map->myKeys, i),
-                       i, MBIntVector_GetValue(&map->myValues, i));
+                       i, CMBIntVec_GetValue(&map->myKeys, i),
+                       i, CMBIntVec_GetValue(&map->myValues, i));
         } else if (BitVector_Get(&map->myFullFlags, i)) {
             DebugPrint("myKeys[%d]=full\n", i);
         }
@@ -318,14 +318,14 @@ static void IntMapRehash(IntMap *map)
     int newSpace = map->mySpace*2 + 1;
     BitVector oldFull;
     BitVector oldActive;
-    MBIntVector oldKeys;
-    MBIntVector oldValues;
+    CMBIntVec oldKeys;
+    CMBIntVec oldValues;
     int x;
 
     BitVector_Create(&oldFull);
     BitVector_Create(&oldActive);
-    MBIntVector_CreateEmpty(&oldKeys);
-    MBIntVector_CreateEmpty(&oldValues);
+    CMBIntVec_CreateEmpty(&oldKeys);
+    CMBIntVec_CreateEmpty(&oldValues);
 
     while (map->mySize/((double)newSpace) > map->myLoad) {
         newSpace = newSpace*2 + 1;
@@ -336,24 +336,24 @@ static void IntMapRehash(IntMap *map)
 
     BitVector_Consume(&oldFull, &map->myFullFlags);
     BitVector_Consume(&oldActive, &map->myActiveFlags);
-    MBIntVector_Consume(&oldKeys, &map->myKeys);
-    MBIntVector_Consume(&oldValues, &map->myValues);
+    CMBIntVec_Consume(&oldKeys, &map->myKeys);
+    CMBIntVec_Consume(&oldValues, &map->myValues);
 
     //the flags should all be false
     BitVector_Resize(&map->myFullFlags, newSpace);
     BitVector_Resize(&map->myActiveFlags, newSpace);
-    MBIntVector_Resize(&map->myKeys, newSpace);
-    MBIntVector_Resize(&map->myValues, newSpace);
+    CMBIntVec_Resize(&map->myKeys, newSpace);
+    CMBIntVec_Resize(&map->myValues, newSpace);
 
     map->mySpace = newSpace;
     map->mySize = 0;
     map->myFullSpace = 0;
     map->myFreeSpace = map->mySpace;
 
-    for (x = 0; x < MBIntVector_Size(&oldKeys); x++) {
+    for (x = 0; x < CMBIntVec_Size(&oldKeys); x++) {
         if (BitVector_Get(&oldFull,x) && BitVector_Get(&oldActive, x)) {
-            IntMap_Put(map, MBIntVector_GetValue(&oldKeys, x),
-                       MBIntVector_GetValue(&oldValues, x));
+            IntMap_Put(map, CMBIntVec_GetValue(&oldKeys, x),
+                       CMBIntVec_GetValue(&oldValues, x));
         }
     }
 
@@ -361,6 +361,6 @@ static void IntMapRehash(IntMap *map)
 
     BitVector_Destroy(&oldFull);
     BitVector_Destroy(&oldActive);
-    MBIntVector_Destroy(&oldKeys);
-    MBIntVector_Destroy(&oldValues);
+    CMBIntVec_Destroy(&oldKeys);
+    CMBIntVec_Destroy(&oldValues);
 }

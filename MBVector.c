@@ -25,7 +25,7 @@
 
 #include "MBVector.h"
 
-void MBVector_EnsureCapacity(MBVector *vector, int capacity)
+void CMBVector_EnsureCapacity(CMBVector *vector, int capacity)
 {
     int newCap;
     ASSERT(vector->capacity > 0);

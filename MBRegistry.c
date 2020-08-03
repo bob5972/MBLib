@@ -35,8 +35,8 @@
 
 typedef struct MBRegistry {
     uint64 magic;
-    MBVector data;
-    MBVector freeList;
+    CMBVector data;
+    CMBVector freeList;
 } MBRegistry;
 
 
@@ -51,8 +51,8 @@ MBRegistry *MBRegistry_Alloc()
     MBRegistry *mreg = malloc(sizeof(*mreg));
     ASSERT(mreg != NULL);
     mreg->magic = ((uintptr_t)mreg) ^ MBREGISTRY_MAGIC;
-    MBVector_CreateEmpty(&mreg->data, sizeof(MBRegistryNode));
-    MBVector_CreateEmpty(&mreg->freeList, sizeof(char *));
+    CMBVector_CreateEmpty(&mreg->data, sizeof(MBRegistryNode));
+    CMBVector_CreateEmpty(&mreg->freeList, sizeof(char *));
     return mreg;
 }
 MBRegistry *MBRegistry_AllocCopy(MBRegistry *toCopy)
@@ -61,19 +61,19 @@ MBRegistry *MBRegistry_AllocCopy(MBRegistry *toCopy)
     ASSERT(mreg->magic == ((uintptr_t)mreg ^ MBREGISTRY_MAGIC));
     ASSERT(toCopy->magic == ((uintptr_t)toCopy ^ MBREGISTRY_MAGIC));
 
-    MBVector_Copy(&mreg->data, &toCopy->data);
+    CMBVector_Copy(&mreg->data, &toCopy->data);
 
-    uint ksize = MBVector_Size(&mreg->data);
-    uint fsize = MBVector_Size(&toCopy->freeList);
-    MBVector_Resize(&mreg->freeList, fsize);
+    uint ksize = CMBVector_Size(&mreg->data);
+    uint fsize = CMBVector_Size(&toCopy->freeList);
+    CMBVector_Resize(&mreg->freeList, fsize);
     for (uint i = 0; i < fsize; i++) {
-        char **p = MBVector_GetPtr(&toCopy->freeList, i);
+        char **p = CMBVector_GetPtr(&toCopy->freeList, i);
         char *s = strdup(*p);
-        char **n = MBVector_GetPtr(&mreg->freeList, i);
+        char **n = CMBVector_GetPtr(&mreg->freeList, i);
         *n = s;
 
         for (uint x = 0; x < ksize; x++) {
-            MBRegistryNode *node = MBVector_GetPtr(&mreg->data, x);
+            MBRegistryNode *node = CMBVector_GetPtr(&mreg->data, x);
             if (node->key == *p) {
                 node->key = s;
             }
@@ -92,25 +92,25 @@ void MBRegistry_Free(MBRegistry *mreg)
     ASSERT(mreg->magic == ((uintptr_t)mreg ^ MBREGISTRY_MAGIC));
     mreg->magic = 0;
 
-    MBVector_Destroy(&mreg->data);
+    CMBVector_Destroy(&mreg->data);
 
-    uint fsize = MBVector_Size(&mreg->freeList);
+    uint fsize = CMBVector_Size(&mreg->freeList);
     for (uint i = 0; i < fsize; i++) {
         char *s;
-        char **p = MBVector_GetPtr(&mreg->freeList, i);
+        char **p = CMBVector_GetPtr(&mreg->freeList, i);
         s = *p;
         free(s);
     }
 
-    MBVector_Destroy(&mreg->freeList);
+    CMBVector_Destroy(&mreg->freeList);
     free(mreg);
 }
 
 bool MBRegistry_ContainsKey(MBRegistry *mreg, const char *key)
 {
     ASSERT(mreg != NULL);
-    for (uint32 i = 0; i < MBVector_Size(&mreg->data); i++) {
-        MBRegistryNode *n = MBVector_GetPtr(&mreg->data, i);
+    for (uint32 i = 0; i < CMBVector_Size(&mreg->data); i++) {
+        MBRegistryNode *n = CMBVector_GetPtr(&mreg->data, i);
         if (strcmp(n->key, key) == 0) {
             return TRUE;
         }
@@ -122,8 +122,8 @@ bool MBRegistry_ContainsKey(MBRegistry *mreg, const char *key)
 const char *MBRegistry_Get(MBRegistry *mreg, const char *key)
 {
     ASSERT(mreg != NULL);
-    for (uint32 i = 0; i < MBVector_Size(&mreg->data); i++) {
-        MBRegistryNode *n = MBVector_GetPtr(&mreg->data, i);
+    for (uint32 i = 0; i < CMBVector_Size(&mreg->data); i++) {
+        MBRegistryNode *n = CMBVector_GetPtr(&mreg->data, i);
         if (strcmp(n->key, key) == 0) {
             return n->value;
         }
@@ -137,16 +137,16 @@ void MBRegistry_Put(MBRegistry *mreg, const char *key, const char *value)
     MBRegistryNode *n;
     ASSERT(mreg != NULL);
 
-    for (uint32 i = 0; i < MBVector_Size(&mreg->data); i++) {
-        n = MBVector_GetPtr(&mreg->data, i);
+    for (uint32 i = 0; i < CMBVector_Size(&mreg->data); i++) {
+        n = CMBVector_GetPtr(&mreg->data, i);
         if (strcmp(n->key, key) == 0) {
             n->value = value;
             return;
         }
     }
 
-    MBVector_Grow(&mreg->data);
-    n = MBVector_GetLastPtr(&mreg->data);
+    CMBVector_Grow(&mreg->data);
+    n = CMBVector_GetLastPtr(&mreg->data);
     n->key = key;
     n->value = value;
 }
@@ -157,14 +157,14 @@ const char *MBRegistry_Remove(MBRegistry *mreg, const char *key)
     const char *oldValue = NULL;
     ASSERT(mreg != NULL);
 
-    for (uint32 i = 0; i < MBVector_Size(&mreg->data); i++) {
-        n = MBVector_GetPtr(&mreg->data, i);
+    for (uint32 i = 0; i < CMBVector_Size(&mreg->data); i++) {
+        n = CMBVector_GetPtr(&mreg->data, i);
         if (strcmp(n->key, key) == 0) {
-            MBRegistryNode *last = MBVector_GetLastPtr(&mreg->data);
+            MBRegistryNode *last = CMBVector_GetLastPtr(&mreg->data);
             oldValue = n->value;
 
             *n = *last;
-            MBVector_Shrink(&mreg->data);
+            CMBVector_Shrink(&mreg->data);
             return oldValue;
         }
     }
@@ -175,8 +175,8 @@ const char *MBRegistry_Remove(MBRegistry *mreg, const char *key)
 static void MBRegistryAddToFreeList(MBRegistry *mreg, char *s)
 {
     char **p;
-    MBVector_Grow(&mreg->freeList);
-    p = MBVector_GetLastPtr(&mreg->freeList);
+    CMBVector_Grow(&mreg->freeList);
+    p = CMBVector_GetLastPtr(&mreg->freeList);
     *p = s;
 }
 
@@ -245,8 +245,8 @@ void MBRegistry_LoadSubset(MBRegistry *mreg, const char *filename)
 void MBRegistry_DebugDump(MBRegistry *mreg)
 {
     ASSERT(mreg != NULL);
-    for (uint32 i = 0; i < MBVector_Size(&mreg->data); i++) {
-        MBRegistryNode *n = MBVector_GetPtr(&mreg->data, i);
+    for (uint32 i = 0; i < CMBVector_Size(&mreg->data); i++) {
+        MBRegistryNode *n = CMBVector_GetPtr(&mreg->data, i);
         DebugPrint("\t%s => %s\n", n->key, n->value);
     }
 }

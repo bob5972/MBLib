@@ -37,9 +37,7 @@
  * out to regular pointers).
  */
 extern "C" {
-#define MBVector CMBVector
 #include "MBVector.h"
-#undef MBVector
 }
 
 template<class itemType>
