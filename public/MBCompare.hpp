@@ -1,7 +1,7 @@
 /*
- * MBVector.c -- part of MBLib
+ * MBCompare.hpp -- part of MBLib
  *
- * Copyright (c) 2015-2020 Michael Banack <github@banack.net>
+ * Copyright (c) 2020 Michael Banack <github@banack.net>
  *
  * MIT License
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,28 +23,37 @@
  * SOFTWARE.
  */
 
-#include "MBVector.h"
-#include <stdlib.h>
+#ifndef MBCOMPARE_HPP_202008151132
+#define MBCOMPARE_HPP_202008151132
 
-void CMBVector_EnsureCapacity(CMBVector *vector, int capacity)
-{
-    int newCap;
-    ASSERT(vector->capacity > 0);
-    ASSERT(vector->size >= 0);
-    ASSERT(capacity >= 0);
-    ASSERT(vector->itemSize > 0);
-
-    if (vector->capacity >= capacity) {
-        return;
-    }
-
-    newCap = vector->capacity;
-    while (newCap < capacity) {
-        newCap *= 2;
-    }
-    ASSERT(newCap > vector->capacity);
-    vector->capacity = newCap;
-
-    ASSERT(vector->pinCount == 0);
-    vector->items = realloc(vector->items, vector->itemSize * newCap);
+extern "C" {
+#include "MBCompare.h"
 }
+
+template<class item>
+class MBComparator
+{
+public:
+    MBComparator(const CMBComparator *comp) {
+        ASSERT(comp != NULL);
+        ASSERT(comp->itemSize == sizeof(item));
+        myComparator = comp;
+    }
+
+    int compare(item &lhs, item &rhs) const {
+        return myComparator->compareFn(&lhs, &rhs, myComparator->cbData);
+    }
+
+    CMBCompareFn getCompareFn() const {
+        return myComparator->compareFn;
+    }
+
+    void *getCBData() const {
+        return myComparator->cbData;
+    }
+
+private:
+    const CMBComparator *myComparator;
+};
+
+#endif // MBCOMPARE_HPP_202008151132

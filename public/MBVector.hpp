@@ -27,6 +27,7 @@
 #define MBVECTOR_HPP_201001091353
 
 #include "mbassert.h"
+#include "MBCompare.hpp"
 
 /*
  * The C++ version of this doesn't actually use
@@ -251,6 +252,12 @@ class MBVector
         // underlying array, so that future
         // growing will be faster
         void ensureCapacity(int c);
+
+        void sort(const MBComparator<itemType> &comp) {
+            ASSERT(myPinCount == 0);
+            qsort_r(myItems, mySize, sizeof(itemType), comp.getCompareFn(),
+                    comp.getCBData());
+        }
 
     private:
         int mySize;

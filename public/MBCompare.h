@@ -1,7 +1,7 @@
 /*
- * MBVector.c -- part of MBLib
+ * MBCompare.h -- part of MBLib
  *
- * Copyright (c) 2015-2020 Michael Banack <github@banack.net>
+ * Copyright (c) 2020 Michael Banack <github@banack.net>
  *
  * MIT License
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,28 +23,22 @@
  * SOFTWARE.
  */
 
-#include "MBVector.h"
-#include <stdlib.h>
+#ifndef MBCOMPARE_H_202008151217
+#define MBCOMPARE_H_202008151217
 
-void CMBVector_EnsureCapacity(CMBVector *vector, int capacity)
-{
-    int newCap;
-    ASSERT(vector->capacity > 0);
-    ASSERT(vector->size >= 0);
-    ASSERT(capacity >= 0);
-    ASSERT(vector->itemSize > 0);
+/**
+ * Java-like comparator function.
+   Returns:
+ *    < 0: if lhs < rhs
+ *    = 0: if lhs == rhs
+ *    > 0: if lhs > rhs
+ */
+typedef int (*CMBCompareFn)(const void *lhs, const void *rhs, void *cbData);
 
-    if (vector->capacity >= capacity) {
-        return;
-    }
+typedef struct CMBComparator {
+    CMBCompareFn compareFn;
+    void *cbData;
+    uint itemSize;
+} CMBComparator;
 
-    newCap = vector->capacity;
-    while (newCap < capacity) {
-        newCap *= 2;
-    }
-    ASSERT(newCap > vector->capacity);
-    vector->capacity = newCap;
-
-    ASSERT(vector->pinCount == 0);
-    vector->items = realloc(vector->items, vector->itemSize * newCap);
-}
+#endif // MBCOMPARE_H_202008151217

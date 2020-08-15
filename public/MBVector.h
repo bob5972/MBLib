@@ -29,6 +29,7 @@
 #include <stdlib.h>
 
 #include "mbassert.h"
+#include "MBCompare.h"
 
 typedef struct CMBVector {
     int size;
@@ -215,6 +216,19 @@ static INLINE void *CMBVector_GetCArray(CMBVector *vector)
      * Consider pinning the array if you're using this function.
      */
     return vector->items;
+}
+
+static INLINE void CMBVector_Sort(CMBVector *v, const CMBComparator *comp)
+{
+    ASSERT(v != NULL);
+    ASSERT(comp != NULL);
+    ASSERT(v->itemSize == comp->itemSize);
+#ifdef _GNU_SOURCE
+    qsort_r(v->items, v->size, v->itemSize, comp->compareFn,
+            comp->cbData);
+#else
+    NOT_IMPLEMENTED();
+#endif
 }
 
 
