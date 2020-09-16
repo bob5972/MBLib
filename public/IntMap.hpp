@@ -36,85 +36,85 @@ extern "C" {
 }
 
 class IntMap {
-	public:
-		IntMap() {
-		    CIntMap_Create(&myData);
-		}
+    public:
+        IntMap() {
+            CIntMap_Create(&myData);
+        }
 
-		IntMap(const IntMap &m) {
-		    CIntMap_Create(&myData);
-		    CIntMap_InsertAll(&myData, &m.myData);
-		}
+        IntMap(const IntMap &m) {
+            CIntMap_Create(&myData);
+            CIntMap_InsertAll(&myData, &m.myData);
+        }
 
-		void setEmptyValue(int emptyValue) {
+        void setEmptyValue(int emptyValue) {
             CIntMap_SetEmptyValue(&myData, emptyValue);
         }
 
-		void makeEmpty() {
-		    CIntMap_MakeEmpty(&myData);
-		}
+        void makeEmpty() {
+            CIntMap_MakeEmpty(&myData);
+        }
 
-		bool containsKey(int key) const
-		{
+        bool containsKey(int key) const
+        {
             return CIntMap_ContainsKey(&myData, key);
-		}
+        }
 
-		bool isEmpty() const {
+        bool isEmpty() const {
             return CIntMap_IsEmpty(&myData);
-		}
+        }
 
-		int size() const {
+        int size() const {
             return CIntMap_Size(&myData);
-		}
+        }
 
-		//defaults to a value of 0 for missing keys
-		int get(int key) const
-		{
+        //defaults to a value of 0 for missing keys
+        int get(int key) const
+        {
             return CIntMap_Get(&myData, key);
-		}
+        }
 
 
-		//returns the new value
-		int increment(int key) {
+        //returns the new value
+        int increment(int key) {
             return CIntMap_Increment(&myData, key);
-		}
+        }
 
-		//returns the new value
-		int decrement(int key) {
+        //returns the new value
+        int decrement(int key) {
             return CIntMap_Decrement(&myData, key);
-		}
+        }
 
-		//returns the new value
-		int increment(int key, int amount) {
-		    return CIntMap_IncrementBy(&myData, key, amount);
-		}
-		//returns the new value
-		int decrement(int key, int amount) {
-		    return CIntMap_DecrementBy(&myData, key, amount);
-		}
+        //returns the new value
+        int increment(int key, int amount) {
+            return CIntMap_IncrementBy(&myData, key, amount);
+        }
+        //returns the new value
+        int decrement(int key, int amount) {
+            return CIntMap_DecrementBy(&myData, key, amount);
+        }
 
-		void put(int key, int value) {
-		    CIntMap_Put(&myData, key, value);
-		}
+        void put(int key, int value) {
+            CIntMap_Put(&myData, key, value);
+        }
 
-		//returns true iff the map changed
-		// (Note that deleting an entry of (1,0) will "change"
-		//  the map, even though get(1) will return 0
-		//  before an after the delete call
-		//  (due to the default value of 0)
-		bool remove(int key) {
-		    return CIntMap_Remove(&myData, key);
-		}
+        //returns true iff the map changed
+        // (Note that deleting an entry of (1,0) will "change"
+        //  the map, even though get(1) will return 0
+        //  before an after the delete call
+        //  (due to the default value of 0)
+        bool remove(int key) {
+            return CIntMap_Remove(&myData, key);
+        }
 
-		//insert all keys from m into this map
-		//  if the key already exists, use the new value
-		//  linear time to the capacity (NOT size) of m
-		void insertAll(const IntMap &m) {
-		    return CIntMap_InsertAll(&myData, &m.myData);
-		}
+        //insert all keys from m into this map
+        //  if the key already exists, use the new value
+        //  linear time to the capacity (NOT size) of m
+        void insertAll(const IntMap &m) {
+            return CIntMap_InsertAll(&myData, &m.myData);
+        }
 
-	private:
-		CIntMap myData;
+    private:
+        CIntMap myData;
 };
 
 
