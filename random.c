@@ -62,38 +62,13 @@ void RandomState_Destroy(RandomState *r)
 
 void RandomState_GenerateSeed(RandomState *r)
 {
-    uint64 seed;
-
-    bool haveSeed = FALSE;
-
-    int fd;
-
-    fd = open ("/dev/urandom", O_RDONLY);
-
-    if (fd != -1) {
-        int count;
-        count = read(fd, &seed, sizeof(seed));
-        if (count == sizeof(seed)) {
-            haveSeed = TRUE;
-        }
-        close (fd);
-    }
-
-    if (!haveSeed) {
-        pid_t pid = getpid();
-        seed = time(0) * pid + pid;
-        RandomState_SetSeed(r, seed);
-
-        RandomState_Uint64(r);
-        seed = RandomState_Uint64(r);
-        haveSeed = TRUE;
-    }
-
-    r->bitBucket = 0;
-    r->bitBucketSize = 0;
-
-    ASSERT(haveSeed);
-    RandomState_SetSeed(r, seed);
+    /*
+     * Use the module Random to generate the seeds, so that we don't
+     * keep re-reading from /dev/urandom.  This also makes re-seeding
+     * RandomState's deterministic if someone called Random_SetSeed
+     * before this.
+     */
+    RandomState_SetSeed(r, Random_Uint64());
 }
 
 uint64 RandomState_GetSeed(RandomState *r)
@@ -101,10 +76,16 @@ uint64 RandomState_GetSeed(RandomState *r)
     return r->seed;
 }
 
+/*
+ * The Workhorse of the entire module.
+ */
 void RandomState_SetSeed(RandomState *r, uint64 seed)
 {
     r->seed = seed;
     r->value = r->seed;
+
+    r->bitBucket = 0;
+    r->bitBucketSize = 0;
 }
 
 uint32 RandomState_Uint32(RandomState *r)
@@ -302,7 +283,7 @@ void Random_Init(void)
 
     if (!randomData.haveSeed) {
         Random_GenerateSeed();
-        ASSERT(randomData.haveSeed == TRUE);
+        ASSERT(randomData.haveSeed);
     }
 }
 
@@ -312,13 +293,41 @@ void Random_Exit(void)
     randomData.haveSeed = FALSE;
 }
 
+
 /*
- * Generate a random seed for the module.
+ * Generate a new random seed for the module.
  */
 void Random_GenerateSeed()
 {
-    RandomState_GenerateSeed(&randomData.rs);
-    randomData.haveSeed = TRUE;
+    uint64 seed;
+
+    bool haveSeed = FALSE;
+
+    int fd;
+
+    fd = open ("/dev/urandom", O_RDONLY);
+
+    if (fd != -1) {
+        int count;
+        count = read(fd, &seed, sizeof(seed));
+        if (count == sizeof(seed)) {
+            haveSeed = TRUE;
+        }
+        close (fd);
+    }
+
+    if (!haveSeed) {
+        pid_t pid = getpid();
+        seed = time(0) * pid + pid;
+        Random_SetSeed(seed);
+
+        Random_Uint64();
+        seed = Random_Uint64();
+        haveSeed = TRUE;
+    }
+
+    ASSERT(haveSeed);
+    Random_SetSeed(seed);
 }
 
 /*
@@ -342,9 +351,7 @@ void Random_SetSeed(uint64 seed)
     randomData.haveSeed = TRUE;
 }
 
-/*
- * The Workhorse of the entire module.
- */
+
 uint32 Random_Uint32(void)
 {
     ASSERT(randomData.initialized);
