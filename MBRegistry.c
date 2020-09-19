@@ -58,6 +58,11 @@ MBRegistry *MBRegistry_Alloc()
 MBRegistry *MBRegistry_AllocCopy(MBRegistry *toCopy)
 {
     MBRegistry *mreg = MBRegistry_Alloc();
+
+    if (toCopy == NULL ) {
+        return mreg;
+    }
+
     ASSERT(mreg->magic == ((uintptr_t)mreg ^ MBREGISTRY_MAGIC));
     ASSERT(toCopy->magic == ((uintptr_t)toCopy ^ MBREGISTRY_MAGIC));
 

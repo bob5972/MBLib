@@ -68,6 +68,7 @@ void RandomState_GenerateSeed(RandomState *r)
      * RandomState's deterministic if someone called Random_SetSeed
      * before this.
      */
+    ASSERT(randomData.initialized);
     RandomState_SetSeed(r, Random_Uint64());
 }
 
@@ -151,10 +152,6 @@ float RandomState_Float(RandomState *r, float min, float max)
     double dmax;
 
     ASSERT(max >= min);
-
-    //This might work, but I'm too lazy to figure out signs right now.
-    ASSERT(max >= 0);
-    ASSERT(min >= 0);
 
     if (min == max) {
         return min;
