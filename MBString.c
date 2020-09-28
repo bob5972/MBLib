@@ -74,6 +74,22 @@ void MBString_EnsureCapacity(MBString *str, int cap)
     ASSERT(str->capacity >= cap + 1);
 }
 
+int MBString_CountChar(const MBString *str, char c)
+{
+    int length = str->length;
+    int x;
+    int count = 0;
+
+    ASSERT(MBStringIsNullTerminated(str));
+
+    for (x = 0; x < length; x++) {
+        if (str->chars[x] == c) {
+            count++;
+        }
+    }
+    return count;
+}
+
 int MBString_FindChar(const MBString *str, char c)
 {
     int length = str->length;

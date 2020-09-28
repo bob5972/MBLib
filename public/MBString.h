@@ -42,6 +42,7 @@ typedef MBString MBStringData;
 
 void MBString_EnsureCapacity(MBString *str, int cap);
 
+int MBString_CountChar(const MBString *str, char x);
 int MBString_FindChar(const MBString *str, char x);
 int MBString_FindStr(const MBString *str, const MBString *substr);
 

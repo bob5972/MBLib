@@ -120,6 +120,10 @@ class MBString {
             return MBString_GetCStr(&data);
         }
 
+        int countChar(char c) const {
+            return MBString_CountChar(&data, c);
+        }
+
         int find(char c) const {
             return MBString_FindChar(&data, c);
         }
@@ -156,6 +160,10 @@ class MBString {
 
         char getChar(int k) const {
             return MBString_GetChar(&data, k);
+        }
+
+        char lastChar() const {
+            return MBString_GetChar(&data, MBString_Length(&data) - 1);
         }
 
         void setChar(int k, char c) {
