@@ -22,7 +22,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
- 
+
 #ifndef _MBUTIL_H_201106111445
 #define _MBUTIL_H_201106111445
 
@@ -49,6 +49,7 @@ MBUtil_IsWhitespace(char c)
         case ' ':
         case '\t':
         case '\n':
+        case '\r':
             return TRUE;
         default:
             return FALSE;
@@ -95,6 +96,6 @@ MBUtil_Popcountl(uint64 x)
 
 #ifdef __cplusplus
 	}
-#endif 
+#endif
 
 #endif //_MBUTIL_H_201106111445
