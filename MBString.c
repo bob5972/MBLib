@@ -184,6 +184,9 @@ void MBString_ToLower(MBString *str)
     }
 }
 
+/**
+ * Strip white-space from both ends of the string.
+ */
 void MBString_StripWS(MBString *str)
 {
     int myLength = str->length;

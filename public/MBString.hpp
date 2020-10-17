@@ -158,6 +158,14 @@ class MBString {
             return oup;
         }
 
+        MBString stripWS() const {
+            MBString oup;
+
+            MBString_Copy(&oup.data, &data);
+            MBString_StripWS(&oup.data);
+            return oup;
+        }
+
         char getChar(int k) const {
             return MBString_GetChar(&data, k);
         }
