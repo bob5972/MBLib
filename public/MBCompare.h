@@ -38,7 +38,7 @@ typedef int (*CMBCompareFn)(const void *lhs, const void *rhs, void *cbData);
 typedef struct CMBComparator {
     CMBCompareFn compareFn;
     void *cbData;
-    uint itemSize;
+    int itemSize;
 } CMBComparator;
 
 #endif // MBCOMPARE_H_202008151217
