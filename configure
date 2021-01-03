@@ -58,8 +58,10 @@ sub Main() {
 
     if ( $^O eq 'linux') {
         $gConfig->{'LINUX'} = TRUE;
-    } else {
+    } elsif ($^O eq 'darwin') {
         $gConfig->{'MACOS'} = TRUE;
+    } else {
+        Panic("Unknown OS: $^O\n");
     }
 
     if ($gConfig->{'DEBUG'}) {
