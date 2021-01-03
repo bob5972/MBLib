@@ -5,6 +5,7 @@ use FindBin qw($Bin);
 use lib "$Bin/MBPerl";
 
 use MBBasic;
+use File::Path qw(make_path);
 
 my $gConfig = {};
 
@@ -77,6 +78,8 @@ sub Main() {
     if (!$gConfig->{'CXX'}) {
         $gConfig->{'CXX'} = $dcxx;
     }
+
+    #Dump($gConfig);
 
     #Open files
     make_path($gConfig->{'MBLIB_BUILDDIR'});
