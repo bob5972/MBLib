@@ -7,9 +7,12 @@ use lib "$Bin/MBPerl";
 use MBBasic;
 use File::Path qw(make_path);
 
-$MBBasic::PROGRAM_AUTHOR="Michael Banack";
+$MBBasic::PROGRAM_AUTHOR = "Michael Banack";
 $MBBasic::PROGRAM_COPYRIGHT_DATE = "2021";
-my $gScriptOptions = {};
+my $gScriptOptions = {
+    "useClang!" => { desc => "Use Clang as the compiler?",
+                     default => FALSE, },
+};
 
 my $gConfig = {};
 
@@ -24,7 +27,7 @@ sub Main() {
     foreach my $x ('BUILDROOT', 'TMPDIR', 'DEPROOT',
                    'MBLIB_BUILDDIR', 'MBLIB_DEPDIR',
                    'MBLIB_SRCDIR', 'DEBUG', 'DEFAULT_CFLAGS',
-                   'CC', 'CXX', 'USE_CLANG') {
+                   'CC', 'CXX') {
         if (defined($ENV{$x})) {
             $gConfig->{$x} = $ENV{$x};
         }
@@ -67,7 +70,7 @@ sub Main() {
 
     my $dcc = $gConfig->{'CC'};
     my $dcxx = $gConfig->{'CXX'};
-    if ($gConfig->{'USE_CLANG'}) {
+    if ($OPTIONS->{'useClang'}) {
         $dcc = 'clang';
         $dcxx = 'clang++';
         $gConfig->{'DEFAULT_CFLAGS'} .= " -Wno-constant-logical-operand";
@@ -84,7 +87,9 @@ sub Main() {
         $gConfig->{'CXX'} = $dcxx;
     }
 
-    #Dump($gConfig);
+    if ($OPTIONS->{'verbose'}) {
+        Dump($gConfig);
+    }
 
     #Open files
     make_path($gConfig->{'MBLIB_BUILDDIR'});
