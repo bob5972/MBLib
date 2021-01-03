@@ -7,9 +7,14 @@ use lib "$Bin/MBPerl";
 use MBBasic;
 use File::Path qw(make_path);
 
+$MBBasic::PROGRAM_AUTHOR="Michael Banack";
+$MBBasic::PROGRAM_COPYRIGHT_DATE = "2021";
+my $gScriptOptions = {};
+
 my $gConfig = {};
 
 sub Main() {
+    MBBasic::Init($gScriptOptions);
 
     # Load static defaults
     $gConfig->{'BUILDROOT'} = 'build';
