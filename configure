@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-## configure -- MBLib
+## configure -- part of MBLib
 
 use File::Spec catfile;
 use File::Path make_path;
@@ -96,8 +96,8 @@ sub Main() {
 
     my $cMake;
     my $cHeader;
-    open($cMake, '>', 'config.mk');
-    open($cHeader, '>', catfile($gConfig->{'BUILDROOT'}, 'config.h'));
+    open($cMake, '>', 'config.mk') or Panic($!);
+    open($cHeader, '>', catfile($gConfig->{'BUILDROOT'}, 'config.h')) or Panic($!);
 
     # Save Makefile options
     foreach my $x  ('BUILDROOT', 'TMPDIR', 'DEPROOT',
