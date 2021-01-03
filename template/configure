@@ -2,7 +2,7 @@
 ## configure -- part of MBLib
 
 use FindBin qw($Bin);
-use lib "$Bin/MBPerl";
+use lib "$Bin/MBLib/MBPerl";
 
 use MBBasic;
 use MBBuild;
