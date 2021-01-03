@@ -8,3 +8,4 @@ gmon.out
 .project
 .cproject
 .settings/
+*.kate-swp

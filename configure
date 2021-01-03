@@ -1,23 +1,12 @@
 #!/usr/bin/perl
 ## configure -- part of MBLib
 
-use File::Spec catfile;
-use File::Path make_path;
+use FindBin qw($Bin);
+use lib "$Bin/MBPerl";
 
-use constant TRUE => 1;
-use constant FALSE => 0;
+use MBBasic;
 
 my $gConfig = {};
-
-sub catfile { return File::Spec->catfile(@_); }
-sub make_path { return File::Path->make_path(@_); }
-
-sub Panic {
-    my @args = @_;
-    my $msg = join("\n", @args);
-    chomp($msg);
-    die("PANIC: $msg\n");
-}
 
 sub Main() {
 
