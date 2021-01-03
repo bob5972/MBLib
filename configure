@@ -1,77 +1,131 @@
-#!/bin/bash
+#!/usr/bin/perl
 ## configure -- MBLib
 
-if [ "$BUILDROOT" == "" ]; then
-    BUILDROOT="build";
-fi;
+use File::Spec catfile;
+use File::Path make_path;
 
-if [ "$TMPDIR" == "" ]; then
-    TMPDIR="$BUILDROOT/tmp"
-fi;
+use constant TRUE => 1;
+use constant FALSE => 0;
 
-if [ "$DEPROOT" == "" ]; then
-    DEPROOT="$BUILDROOT/deps";
-fi;
+my $gConfig = {};
 
-if [ "$MBLIB_BUILDDIR" == "" ]; then
-    MBLIB_BUILDDIR="$BUILDROOT";
-fi;
+sub catfile { return File::Spec->catfile(@_); }
+sub make_path { return File::Path->make_path(@_); }
 
-if [ "$MBLIB_DEPDIR" == "" ]; then
-    MBLIB_DEPDIR="$DEPROOT";
-fi;
+sub Panic {
+    my @args = @_;
+    my $msg = join("\n", @args);
+    chomp($msg);
+    die("PANIC: $msg\n");
+}
 
-if [ "$MBLIB_SRCDIR" == "" ]; then
-    MBLIB_SRCDIR=".";
-fi;
+sub Main() {
 
-mkdir -p "$MBLIB_BUILDDIR"
-mkdir -p "$TMPDIR"
-mkdir -p "$MBLIB_DEPDIR"
+    # Load static defaults
+    $gConfig->{'BUILDROOT'} = 'build';
+    $gConfig->{'DEBUG'} = TRUE;
 
-CONFIG_MK="config.mk"
-CONFIG_H="$BUILDROOT/config.h"
+    # Load environment defaults
+    foreach my $x ('BUILDROOT', 'TMPDIR', 'DEPROOT',
+                   'MBLIB_BUILDDIR', 'MBLIB_DEPDIR',
+                   'MBLIB_SRCDIR', 'DEBUG', 'DEFAULT_CFLAGS',
+                   'CC', 'CXX', 'USE_CLANG') {
+        if (defined($ENV{$x})) {
+            $gConfig->{$x} = $ENV{$x};
+        }
+    }
 
-cat /dev/null > $CONFIG_H;
-cat /dev/null > $CONFIG_MK;
+    # Load dynamic defaults
+    if (!$gConfig->{'TMPDIR'}) {
+        $gConfig->{'TMPDIR'} = catfile($gConfig->{'BUILDROOT'}, 'tmp');
+    }
 
-echo "BUILDROOT=$BUILDROOT" >> $CONFIG_MK;
-echo "TMPDIR=$TMPDIR" >> $CONFIG_MK;
-echo "DEPROOT=$DEPROOT" >> $CONFIG_MK;
-echo "MBLIB_BUILDDIR=$MBLIB_BUILDDIR" >> $CONFIG_MK;
-echo "MBLIB_DEPDIR=$MBLIB_DEPDIR" >> $CONFIG_MK;
-echo "MBLIB_SRCDIR=$MBLIB_SRCDIR" >> $CONFIG_MK;
+    if (!$gConfig->{'DEPROOT'}) {
+        $gConfig->{'DEPROOT'} = catfile($gConfig->{'BUILDROOT'}, 'deps');
+    }
 
-if [ `uname -a | cut -c 1-5` == "Linux" ]; then
-    echo '#define LINUX 1' >> $CONFIG_H;
-    echo 'LINUX=1' >> $CONFIG_MK;
-else
-    echo '#define MACOS 1' >> $CONFIG_H;
-    echo 'MACOS=1' >> $CONFIG_MK;
-fi;
+    if (!$gConfig->{'MBLIB_BUILDDIR'}) {
+        $gConfig->{'MBLIB_BUILDDIR'} = $gConfig->{'BUILDROOT'};
+    }
 
-if [ "$DEBUG" == "" ]; then
-    DEBUG=1;
-fi;
+    if (!$gConfig->{'MBLIB_DEPDIR'}) {
+        $gConfig->{'MBLIB_DEPDIR'} = $gConfig->{'DEPROOT'};
+    }
 
-echo '#define DEBUG ' $DEBUG >> $CONFIG_H
-echo DEBUG=$DEBUG >> $CONFIG_MK;
+    if (!$gConfig->{'MBLIB_SRCDIR'}) {
+        $gConfig->{'MBLIB_SRCDIR'} = '.';
+    }
 
-if [ "$DEBUG" != "0" ]; then
-    DEFAULT_CFLAGS="${DEFAULT_CFLAGS} -march=native -Werror -Wall -g"
-else
-    DEFAULT_CFLAGS="${DEFAULT_CFLAGS} -march=native -O2 -fomit-frame-pointer"
-fi;
+    if ( $^O eq 'linux') {
+        $gConfig->{'LINUX'} = TRUE;
+    } else {
+        $gConfig->{'MACOS'} = TRUE;
+    }
 
-if [ "$USE_CLANG" != "" ]; then
-    echo CC=clang >> $CONFIG_MK;
-    echo CXX=clang++ >> $CONFIG_MK;
-    DEFAULT_CFLAGS="${DEFAULT_CFLAGS} -Wno-constant-logical-operand"
-    DEFAULT_CFLAGS="${DEFAULT_CFLAGS} -Wno-unused-function"
-else
-    echo CC=gcc >> $CONFIG_MK;
-    echo CXX=g++ >> $CONFIG_MK;
-fi;
+    if ($gConfig->{'DEBUG'}) {
+        $gConfig->{'DEFAULT_CFLAGS'} .= " -march=native -Werror -Wall -g";
+    } else {
+        $gConfig->{'DEFAULT_CFLAGS'} .= " -march=native -O2 -fomit-frame-pointer";
+    }
 
-echo DEFAULT_CFLAGS=${DEFAULT_CFLAGS} >> $CONFIG_MK;
+    my $dcc = $gConfig->{'CC'};
+    my $dcxx = $gConfig->{'CXX'};
+    if ($gConfig->{'USE_CLANG'}) {
+        $dcc = 'clang';
+        $dcxx = 'clang++';
+        $gConfig->{'DEFAULT_CFLAGS'} .= " -Wno-constant-logical-operand";
+        $gConfig->{'DEFAULT_CFLAGS'} .= " -Wno-unused-function";
+    } else {
+        $dcc = 'gcc';
+        $dcxx = 'g++';
+    }
 
+    if (!$gConfig->{'CC'}) {
+        $gConfig->{'CC'} = $dcc;
+    }
+    if (!$gConfig->{'CXX'}) {
+        $gConfig->{'CXX'} = $dcxx;
+    }
+
+    #Open files
+    make_path($gConfig->{'MBLIB_BUILDDIR'});
+    make_path($gConfig->{'TMPDIR'});
+    make_path($gConfig->{'MBLIB_DEPDIR'});
+
+    my $cMake;
+    my $cHeader;
+    open($cMake, '>', 'config.mk');
+    open($cHeader, '>', catfile($gConfig->{'BUILDROOT'}, 'config.h'));
+
+    # Save Makefile options
+    foreach my $x  ('BUILDROOT', 'TMPDIR', 'DEPROOT',
+                    'MBLIB_BUILDDIR', 'MBLIB_DEPDIR',
+                    'MBLIB_SRCDIR', 'DEFAULT_CFLAGS',
+                    'CC', 'CXX') {
+        print $cMake "$x=" . $gConfig->{$x} . "\n";
+        delete $gConfig->{$x};
+    }
+
+    # Save joint MakeFile/Header options
+    foreach my $x ('LINUX', 'MACOS', 'DEBUG') {
+        if (defined($gConfig->{$x})) {
+            print $cMake "$x=" . $gConfig->{$x} . "\n";
+            print $cHeader "#define $x " . $gConfig->{$x} . "\n";
+        }
+
+        delete $gConfig->{$x};
+    }
+
+    # Check for unused keys
+    delete $gConfig->{'USE_CLANG'};
+    foreach my $x (keys(%{$gConfig})) {
+        Panic("Unused key found in gConfig: $x => " . $gConfig->{$x} . "\n");
+    }
+}
+
+# Call the Main function.
+my $exitCode;
+eval {
+   $exitCode = Main();
+}; Panic($@) if $@;
+exit $exitCode;
