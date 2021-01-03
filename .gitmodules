@@ -1,0 +1,3 @@
+[submodule "MBPerl"]
+	path = MBPerl
+	url = https://github.com/bob5972/MBPerl.git
