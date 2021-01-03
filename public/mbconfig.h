@@ -1,7 +1,7 @@
 /*
- * mbdebug.h -- part of MBLib
+ * mbconfig.h -- part of MBLib
  *
- * Copyright (c) 2015-2020 Michael Banack <github@banack.net>
+ * Copyright (c) 2021 Michael Banack <github@banack.net>
  *
  * MIT License
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,40 +23,43 @@
  * SOFTWARE.
  */
 
-#ifndef MBDEBUG_H_201001091239
-#define MBDEBUG_H_201001091239
-
-#include "mbbasic.h"
+#ifndef _MBCONFIG_H_202101031218
+#define _MBCONFIG_H_202101031218
 
 #ifdef __cplusplus
 	extern "C" {
 #endif
 
+#define ALLOW_MBBUILD_CONFIG_H
+#include "config.h"
+#undef ALLOW_MBBUILD_CONFIG_H
 
-//backtraces and logfile not implemented
-
-void Warning(const char *fmt, ...);
-void Log(int level, const char *fmt, ...);
-
-#define NOT_TESTED() DebugPrintHelper( __FILE__, __LINE__, "NOT_TESTED\n")
-
-#define RTRACE() DebugPrintHelper( __FILE__, __LINE__, "TRACE: %s:%d\n", __FUNCTION__, __LINE__)
-
-#ifdef MB_DEBUG
-	#define DebugPrint(...) DebugPrintHelper( __FILE__, __LINE__, __VA_ARGS__)
-	#define TRACE() RTRACE()
-    #define DEBUG_ONLY(x) x
+#ifdef MB_LINUX
+#define mb_linux 1
 #else
-	#define DebugPrint(...)
-	#define TRACE()
-    #define DEBUG_ONLY(x)
+#define mb_linux 0
 #endif
 
-void DebugPrintHelper(const char *file, int line, const char *fmt, ...);
+#ifdef MB_MACOS
+#define mb_macos 1
+#else
+#define mb_macos 0
+#endif
 
+#ifdef MB_DEBUG
+#define mb_debug 1
+#else
+#define mb_debug 0
+#endif
+
+#ifdef MB_DEVEL
+#define mb_devel 1
+#else
+#define mb_devel 0
+#endif
 
 #ifdef __cplusplus
 	}
 #endif
 
-#endif //MBDEBUG_H_201001091239
+#endif //_MBCONFIG_H_202101031218

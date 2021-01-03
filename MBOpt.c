@@ -142,7 +142,7 @@ bool MBOpt_IsPresent(const char *option)
         return TRUE;
     }
 
-    if (DEBUG) {
+    if (mb_debug) {
         if (!MBOpt_IsValid(option)) {
             PANIC("Unknown Option: %s\n", option);
         }
@@ -153,7 +153,7 @@ bool MBOpt_IsPresent(const char *option)
 
 const char *MBOpt_GetCStr(const char *option)
 {
-    if (DEBUG) {
+    if (mb_debug) {
         if (!MBOpt_IsValid(option)) {
             PANIC("Unknown Option: %s\n", option);
         }
@@ -164,7 +164,7 @@ const char *MBOpt_GetCStr(const char *option)
 
 int MBOpt_GetInt(const char *option)
 {
-    if (DEBUG) {
+    if (mb_debug) {
         if (!MBOpt_IsValid(option)) {
             PANIC("Unknown Option: %s\n", option);
         }
@@ -176,7 +176,7 @@ int MBOpt_GetInt(const char *option)
 
 int64 MBOpt_GetInt64(const char *option)
 {
-    if (DEBUG) {
+    if (mb_debug) {
         if (!MBOpt_IsValid(option)) {
             PANIC("Unknown Option: %s\n", option);
         }
@@ -187,7 +187,7 @@ int64 MBOpt_GetInt64(const char *option)
 
 uint MBOpt_GetUint(const char *option)
 {
-    if (DEBUG) {
+    if (mb_debug) {
         if (!MBOpt_IsValid(option)) {
             PANIC("Unknown Option: %s\n", option);
         }
@@ -199,7 +199,7 @@ uint MBOpt_GetUint(const char *option)
 
 uint64 MBOpt_GetUint64(const char *option)
 {
-    if (DEBUG) {
+    if (mb_debug) {
         if (!MBOpt_IsValid(option)) {
             PANIC("Unknown Option: %s\n", option);
         }
@@ -211,7 +211,7 @@ uint64 MBOpt_GetUint64(const char *option)
 
 bool MBOpt_GetBool(const char *option)
 {
-    if (DEBUG) {
+    if (mb_debug) {
         if (!MBOpt_IsValid(option)) {
             PANIC("Unknown Option: %s\n", option);
         }

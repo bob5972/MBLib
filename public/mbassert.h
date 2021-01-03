@@ -26,7 +26,7 @@
 #ifndef MBASSERT_H_201001091250
 #define MBASSERT_H_201001091250
 
-#include "config.h"
+#include "mbconfig.h"
 #include "mbtypes.h"
 #include "mbdebug.h"
 #include "mbutil.h"
@@ -36,16 +36,6 @@
 #endif
 
 #if MB_DEBUG
-#ifndef MB_ASSERT
-#define MB_ASSERT 1
-#endif //MB_ASSERT
-#endif // MB_DEBUG
-
-#ifndef MB_ASSERT
-#define MB_ASSERT 0
-#endif
-
-#if MB_ASSERT
 #define ASSERT(x) \
     do { \
         if (UNLIKELY(!(x))) { \

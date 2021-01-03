@@ -76,14 +76,14 @@ static INLINE void CMBVector_Destroy(CMBVector *vector)
 
 static INLINE void CMBVector_Pin(CMBVector *vector)
 {
-    if (DEBUG) {
+    if (mb_debug) {
         vector->pinCount++;
     }
 }
 
 static INLINE void CMBVector_Unpin(CMBVector *vector)
 {
-    if (DEBUG) {
+    if (mb_debug) {
         ASSERT(vector->pinCount > 0);
         vector->pinCount--;
     }
