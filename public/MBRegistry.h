@@ -43,6 +43,8 @@ void MBRegistry_DebugDump(MBRegistry *mreg);
 
 void MBRegistry_Put(MBRegistry *mreg, const char *key, const char *value);
 void MBRegistry_PutCopy(MBRegistry *mreg, const char *key, const char *value);
+void MBRegistry_PutAll(MBRegistry *dest, MBRegistry *src, const char *prefix);
+
 bool MBRegistry_ContainsKey(MBRegistry *mreg, const char *key);
 const char *MBRegistry_Get(MBRegistry *mreg, const char *key);
 int MBRegistry_GetIntD(MBRegistry *mreg, const char *key, int defValue);

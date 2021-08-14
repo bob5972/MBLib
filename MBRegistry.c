@@ -300,6 +300,35 @@ void MBRegistry_DebugDump(MBRegistry *mreg)
     }
 }
 
+void MBRegistry_PutAll(MBRegistry *dest, MBRegistry *src, const char *prefix)
+{
+    bool usePrefix;
+    MBString key;
+
+    if (prefix == NULL || strcmp(prefix, "") == 0) {
+        usePrefix = FALSE;
+    } else {
+        usePrefix = TRUE;
+        MBString_Create(&key);
+    }
+
+    for (uint32 i = 0; i < CMBVector_Size(&src->data); i++) {
+        MBRegistryNode *n = CMBVector_GetPtr(&src->data, i);
+
+        if (usePrefix) {
+            MBString_CopyCStr(&key, prefix);
+            MBString_AppendCStr(&key, n->key);
+            MBRegistry_PutCopy(dest, MBString_GetCStr(&key), n->value);
+        } else {
+            MBRegistry_PutCopy(dest, n->key, n->value);
+        }
+    }
+
+    if (usePrefix) {
+        MBString_Destroy(&key);
+    }
+}
+
 int MBRegistry_GetIntD(MBRegistry *mreg, const char *key, int defValue)
 {
     int64 val = MBRegistry_GetInt64D(mreg, key, defValue);
