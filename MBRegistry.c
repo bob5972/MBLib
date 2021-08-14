@@ -45,6 +45,9 @@ typedef struct MBRegistryNode {
     const char *value;
 } MBRegistryNode;
 
+static void MBRegistryAddToFreeList(MBRegistry *mreg, char *s);
+static const char *MBRegistryDupToFreeList(MBRegistry *mreg, const char *s);
+
 
 MBRegistry *MBRegistry_Alloc()
 {
@@ -137,6 +140,10 @@ const char *MBRegistry_Get(MBRegistry *mreg, const char *key)
     return NULL;
 }
 
+/*
+ * Assumes the supplied strings are constants, and the caller won't
+ * change them.
+ */
 void MBRegistry_Put(MBRegistry *mreg, const char *key, const char *value)
 {
     MBRegistryNode *n;
@@ -154,6 +161,17 @@ void MBRegistry_Put(MBRegistry *mreg, const char *key, const char *value)
     n = CMBVector_GetLastPtr(&mreg->data);
     n->key = key;
     n->value = value;
+}
+
+/*
+ * Copies the supplied strings, so they need not be valid after the call.
+ */
+void MBRegistry_PutCopy(MBRegistry *mreg, const char *key, const char *value)
+{
+    const char *newKey = MBRegistryDupToFreeList(mreg, key);
+    const char *newValue = MBRegistryDupToFreeList(mreg, value);
+
+    MBRegistry_Put(mreg, newKey, newValue);
 }
 
 const char *MBRegistry_Remove(MBRegistry *mreg, const char *key)
@@ -183,6 +201,14 @@ static void MBRegistryAddToFreeList(MBRegistry *mreg, char *s)
     CMBVector_Grow(&mreg->freeList);
     p = CMBVector_GetLastPtr(&mreg->freeList);
     *p = s;
+}
+
+static const char *MBRegistryDupToFreeList(MBRegistry *mreg, const char *s)
+{
+    char *newS = strdup(s);
+    ASSERT(newS != NULL);
+    MBRegistryAddToFreeList(mreg, newS);
+    return newS;
 }
 
 static void
@@ -245,6 +271,24 @@ void MBRegistry_Load(MBRegistry *mreg, const char *filename)
 void MBRegistry_LoadSubset(MBRegistry *mreg, const char *filename)
 {
     MBRegistryLoad(mreg, filename, TRUE);
+}
+
+void
+MBRegistry_Save(MBRegistry *mreg, const char *filename)
+{
+    FILE *file;
+
+    ASSERT(mreg != NULL);
+
+    file = fopen(filename, "w");
+    VERIFY(file != NULL);
+
+    for (uint32 i = 0; i < CMBVector_Size(&mreg->data); i++) {
+        MBRegistryNode *n = CMBVector_GetPtr(&mreg->data, i);
+        fprintf(file, "%s = %s\n", n->key, n->value);
+    }
+
+    fclose(file);
 }
 
 void MBRegistry_DebugDump(MBRegistry *mreg)

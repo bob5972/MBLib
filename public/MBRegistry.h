@@ -38,9 +38,11 @@ void MBRegistry_Free(MBRegistry *mreg);
 
 void MBRegistry_Load(MBRegistry *mreg, const char *filename);
 void MBRegistry_LoadSubset(MBRegistry *mreg, const char *filename);
+void MBRegistry_Save(MBRegistry *mreg, const char *filename);
 void MBRegistry_DebugDump(MBRegistry *mreg);
 
 void MBRegistry_Put(MBRegistry *mreg, const char *key, const char *value);
+void MBRegistry_PutCopy(MBRegistry *mreg, const char *key, const char *value);
 bool MBRegistry_ContainsKey(MBRegistry *mreg, const char *key);
 const char *MBRegistry_Get(MBRegistry *mreg, const char *key);
 int MBRegistry_GetIntD(MBRegistry *mreg, const char *key, int defValue);
