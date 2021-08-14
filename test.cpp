@@ -1018,7 +1018,7 @@ int main(int argc, char *argv[])
         }
     }
 
-    printf("\nStarting %s ...\n", benchmark ? "Benchmark" : "Tests");
+    printf("\nStarting MBLib %s ...\n", benchmark ? "Benchmark" : "Tests");
 
     /*
      * Make benchmark mode deterministic.
