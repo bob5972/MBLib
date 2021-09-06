@@ -329,6 +329,34 @@ void MBRegistry_PutAll(MBRegistry *dest, MBRegistry *src, const char *prefix)
     }
 }
 
+void MBRegistry_SplitOnPrefix(MBRegistry *dest, MBRegistry *src,
+                              const char *prefix, bool keepPrefix)
+{
+    MBString key;
+    MBString prefixStr;
+
+    ASSERT(prefix != NULL);
+    MBString_Create(&key);
+    MBString_Create(&prefixStr);
+    MBString_CopyCStr(&prefixStr, prefix);
+
+    for (uint32 i = 0; i < CMBVector_Size(&src->data); i++) {
+        MBRegistryNode *n = CMBVector_GetPtr(&src->data, i);
+
+        if (MBString_IsPrefixOfCStr(&prefix, n->key)) {
+            MBString_MakeEmpty(&key);
+            if (keepPrefix) {
+                MBString_AppendStr(&key, &prefixStr);
+            }
+            MBString_AppendCStr(&key, n->key);
+            MBRegistry_PutCopy(dest, MBString_GetCStr(&key), n->value);
+        }
+    }
+
+    MBString_Destroy(&key);
+    MBString_Destroy(&prefixStr);
+}
+
 int MBRegistry_GetIntD(MBRegistry *mreg, const char *key, int defValue)
 {
     int64 val = MBRegistry_GetInt64D(mreg, key, defValue);

@@ -136,6 +136,67 @@ int MBString_FindStr(const MBString *str, const MBString *substr)
     return -1;
 }
 
+bool MBString_StartsWith(const MBString *str, const MBString *prefix)
+{
+    int x = 0;
+    int myLength = str->length;
+    int prefixLen = prefix->length;
+
+    ASSERT(MBStringIsNullTerminated(str));
+    ASSERT(MBStringIsNullTerminated(prefix));
+
+    if (prefixLen > myLength) {
+        return FALSE;
+    }
+
+    if (prefixLen == 0) {
+        return TRUE;
+    }
+
+    return memcmp(&str->chars[0], &prefix->chars[0], prefixLen) == 0;
+}
+
+
+bool MBString_StartsWithCStr(const MBString *str, const char *prefix)
+{
+    int x = 0;
+    int myLength = str->length;
+    int prefixLen = strnlen(prefix, myLength + 1);
+
+    ASSERT(MBStringIsNullTerminated(str));
+
+    if (prefixLen > myLength) {
+        return FALSE;
+    }
+
+    if (prefixLen == 0) {
+        return TRUE;
+    }
+
+    return memcmp(&str->chars[0], prefix, prefixLen) == 0;
+}
+
+
+bool MBString_IsPrefixOfCStr(const MBString *prefix, const char *str)
+{
+    int x = 0;
+    int prefixLen = prefix->length;
+    int strLength = strnlen(str, prefixLen + 1);
+
+    ASSERT(MBStringIsNullTerminated(str));
+
+    if (prefixLen > strLength) {
+        return FALSE;
+    }
+
+    if (prefixLen == 0) {
+        return TRUE;
+    }
+
+    return memcmp(&prefix->chars[0], str, prefixLen) == 0;
+}
+
+
 /*
  * Copy len chars from str starting at start.
  */

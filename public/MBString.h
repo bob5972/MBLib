@@ -45,6 +45,9 @@ void MBString_EnsureCapacity(MBString *str, int cap);
 int MBString_CountChar(const MBString *str, char x);
 int MBString_FindChar(const MBString *str, char x);
 int MBString_FindStr(const MBString *str, const MBString *substr);
+bool MBString_StartsWith(const MBString *str, const MBString *prefix);
+bool MBString_StartsWithCStr(const MBString *str, const char *prefix);
+bool MBString_IsPrefixOfCStr(const MBString *prefix, const char *str);
 
 void MBString_CopySubstr(MBString *dest, const MBString *str,
                          int start, int len);

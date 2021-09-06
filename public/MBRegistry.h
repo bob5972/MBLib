@@ -36,6 +36,9 @@ MBRegistry *MBRegistry_Alloc();
 MBRegistry *MBRegistry_AllocCopy(MBRegistry *toCopy);
 void MBRegistry_Free(MBRegistry *mreg);
 
+void MBRegistry_SplitOnPrefix(MBRegistry *dest, MBRegistry *src,
+                              const char *prefix, bool keepPrefix);
+
 void MBRegistry_Load(MBRegistry *mreg, const char *filename);
 void MBRegistry_LoadSubset(MBRegistry *mreg, const char *filename);
 void MBRegistry_Save(MBRegistry *mreg, const char *filename);
@@ -55,10 +58,6 @@ bool MBRegistry_GetBoolD(MBRegistry *mreg, const char *key, bool defValue);
 float MBRegistry_GetFloatD(MBRegistry *mreg, const char *key, float defValue);
 
 const char *MBRegistry_Remove(MBRegistry *mreg, const char *key);
-
-MBRegistry *MBRegistry_Alloc(void);
-MBRegistry *MBRegistry_AllocCopy(MBRegistry *toCopy);
-void MBRegistry_Free(MBRegistry *mreg);
 
 const char *MBRegistry_GetCStrD(MBRegistry *mreg, const char *key,
                                 const char *defValue);
