@@ -352,6 +352,17 @@ void MBString_Consume(MBString *consumer, MBString *strData)
     ASSERT(MBStringIsNulTerminated(consumer));
 }
 
+void MBString_Truncate(MBString *str, uint32 firstChar, uint32 numChars)
+{
+    ASSERT(firstChar < str->length);
+    ASSERT(numChars <= str->length);
+    ASSERT(firstChar + numChars <= str->length);
+    memmove(&str->chars[0], &str->chars[firstChar], numChars);
+    str->length = numChars;
+    str->chars[str->length] = '\0';
+    ASSERT(MBStringIsNulTerminated(str));
+}
+
 /*
  * Compare strings lexicographically
  *

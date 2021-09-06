@@ -61,6 +61,7 @@ void MBString_PrependChar(MBString *str, char c);
 void MBString_PrependStr(MBString *str, const MBString *prefix);
 void MBString_PrependCStr(MBString *str, const char *prefix);
 void MBString_Consume(MBString *consumer, MBString *strData);
+void MBString_Truncate(MBString *str, uint32 firstChar, uint32 numChars);
 
 int MBString_Compare(const MBString *lhs, const MBString *rhs);
 void MBString_IntToString(MBString *str, int x);

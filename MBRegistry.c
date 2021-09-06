@@ -341,21 +341,23 @@ void MBRegistry_SplitOnPrefix(MBRegistry *dest, MBRegistry *src,
 {
     MBString key;
     MBString prefixStr;
+    uint32 prefixLength;
 
     ASSERT(prefix != NULL);
     MBString_Create(&key);
     MBString_Create(&prefixStr);
     MBString_CopyCStr(&prefixStr, prefix);
+    prefixLength = MBString_Length(&prefixStr);
 
     for (uint32 i = 0; i < CMBVector_Size(&src->data); i++) {
         MBRegistryNode *n = CMBVector_GetPtr(&src->data, i);
 
         if (MBString_IsPrefixOfCStr(&prefixStr, n->key)) {
+            uint32 keyLength;
             MBString_MakeEmpty(&key);
-            if (keepPrefix) {
-                MBString_AppendStr(&key, &prefixStr);
-            }
             MBString_AppendCStr(&key, n->key);
+            keyLength = MBString_Length(&key);
+            MBString_Truncate(&key, prefixLength, keyLength - prefixLength);
             MBRegistry_PutCopy(dest, MBString_GetCStr(&key), n->value);
         }
     }
