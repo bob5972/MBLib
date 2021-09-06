@@ -96,7 +96,10 @@ MBRegistry *MBRegistry_AllocCopy(MBRegistry *toCopy)
 
 void MBRegistry_Free(MBRegistry *mreg)
 {
-    ASSERT(mreg != NULL);
+    if (mreg == NULL) {
+        return;
+    }
+
     ASSERT(mreg->magic == ((uintptr_t)mreg ^ MBREGISTRY_MAGIC));
     mreg->magic = 0;
 
