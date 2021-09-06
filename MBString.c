@@ -315,6 +315,7 @@ void MBString_PrependStr(MBString *str, const MBString *prefix)
     MBString_EnsureCapacity(str, str->length + prefix->length);
     memmove(&str->chars[prefix->length], &str->chars[0], str->length + 1);
     memcpy(&str->chars[0], &prefix->chars[0], prefix->length);
+    str->length += prefix->length;
     ASSERT(MBStringIsNulTerminated(str));
 }
 
@@ -328,6 +329,7 @@ void MBString_PrependCStr(MBString *str, const char *prefix)
     MBString_EnsureCapacity(str, str->length + prefixLen);
     memmove(&str->chars[prefixLen], &str->chars[0], str->length + 1);
     memcpy(&str->chars[0], prefix, prefixLen);
+    str->length += prefixLen;
     ASSERT(MBStringIsNulTerminated(str));
 }
 
