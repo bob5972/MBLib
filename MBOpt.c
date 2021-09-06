@@ -219,3 +219,14 @@ bool MBOpt_GetBool(const char *option)
 
     return MBRegistry_GetBool(mbopt.mreg, option);
 }
+
+float MBOpt_GetFloat(const char *option)
+{
+    if (mb_debug) {
+        if (!MBOpt_IsValid(option)) {
+            PANIC("Unknown Option: %s\n", option);
+        }
+    }
+
+    return MBRegistry_GetFloat(mbopt.mreg, option);
+}
