@@ -59,12 +59,13 @@ void MBString_StripWS(MBString *str);
 void MBString_AppendStr(MBString *str, const MBString *suffix);
 void MBString_PrependChar(MBString *str, char c);
 void MBString_PrependStr(MBString *str, const MBString *prefix);
+void MBString_PrependCStr(MBString *str, const char *prefix);
 void MBString_Consume(MBString *consumer, MBString *strData);
 
 int MBString_Compare(const MBString *lhs, const MBString *rhs);
 void MBString_IntToString(MBString *str, int x);
 
-static INLINE bool MBStringIsNullTerminated(const MBString *str)
+static INLINE bool MBStringIsNulTerminated(const MBString *str)
 {
     ASSERT(str != NULL);
     ASSERT(str->capacity >= str->length + 1);
@@ -75,7 +76,7 @@ static INLINE char MBString_GetChar(const MBString *str, int x)
 {
     ASSERT(x >= 0);
     ASSERT(x < str->length);
-    ASSERT(MBStringIsNullTerminated(str));
+    ASSERT(MBStringIsNulTerminated(str));
 
     return str->chars[x];
 }
@@ -84,14 +85,14 @@ static INLINE void MBString_SetChar(MBString *str, int x, char c)
 {
     ASSERT(x >= 0);
     ASSERT(x < str->length);
-    ASSERT(MBStringIsNullTerminated(str));
+    ASSERT(MBStringIsNulTerminated(str));
 
     str->chars[x] = c;
 }
 
 static INLINE int MBString_Length(const MBString *str)
 {
-    ASSERT(MBStringIsNullTerminated(str));
+    ASSERT(MBStringIsNulTerminated(str));
     return str->length;
 }
 
@@ -106,7 +107,7 @@ static INLINE void MBString_MakeEmpty(MBString *str)
     str->length = 0;
     str->chars[str->length] = '\0';
 
-    ASSERT(MBStringIsNullTerminated(str));
+    ASSERT(MBStringIsNulTerminated(str));
 }
 
 /*
@@ -119,7 +120,7 @@ static INLINE void MBString_MakeEmpty(MBString *str)
 static INLINE const char *MBString_GetCStr(const MBString *str)
 {
     ASSERT(str != NULL);
-    ASSERT(MBStringIsNullTerminated(str));
+    ASSERT(MBStringIsNulTerminated(str));
     return str->chars;
 }
 
@@ -130,7 +131,7 @@ static INLINE const char *MBString_GetCStr(const MBString *str)
 static INLINE char *MBString_DupCStr(const MBString *str)
 {
     ASSERT(str != NULL);
-    ASSERT(MBStringIsNullTerminated(str));
+    ASSERT(MBStringIsNulTerminated(str));
     return strdup(str->chars);
 }
 
@@ -142,7 +143,7 @@ static INLINE void MBString_CreateWithCapacity(MBString *str, int cap)
     str->capacity = cap;
     str->chars = (char *)malloc(cap * sizeof(str->chars[0]));
     str->chars[0] = '\0';
-    ASSERT(MBStringIsNullTerminated(str));
+    ASSERT(MBStringIsNulTerminated(str));
 }
 
 static INLINE void MBString_Create(MBString *str)
@@ -153,7 +154,7 @@ static INLINE void MBString_Create(MBString *str)
 static INLINE void MBString_Destroy(MBString *str)
 {
     ASSERT(str != NULL);
-    ASSERT(MBStringIsNullTerminated(str));
+    ASSERT(MBStringIsNulTerminated(str));
 
     free(str->chars);
     str->chars = NULL;
@@ -164,13 +165,13 @@ static INLINE void MBString_Destroy(MBString *str)
  */
 static INLINE void MBString_FillChar(MBString *str, char c, int pos, int len)
 {
-    ASSERT(MBStringIsNullTerminated(str));
+    ASSERT(MBStringIsNulTerminated(str));
     ASSERT(pos >= 0);
     ASSERT(pos < str->length);
     ASSERT(pos + len <= str->length);
 
     memset(&str->chars[pos], c, len);
-    ASSERT(MBStringIsNullTerminated(str));
+    ASSERT(MBStringIsNulTerminated(str));
 }
 
 
@@ -182,31 +183,31 @@ static INLINE void MBString_FillChar(MBString *str, char c, int pos, int len)
  */
 static INLINE void MBString_Resize(MBString *str, int size)
 {
-    ASSERT(MBStringIsNullTerminated(str));
+    ASSERT(MBStringIsNulTerminated(str));
     ASSERT(size > 0);
     MBString_EnsureCapacity(str, size);
     str->length = size;
     str->chars[str->length] = '\0';
-    ASSERT(MBStringIsNullTerminated(str));
+    ASSERT(MBStringIsNulTerminated(str));
 }
 
 static INLINE void MBString_AppendChar(MBString *str, char c)
 {
     int myLength = str->length;
-    ASSERT(MBStringIsNullTerminated(str));
+    ASSERT(MBStringIsNulTerminated(str));
     MBString_EnsureCapacity(str, myLength + 1);
     str->chars[myLength] = c;
     str->chars[myLength+1] = '\0';
     str->length = myLength + 1;
-    ASSERT(MBStringIsNullTerminated(str));
+    ASSERT(MBStringIsNulTerminated(str));
 }
 
 static INLINE void MBString_Copy(MBString *dest, const MBString *src)
 {
     int srcLength = src->length;
     ASSERT(dest != src);
-    ASSERT(MBStringIsNullTerminated(src));
-    ASSERT(MBStringIsNullTerminated(dest));
+    ASSERT(MBStringIsNulTerminated(src));
+    ASSERT(MBStringIsNulTerminated(dest));
 
     /*
      * Empty the destination so there's nothing to copy if we have to
@@ -216,14 +217,14 @@ static INLINE void MBString_Copy(MBString *dest, const MBString *src)
     MBString_EnsureCapacity(dest, srcLength);
     dest->length = srcLength;
     memcpy(dest->chars, src->chars, srcLength + 1);
-    ASSERT(MBStringIsNullTerminated(dest));
+    ASSERT(MBStringIsNulTerminated(dest));
 }
 
 static INLINE void MBString_CopyCStr(MBString *dest, const char *cstr)
 {
     int len;
     ASSERT(cstr != NULL);
-    ASSERT(MBStringIsNullTerminated(dest));
+    ASSERT(MBStringIsNulTerminated(dest));
 
     MBString_MakeEmpty(dest);
 
@@ -240,7 +241,7 @@ static INLINE void MBString_CopyCStr(MBString *dest, const char *cstr)
 
     memcpy(dest->chars, cstr, len + 1);
     dest->length = len;
-    ASSERT(MBStringIsNullTerminated(dest));
+    ASSERT(MBStringIsNulTerminated(dest));
 }
 
 
@@ -248,7 +249,7 @@ static INLINE void MBString_AppendCStr(MBString *dest, const char *cstr)
 {
     int len;
     ASSERT(cstr != NULL);
-    ASSERT(MBStringIsNullTerminated(dest));
+    ASSERT(MBStringIsNulTerminated(dest));
 
     /*
      * We end up walking cstr twice (once to calculate the length, and
@@ -263,7 +264,7 @@ static INLINE void MBString_AppendCStr(MBString *dest, const char *cstr)
 
     memcpy(dest->chars + dest->length, cstr, len + 1);
     dest->length += len;
-    ASSERT(MBStringIsNullTerminated(dest));
+    ASSERT(MBStringIsNulTerminated(dest));
 }
 
 

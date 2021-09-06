@@ -49,7 +49,7 @@ void MBString_EnsureCapacity(MBString *str, int cap)
     ASSERT(myCapacity > 0);
     ASSERT(myCapacity >= myLength + 1);
     ASSERT(capacity > 0);
-    ASSERT(MBStringIsNullTerminated(str));
+    ASSERT(MBStringIsNulTerminated(str));
 
     if (myCapacity < capacity) {
         char *temp = str->chars;
@@ -66,7 +66,7 @@ void MBString_EnsureCapacity(MBString *str, int cap)
         ASSERT(temp[myLength] == '\0');
         memcpy(str->chars, temp, myLength + 1);
 
-        ASSERT(MBStringIsNullTerminated(str));
+        ASSERT(MBStringIsNulTerminated(str));
 
         free(temp);
     }
@@ -80,7 +80,7 @@ int MBString_CountChar(const MBString *str, char c)
     int x;
     int count = 0;
 
-    ASSERT(MBStringIsNullTerminated(str));
+    ASSERT(MBStringIsNulTerminated(str));
 
     for (x = 0; x < length; x++) {
         if (str->chars[x] == c) {
@@ -95,7 +95,7 @@ int MBString_FindChar(const MBString *str, char c)
     int length = str->length;
     int x;
 
-    ASSERT(MBStringIsNullTerminated(str));
+    ASSERT(MBStringIsNulTerminated(str));
 
     for (x = 0; x < length; x++) {
         if (str->chars[x] == c) {
@@ -111,8 +111,8 @@ int MBString_FindStr(const MBString *str, const MBString *substr)
     int myLength = str->length;
     int subLen = substr->length;
 
-    ASSERT(MBStringIsNullTerminated(str));
-    ASSERT(MBStringIsNullTerminated(substr));
+    ASSERT(MBStringIsNulTerminated(str));
+    ASSERT(MBStringIsNulTerminated(substr));
 
     if (myLength == 0) {
         return -1;
@@ -138,12 +138,11 @@ int MBString_FindStr(const MBString *str, const MBString *substr)
 
 bool MBString_StartsWith(const MBString *str, const MBString *prefix)
 {
-    int x = 0;
     int myLength = str->length;
     int prefixLen = prefix->length;
 
-    ASSERT(MBStringIsNullTerminated(str));
-    ASSERT(MBStringIsNullTerminated(prefix));
+    ASSERT(MBStringIsNulTerminated(str));
+    ASSERT(MBStringIsNulTerminated(prefix));
 
     if (prefixLen > myLength) {
         return FALSE;
@@ -159,11 +158,10 @@ bool MBString_StartsWith(const MBString *str, const MBString *prefix)
 
 bool MBString_StartsWithCStr(const MBString *str, const char *prefix)
 {
-    int x = 0;
     int myLength = str->length;
     int prefixLen = strnlen(prefix, myLength + 1);
 
-    ASSERT(MBStringIsNullTerminated(str));
+    ASSERT(MBStringIsNulTerminated(str));
 
     if (prefixLen > myLength) {
         return FALSE;
@@ -179,11 +177,10 @@ bool MBString_StartsWithCStr(const MBString *str, const char *prefix)
 
 bool MBString_IsPrefixOfCStr(const MBString *prefix, const char *str)
 {
-    int x = 0;
     int prefixLen = prefix->length;
     int strLength = strnlen(str, prefixLen + 1);
 
-    ASSERT(MBStringIsNullTerminated(str));
+    ASSERT(MBStringIsNulTerminated(prefix));
 
     if (prefixLen > strLength) {
         return FALSE;
@@ -208,8 +205,8 @@ void MBString_CopySubstr(MBString *dest, const MBString *str,
     ASSERT(start + len <= str->length);
     ASSERT(start >= 0);
     ASSERT(str);
-    ASSERT(MBStringIsNullTerminated(str));
-    ASSERT(MBStringIsNullTerminated(dest));
+    ASSERT(MBStringIsNulTerminated(str));
+    ASSERT(MBStringIsNulTerminated(dest));
 
     MBString_MakeEmpty(dest);
 
@@ -218,7 +215,7 @@ void MBString_CopySubstr(MBString *dest, const MBString *str,
     }
 
     ASSERT(dest->length == len);
-    ASSERT(MBStringIsNullTerminated(dest));
+    ASSERT(MBStringIsNulTerminated(dest));
 }
 
 void MBString_ToUpper(MBString *str)
@@ -226,7 +223,7 @@ void MBString_ToUpper(MBString *str)
     int myLength = str->length;
     char *myChars = str->chars;
     int x;
-    ASSERT(MBStringIsNullTerminated(str));
+    ASSERT(MBStringIsNulTerminated(str));
 
     for (x = 0; x < myLength; x++) {
         myChars[x] = toupper(myChars[x]);
@@ -238,7 +235,7 @@ void MBString_ToLower(MBString *str)
     int myLength = str->length;
     char *myChars = str->chars;
     int x;
-    ASSERT(MBStringIsNullTerminated(str));
+    ASSERT(MBStringIsNulTerminated(str));
 
     for (x = 0; x < myLength; x++) {
         myChars[x] = tolower(myChars[x]);
@@ -254,7 +251,7 @@ void MBString_StripWS(MBString *str)
     char *myChars = str->chars;
     uint x;
 
-    ASSERT(MBStringIsNullTerminated(str));
+    ASSERT(MBStringIsNulTerminated(str));
 
     x = 0;
     while (x < myLength && MBUtil_IsWhitespace(myChars[x])) {
@@ -268,7 +265,7 @@ void MBString_StripWS(MBString *str)
 
     str->length = myLength - x;
     memmove(myChars, &myChars[x], str->length + 1);
-    ASSERT(MBStringIsNullTerminated(str));
+    ASSERT(MBStringIsNulTerminated(str));
 
     myLength = str->length;
     x = myLength - 1;
@@ -278,7 +275,7 @@ void MBString_StripWS(MBString *str)
     }
     str->length = x + 1;
     myChars[x + 1] = '\0';
-    ASSERT(MBStringIsNullTerminated(str));
+    ASSERT(MBStringIsNulTerminated(str));
 }
 
 void MBString_AppendStr(MBString *str, const MBString *suffix)
@@ -286,54 +283,52 @@ void MBString_AppendStr(MBString *str, const MBString *suffix)
     int myLength = str->length;
     int sufLen = suffix->length;
 
-    ASSERT(MBStringIsNullTerminated(str));
-    ASSERT(MBStringIsNullTerminated(suffix));
+    ASSERT(MBStringIsNulTerminated(str));
+    ASSERT(MBStringIsNulTerminated(suffix));
 
     MBString_EnsureCapacity(str, myLength + sufLen);
 
     memcpy(&str->chars[myLength], suffix->chars, sufLen + 1);
     str->length = myLength + sufLen;
-    ASSERT(MBStringIsNullTerminated(str));
+    ASSERT(MBStringIsNulTerminated(str));
 }
 
 void MBString_PrependChar(MBString *str, char c)
 {
-    char lastChar;
-    char temp;
-    int x;
-
     /*
-     * Not terribly efficient...
+     * Ensure we have room for one extra char, and then move them
+     * all down (including the terminating NUL).
      */
     MBString_EnsureCapacity(str, str->length + 1);
-    str->length++;
-    str->chars[str->length] = '\0';
+    memmove(&str->chars[1], &str->chars[0], str->length + 1);
 
-    lastChar = c;
-    for (x = 0; x < str->length; x++) {
-        temp = str->chars[x];
-        str->chars[x] = lastChar;
-        lastChar = temp;
-    }
-    ASSERT(MBStringIsNullTerminated(str));
+    str->length++;
+    str->chars[0] = c;
+    ASSERT(MBStringIsNulTerminated(str));
 }
 
 void MBString_PrependStr(MBString *str, const MBString *prefix)
 {
-    MBString temp;
+    ASSERT(MBStringIsNulTerminated(str));
+    ASSERT(MBStringIsNulTerminated(prefix));
 
-    ASSERT(MBStringIsNullTerminated(str));
-    ASSERT(MBStringIsNullTerminated(prefix));
+    MBString_EnsureCapacity(str, str->length + prefix->length);
+    memmove(&str->chars[prefix->length], &str->chars[0], str->length + 1);
+    memcpy(&str->chars[0], &prefix->chars[0], prefix->length);
+    ASSERT(MBStringIsNulTerminated(str));
+}
 
-    /*
-     * Not terribly efficient...
-     */
-    MBString_Create(&temp);
-    MBString_Copy(&temp, str);
-    MBString_Copy(str, prefix);
-    MBString_AppendStr(str, &temp);
-    ASSERT(MBStringIsNullTerminated(str));
-    MBString_Destroy(&temp);
+
+void MBString_PrependCStr(MBString *str, const char *prefix)
+{
+    uint32 prefixLen = strlen(prefix);
+
+    ASSERT(MBStringIsNulTerminated(str));
+
+    MBString_EnsureCapacity(str, str->length + prefixLen);
+    memmove(&str->chars[prefixLen], &str->chars[0], str->length + 1);
+    memcpy(&str->chars[0], prefix, prefixLen);
+    ASSERT(MBStringIsNulTerminated(str));
 }
 
 /*
@@ -345,14 +340,14 @@ void MBString_PrependStr(MBString *str, const MBString *prefix)
  */
 void MBString_Consume(MBString *consumer, MBString *strData)
 {
-    ASSERT(MBStringIsNullTerminated(consumer));
-    ASSERT(MBStringIsNullTerminated(strData));
+    ASSERT(MBStringIsNulTerminated(consumer));
+    ASSERT(MBStringIsNulTerminated(strData));
     MBString_Destroy(consumer);
     *consumer = *strData;
     MBString_Create(strData);
 
-    ASSERT(MBStringIsNullTerminated(strData));
-    ASSERT(MBStringIsNullTerminated(consumer));
+    ASSERT(MBStringIsNulTerminated(strData));
+    ASSERT(MBStringIsNulTerminated(consumer));
 }
 
 /*
@@ -369,8 +364,8 @@ int MBString_Compare(const MBString *lhs, const MBString *rhs)
     int lLen = lhs->length;
     int rLen = rhs->length;
 
-    ASSERT(MBStringIsNullTerminated(lhs));
-    ASSERT(MBStringIsNullTerminated(rhs));
+    ASSERT(MBStringIsNulTerminated(lhs));
+    ASSERT(MBStringIsNulTerminated(rhs));
 
     if (lLen < rLen) {
         maxx = lLen;
@@ -434,5 +429,5 @@ void MBString_IntToString(MBString *str, int x)
         MBString_PrependChar(str, '-');
     }
 
-    ASSERT(MBStringIsNullTerminated(str));
+    ASSERT(MBStringIsNulTerminated(str));
 }

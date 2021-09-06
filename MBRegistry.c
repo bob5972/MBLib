@@ -195,6 +195,13 @@ const char *MBRegistry_Remove(MBRegistry *mreg, const char *key)
     return NULL;
 }
 
+
+void MBRegistry_MakeEmpty(MBRegistry *mreg)
+{
+    ASSERT(mreg != NULL);
+    CMBVector_MakeEmpty(&mreg->data);
+}
+
 static void MBRegistryAddToFreeList(MBRegistry *mreg, char *s)
 {
     char **p;
@@ -343,7 +350,7 @@ void MBRegistry_SplitOnPrefix(MBRegistry *dest, MBRegistry *src,
     for (uint32 i = 0; i < CMBVector_Size(&src->data); i++) {
         MBRegistryNode *n = CMBVector_GetPtr(&src->data, i);
 
-        if (MBString_IsPrefixOfCStr(&prefix, n->key)) {
+        if (MBString_IsPrefixOfCStr(&prefixStr, n->key)) {
             MBString_MakeEmpty(&key);
             if (keepPrefix) {
                 MBString_AppendStr(&key, &prefixStr);
