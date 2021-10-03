@@ -320,7 +320,7 @@ MBRegistry_Save(MBRegistry *mreg, const char *filename)
     file = fopen(filename, "w");
     VERIFY(file != NULL);
 
-    fprintf(file, "MReg::MBLib::Version=5");
+    fprintf(file, "MReg::MBLib::Version=5\n");
 
     for (uint32 i = 0; i < CMBVector_Size(&mreg->data); i++) {
         MBRegistryNode *n = CMBVector_GetPtr(&mreg->data, i);
