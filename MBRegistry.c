@@ -231,6 +231,7 @@ MBRegistryLoad(MBRegistry *mreg, const char *filename,
     uint read;
     MBString key;
     MBString value;
+    MBString mbline;
 
     ASSERT(mreg != NULL);
 
@@ -240,6 +241,28 @@ MBRegistryLoad(MBRegistry *mreg, const char *filename,
 
     file = fopen(filename, "r");
     VERIFY(file != NULL);
+
+    read = getline(&line, &len, file);
+
+    if (read == -1) {
+        PANIC("File is empty: file=%s\n", filename);
+    }
+
+    MBString_CreateFromCStr(&mbline, line);
+    MBString_StripWS(&mbline);
+    if (!MBString_StartsWithCStr(&mbline, "MReg::")) {
+        PANIC("File is missing MReg prefix: file=%s\n", filename);
+    }
+
+    if (!MBString_EndsWithCStr(&mbline, "::Version=5")) {
+        if (MBString_FindCStr(&mbline, "::Version=") == -1) {
+            PANIC("File is missing MReg version\n");
+        }
+        PANIC("Bad MReg Version: file=%s, prefix=%s\n", filename,
+              MBString_GetCStr(&mbline));
+    }
+
+    MBString_Destroy(&mbline);
 
     while ((read = getline(&line, &len, file)) != -1) {
         char *d = strstr(line, "=");
@@ -252,6 +275,10 @@ MBRegistryLoad(MBRegistry *mreg, const char *filename,
 
         MBString_StripWS(&key);
         MBString_StripWS(&value);
+
+        // This doesn't properly handle quoted entries.
+        VERIFY(MBString_GetChar(&key, 0) != '"');
+        VERIFY(MBString_GetChar(&key, 0) != '\'');
 
         char *ckey = MBString_DupCStr(&key);
         char *cvalue = MBString_DupCStr(&value);
@@ -293,9 +320,30 @@ MBRegistry_Save(MBRegistry *mreg, const char *filename)
     file = fopen(filename, "w");
     VERIFY(file != NULL);
 
+    fprintf(file, "MReg::MBLib::Version=5");
+
     for (uint32 i = 0; i < CMBVector_Size(&mreg->data); i++) {
         MBRegistryNode *n = CMBVector_GetPtr(&mreg->data, i);
-        fprintf(file, "%s = %s\n", n->key, n->value);
+
+        if (strstr(n->key, "\"") != NULL) {
+            ASSERT(strstr(n->key, "'") == NULL);
+            fprintf(file, "'%s' = ", n->key);
+        } else if (strstr(n->key, " ") != NULL ||
+                   strstr(n->key, "=") != NULL) {
+            fprintf(file, "\"%s\" = ", n->key);
+        } else {
+            fprintf(file, "%s = ", n->key);
+        }
+
+        if (strstr(n->value, "\"") != NULL) {
+            ASSERT(strstr(n->value, "'") == NULL);
+            fprintf(file, "'%s'\n", n->value);
+        } else if (strstr(n->value, " ") != NULL ||
+                   strstr(n->value, "=") != NULL) {
+            fprintf(file, "\"%s\"\n", n->value);
+        } else {
+            fprintf(file, "%s\n", n->value);
+        }
     }
 
     fclose(file);

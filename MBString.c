@@ -136,6 +136,37 @@ int MBString_FindStr(const MBString *str, const MBString *substr)
     return -1;
 }
 
+int MBString_FindCStr(const MBString *str, const char *substr)
+ {
+    int x = 0;
+    int myLength = str->length;
+    int subLen = strnlen(substr, myLength + 1);
+
+    ASSERT(MBStringIsNulTerminated(str));
+    ASSERT(MBStringIsNulTerminated(substr));
+
+    if (myLength == 0) {
+        return -1;
+    }
+
+    if (subLen == 0) {
+        return 0;
+    }
+
+    x = 0;
+    while (x + subLen - 1 < myLength) {
+        const char *start = &str->chars[x];
+
+        if (memcmp(start, substr, subLen) == 0) {
+            return x;
+        }
+
+        x++;
+    }
+
+    return -1;
+}
+
 bool MBString_StartsWith(const MBString *str, const MBString *prefix)
 {
     int myLength = str->length;
@@ -155,6 +186,24 @@ bool MBString_StartsWith(const MBString *str, const MBString *prefix)
     return memcmp(&str->chars[0], &prefix->chars[0], prefixLen) == 0;
 }
 
+
+bool MBString_EndsWithCStr(const MBString *str, const char *suffix)
+{
+    int myLength = str->length;
+    int suffixLen = strnlen(suffix, myLength + 1);
+
+    ASSERT(MBStringIsNulTerminated(str));
+
+    if (suffixLen > myLength) {
+        return FALSE;
+    }
+
+    if (suffixLen == 0) {
+        return TRUE;
+    }
+
+    return memcmp(&str->chars[myLength - suffixLen], suffix, suffixLen) == 0;
+}
 
 bool MBString_StartsWithCStr(const MBString *str, const char *prefix)
 {
