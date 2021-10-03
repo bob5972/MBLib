@@ -143,7 +143,6 @@ int MBString_FindCStr(const MBString *str, const char *substr)
     int subLen = strnlen(substr, myLength + 1);
 
     ASSERT(MBStringIsNulTerminated(str));
-    ASSERT(MBStringIsNulTerminated(substr));
 
     if (myLength == 0) {
         return -1;
