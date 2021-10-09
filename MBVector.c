@@ -28,7 +28,11 @@
 
 void CMBVector_EnsureCapacity(CMBVector *vector, int capacity)
 {
-    int newCap;
+    uint32 newCap;
+    uint32 oldCapacity;
+    uint32 newSize;
+    void *newItems;
+
     ASSERT(vector->capacity > 0);
     ASSERT(vector->size >= 0);
     ASSERT(capacity >= 0);
@@ -38,13 +42,24 @@ void CMBVector_EnsureCapacity(CMBVector *vector, int capacity)
         return;
     }
 
-    newCap = vector->capacity;
-    while (newCap < capacity) {
-        newCap *= 2;
-    }
+    ASSERT(vector->capacity < MAX_INT32 / 2);
+    ASSERT(capacity < MAX_INT32 / 2);
+    oldCapacity = vector->capacity;
+
+    newCap = MAX(capacity, vector->capacity * 2);
     ASSERT(newCap > vector->capacity);
     vector->capacity = newCap;
 
+    newSize = newCap * vector->itemSize;
+    ASSERT(newSize > newCap);
+    ASSERT(newSize > vector->itemSize);
+
     ASSERT(vector->pinCount == 0);
-    vector->items = realloc(vector->items, vector->itemSize * newCap);
+    newItems = realloc(vector->items, newSize);
+    if (newItems != NULL) {
+        vector->items = newItems;
+    } else {
+        PANIC("Unable to resize CMBVector: out of memory "
+              "(oldSize=%d, newSize=%d)", oldCapacity, capacity);
+    }
 }
