@@ -36,6 +36,10 @@ MBRegistry *MBRegistry_Alloc();
 MBRegistry *MBRegistry_AllocCopy(MBRegistry *toCopy);
 void MBRegistry_Free(MBRegistry *mreg);
 
+uint MBRegistry_NumEntries(const MBRegistry *mreg);
+const char *MBRegistry_GetKeyAt(MBRegistry *mreg, uint i);
+const char *MBRegistry_GetValueAt(MBRegistry *mreg, uint i);
+
 void MBRegistry_SplitOnPrefix(MBRegistry *dest, MBRegistry *src,
                               const char *prefix, bool keepPrefix);
 

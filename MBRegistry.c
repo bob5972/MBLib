@@ -31,10 +31,12 @@
 #include "MBVector.h"
 #include "MBString.h"
 
-#define MBREGISTRY_MAGIC 0x1122334455667788
+#define MBREGISTRY_MAGIC 0x8255349905402963
 
 typedef struct MBRegistry {
-    uint64 magic;
+    DEBUG_ONLY(
+        uint64 magic;
+    );
     CMBVector data;
     CMBVector freeList;
 } MBRegistry;
@@ -53,7 +55,9 @@ MBRegistry *MBRegistry_Alloc()
 {
     MBRegistry *mreg = malloc(sizeof(*mreg));
     ASSERT(mreg != NULL);
-    mreg->magic = ((uintptr_t)mreg) ^ MBREGISTRY_MAGIC;
+    DEBUG_ONLY(
+        mreg->magic = ((uintptr_t)mreg) ^ MBREGISTRY_MAGIC;
+    );
     CMBVector_CreateEmpty(&mreg->data, sizeof(MBRegistryNode));
     CMBVector_CreateEmpty(&mreg->freeList, sizeof(char *));
     return mreg;
@@ -62,7 +66,7 @@ MBRegistry *MBRegistry_AllocCopy(MBRegistry *toCopy)
 {
     MBRegistry *mreg = MBRegistry_Alloc();
 
-    if (toCopy == NULL ) {
+    if (toCopy == NULL) {
         return mreg;
     }
 
@@ -100,8 +104,11 @@ void MBRegistry_Free(MBRegistry *mreg)
         return;
     }
 
-    ASSERT(mreg->magic == ((uintptr_t)mreg ^ MBREGISTRY_MAGIC));
-    mreg->magic = 0;
+
+    DEBUG_ONLY(
+        ASSERT(mreg->magic == ((uintptr_t)mreg ^ MBREGISTRY_MAGIC));
+        mreg->magic = 0;
+    );
 
     CMBVector_Destroy(&mreg->data);
 
@@ -527,4 +534,24 @@ MBRegistry_GetCStrD(MBRegistry *mreg, const char *key,
         return defValue;
     }
     return str;
+}
+
+uint
+MBRegistry_NumEntries(const MBRegistry *mreg)
+{
+    return CMBVector_Size(&mreg->data);
+}
+
+const char *
+MBRegistry_GetKeyAt(MBRegistry *mreg, uint i)
+{
+    MBRegistryNode *n = CMBVector_GetPtr(&mreg->data, i);
+    return n->key;
+}
+
+const char *
+MBRegistry_GetValueAt(MBRegistry *mreg, uint i)
+{
+    MBRegistryNode *n = CMBVector_GetPtr(&mreg->data, i);
+    return n->value;
 }
