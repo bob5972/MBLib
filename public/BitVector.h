@@ -148,6 +148,27 @@ static INLINE void BitVector_SetRaw16(int i, uint16 *bits)
     *bits |= BVMASK(i);
 }
 
+static INLINE void BitVector_ResetRaw64(int i, uint64 *bits)
+{
+    ASSERT(i >= 0);
+    ASSERT(i < 64);
+    *bits &= ~BVMASK(i);
+}
+
+static INLINE void BitVector_ResetRaw32(int i, uint32 *bits)
+{
+    ASSERT(i >= 0);
+    ASSERT(i < 32);
+    *bits &= ~BVMASK(i);
+}
+
+static INLINE void BitVector_ResetRaw16(int i, uint16 *bits)
+{
+    ASSERT(i >= 0);
+    ASSERT(i < 16);
+    *bits &= ~BVMASK(i);
+}
+
 
 static INLINE void BitVector_ResetRaw(int i, uint64 *bits)
 {
