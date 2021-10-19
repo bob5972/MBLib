@@ -103,6 +103,7 @@ bool CIntMap_Lookup(const CIntMap *map, int key, int *value)
     } else {
         ASSERT(CMBIntVec_GetValue(&map->myKeys, i) == key);
         v = CMBIntVec_GetValue(&map->myValues, i);
+        found = TRUE;
     }
 
     if (value != NULL) {
