@@ -193,7 +193,7 @@ static INLINE void CMBVector_Consume(CMBVector *dest, CMBVector *src)
      */
     ASSERT(dest->pinCount == 0);
     ASSERT(src->pinCount == 0);
-    
+
     free(dest->items);
     dest->items = src->items;
     dest->size = src->size;
@@ -223,12 +223,8 @@ static INLINE void CMBVector_Sort(CMBVector *v, const CMBComparator *comp)
     ASSERT(v != NULL);
     ASSERT(comp != NULL);
     ASSERT(v->itemSize == comp->itemSize);
-#ifdef _GNU_SOURCE
-    qsort_r(v->items, v->size, v->itemSize, comp->compareFn,
-            comp->cbData);
-#else
-    NOT_IMPLEMENTED();
-#endif
+    MBCompare_QSort(v->items, v->size, v->itemSize, comp->compareFn,
+                    comp->cbData);
 }
 
 

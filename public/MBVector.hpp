@@ -255,12 +255,8 @@ class MBVector
 
         void sort(const MBComparator<itemType> &comp) {
             ASSERT(myPinCount == 0);
-#ifdef _GNU_SOURCE
-            qsort_r(myItems, mySize, sizeof(itemType), comp.getCompareFn(),
-                    comp.getCBData());
-#else
-            NOT_IMPLEMENTED();
-#endif
+            MBCompare_QSort(myItems, mySize, sizeof(itemType),
+                            comp.getCompareFn(), comp.getCBData());
         }
 
     private:

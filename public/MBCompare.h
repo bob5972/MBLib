@@ -41,4 +41,16 @@ typedef struct CMBComparator {
     int itemSize;
 } CMBComparator;
 
+
+static INLINE void
+MBCompare_QSort(void *items, size_t numItems, size_t itemSize,
+                CMBCompareFn compareFn, void *cbData)
+{
+#ifdef _GNU_SOURCE
+    qsort_r(items, numItems, itemSize, compareFn, cbData);
+#else
+    NOT_IMPLEMENTED();
+#endif
+}
+
 #endif // MBCOMPARE_H_202008151217
