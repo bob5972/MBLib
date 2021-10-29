@@ -987,6 +987,49 @@ void testMBRegistry(void)
     MBRegistry_Free(mreg);
 }
 
+int testCompareUint32(const void *lhs, const void *rhs, void *cbData)
+{
+    uint32 *lhsT = (uint32*)lhs;
+    uint32 *rhsT = (uint32*)rhs;
+
+    ASSERT(cbData == NULL);
+
+    if (*lhsT < *rhsT) {
+        return -1;
+    } else if (*lhsT == *rhsT) {
+        return 0;
+    } else {
+        return 1;
+    }
+}
+
+void testMBCompare(void)
+{
+    uint32 array[10];
+
+    for (uint32 i = 0; i < ARRAYSIZE(array); i++) {
+        array[i] = 100 - i;
+    }
+
+    MBCompare_SortFallback(array, ARRAYSIZE(array), sizeof(array[0]),
+                           testCompareUint32, NULL);
+
+    for (uint32 i = 1; i < ARRAYSIZE(array); i++) {
+        TEST(array[i-1] <= array[i]);
+    }
+
+    for (uint32 i = 0; i < ARRAYSIZE(array); i++) {
+        array[i] = 100 - i;
+    }
+
+    MBCompare_Sort(array, ARRAYSIZE(array), sizeof(array[0]),
+                   testCompareUint32, NULL);
+
+    for (uint32 i = 1; i < ARRAYSIZE(array); i++) {
+        TEST(array[i-1] <= array[i]);
+    }
+}
+
 typedef struct
 {
         bool enabled;
@@ -1043,6 +1086,7 @@ int main(int argc, char *argv[])
             { 1, 22,   testBitVector    },
             { 1, 410,  testMBQueue      },
             { 1, 4,    testMBRegistry   },
+            { 1, 1,    testMBCompare    },
     };
 
     //Functional tests

@@ -1,5 +1,5 @@
 /*
- * MBCompare.h -- part of MBLib
+ * MBCompare.c -- part of MBLib
  *
  * Copyright (c) 2020 Michael Banack <github@banack.net>
  *
@@ -23,39 +23,40 @@
  * SOFTWARE.
  */
 
-#ifndef MBCOMPARE_H_202008151217
-#define MBCOMPARE_H_202008151217
+#include <stdlib.h>
 
-#include "mbtypes.h"
-#include "mbbasic.h"
+#include "MBCompare.h"
+#include "mbassert.h"
 
-/**
- * Java-like comparator function.
-   Returns:
- *    < 0: if lhs < rhs
- *    = 0: if lhs == rhs
- *    > 0: if lhs > rhs
- */
-typedef int (*CMBCompareFn)(const void *lhs, const void *rhs, void *cbData);
-
-typedef struct CMBComparator {
-    CMBCompareFn compareFn;
-    void *cbData;
-    uint32 itemSize;
-} CMBComparator;
-
-void MBCompare_SortFallback(void *items, uint32 numItems, uint32 itemSize,
-                            CMBCompareFn compareFn, void *cbData);
-
-static INLINE void
-MBCompare_Sort(void *items, uint32 numItems, uint32 itemSize,
-               CMBCompareFn compareFn, void *cbData)
+void
+MBCompare_SortFallback(void *items, uint32 numItems, uint32 itemSize,
+                       CMBCompareFn compareFn, void *cbData)
 {
-#ifdef _GNU_SOURCE
-    qsort_r(items, numItems, itemSize, compareFn, cbData);
-#else
-    MBCompare_SortFallback(items, numItems, itemSize, compareFn, cbData);
-#endif
-}
+    if (numItems <= 1) {
+        return;
+    }
 
-#endif // MBCOMPARE_H_202008151217
+#define GET_ITEM(_n) (&((uint8 *)items)[itemSize * _n])
+#define COMPARE(_lhs, _rhs) (compareFn(GET_ITEM(_lhs), GET_ITEM(_rhs), cbData))
+
+    void *swapSpace = malloc(itemSize);
+
+    ASSERT(numItems <= MAX_UINT32);
+
+    for (uint32 i = 0; i < numItems; i++) {
+        uint32 min = i;
+        for (uint32 k = i + 1; k < numItems; k++) {
+            if (COMPARE(min, k) > 0) {
+                min = k;
+            }
+        }
+
+        if (min != i) {
+            memcpy(swapSpace, GET_ITEM(min), itemSize);
+            memcpy(GET_ITEM(min), GET_ITEM(i), itemSize);
+            memcpy(GET_ITEM(i), swapSpace ,itemSize);
+        }
+    }
+
+    free(swapSpace);
+}

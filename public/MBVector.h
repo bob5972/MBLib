@@ -223,8 +223,8 @@ static INLINE void CMBVector_Sort(CMBVector *v, const CMBComparator *comp)
     ASSERT(v != NULL);
     ASSERT(comp != NULL);
     ASSERT(v->itemSize == comp->itemSize);
-    MBCompare_QSort(v->items, v->size, v->itemSize, comp->compareFn,
-                    comp->cbData);
+    MBCompare_Sort(v->items, v->size, v->itemSize, comp->compareFn,
+                   comp->cbData);
 }
 
 

@@ -49,6 +49,7 @@ C_SOURCES = BitVector.c \
             MBRegistry.c \
             MBString.c \
             MBVector.c \
+	    MBCompare.c \
             random.c
 
 OBJECTS=$(addprefix $(MBLIB_BUILDDIR)/, \
