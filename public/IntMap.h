@@ -39,7 +39,7 @@ typedef struct CIntMap {
     int mySpace;
     int myFreeSpace;
     int myFullSpace;
-    float myLoad;
+    int myTargetLoad;
     int myEmptyValue;
 } CIntMap;
 

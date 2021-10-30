@@ -51,7 +51,7 @@ void CIntMap_Create(CIntMap *map)
     map->mySpace = DEFAULT_SPACE;
     map->myFreeSpace = DEFAULT_SPACE;
     map->myFullSpace = 0;
-    map->myLoad = DEFAULT_LOAD;
+    map->myTargetLoad = DEFAULT_LOAD * map->mySpace;
 
     // Zero is the default emptyValue.
     map->myEmptyValue = 0;
@@ -270,7 +270,7 @@ static void CIntMapPutHelper(CIntMap *map, int index, int key, int value)
         ASSERT(map->myFreeSpace == 0 || map->myFullSpace == map->mySpace);
     }
 
-    if (index == -1 || ((float)map->myFullSpace+1)/map->mySpace >= map->myLoad) {
+    if (index == -1 || map->myFullSpace + 1 >= map->myTargetLoad) {
         CIntMapRehash(map);
         ASSERT(map->mySpace % SEARCH_INCR == 1);
 
@@ -342,7 +342,7 @@ static void CIntMapRehash(CIntMap *map)
     CMBIntVec_CreateEmpty(&oldKeys);
     CMBIntVec_CreateEmpty(&oldValues);
 
-    while (map->mySize/((float)newSpace) > map->myLoad) {
+    while (map->mySize/((float)newSpace) > DEFAULT_LOAD) {
         newSpace = newSpace*2 + 1;
     }
 
@@ -364,6 +364,7 @@ static void CIntMapRehash(CIntMap *map)
     map->mySize = 0;
     map->myFullSpace = 0;
     map->myFreeSpace = map->mySpace;
+    map->myTargetLoad = map->mySpace * DEFAULT_LOAD;
 
     for (x = 0; x < CMBIntVec_Size(&oldKeys); x++) {
         if (BitVector_Get(&oldFull,x) && BitVector_Get(&oldActive, x)) {
