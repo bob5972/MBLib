@@ -58,4 +58,7 @@ MBCompare_Sort(void *items, uint32 numItems, uint32 itemSize,
 #endif
 }
 
+int MBCompare_FindMin(void *items, uint32 numItems, uint32 itemSize,
+                      CMBCompareFn compareFn, void *cbData);
+
 #endif // MBCOMPARE_H_202008151217

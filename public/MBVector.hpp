@@ -259,6 +259,11 @@ class MBVector
                            comp.getCompareFn(), comp.getCBData());
         }
 
+        int findMin(const MBComparator<itemType> &comp) {
+            return MBCompare_FindMin(myItems, mySize, sizeof(itemType),
+                                     comp.getCompareFn(), comp.getCBData());
+        }
+
     private:
         int mySize;
         int myCapacity;

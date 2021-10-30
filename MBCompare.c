@@ -63,3 +63,31 @@ MBCompare_SortFallback(void *items, uint32 numItems, uint32 itemSize,
 #undef GET_ITEM
 #undef COMPARE
 }
+
+int
+MBCompare_FindMin(void *items, uint32 numItems, uint32 itemSize,
+                  CMBCompareFn compareFn, void *cbData)
+{
+    if (numItems == 0) {
+        return -1;
+    } else if (numItems == 1) {
+        return 0;
+    }
+
+#define GET_ITEM(_n) (&((uint8 *)items)[itemSize * _n])
+#define COMPARE(_lhs, _rhs) (compareFn(GET_ITEM(_lhs), GET_ITEM(_rhs), cbData))
+
+    ASSERT(numItems <= MAX_UINT32);
+
+    uint32 min = 0;
+    for (uint32 i = 1; i < numItems; i++) {
+        if (COMPARE(min, i) > 0) {
+            min = i;
+        }
+    }
+
+    return min;
+
+#undef GET_ITEM
+#undef COMPARE
+}
