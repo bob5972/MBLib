@@ -180,21 +180,10 @@ void CIntMap_InsertAll(CIntMap *dest, const CIntMap *src)
 
 static int CIntMapHash(const CIntMap *map, int key)
 {
-    uint32 hash;
-    uint32 mix;
-
-    // This seems to help my benchmarking tests
-    // though I'm not sure if it's a real improvement
-    // to the hashing algorithm, or just a quirk
-    // of the particular workload I'm running.
-    mix = 0x45678;
-    mix = key ^ (mix);
-    hash = mix % map->mySpace;
-
-    ASSERT(hash >= 0);
-    ASSERT(map->mySpace > 0);
-    ASSERT(hash < (uint32) map->mySpace);
-
+    uint32 mix1 = 0xF7345678;
+    uint32 rotKey = (key >> 19);
+    uint32 hash = (key ^ mix1) ^ rotKey;
+    hash %= map->mySpace;
     return hash;
 }
 
