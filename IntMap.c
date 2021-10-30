@@ -29,6 +29,7 @@
 #define DEFAULT_LOAD  (0.60f)
 #define SEARCH_INCR   2
 
+static int CIntMapFindHelper(const CIntMap *map, int key, bool useInsertion);
 static int CIntMapFindKey(const CIntMap *map, int key);
 static int CIntMapGetInsertionIndex(const CIntMap *map, int key);
 static int CIntMapHash(const CIntMap *map, int key);
@@ -197,26 +198,57 @@ static int CIntMapHash(const CIntMap *map, int key)
     return hash;
 }
 
-//Returns the index of a valid key, or -1.
-static int CIntMapFindKey(const CIntMap *map, int key)
+/*
+ * If useInsertion is TRUE, return the index of where this key would be
+ * inserted or -1 if the map is full.
+ * In other words, if the key is in the map, return it,
+ * and if not, return the next free index.
+ *
+ * If useInsertion is FALSE, return the index of valid key, or -1.
+ */
+static int CIntMapFindHelper(const CIntMap *map, int key, bool useInsertion)
 {
     int hashI = CIntMapHash(map, key);
     int x = hashI;
 
     do {
-        if (!BitVector_Get(&map->myFullFlags, x)) {
-            return -1;
-        } else if (CMBIntVec_GetValue(&map->myKeys, x) == key &&
-                   BitVector_Get(&map->myActiveFlags, x)) {
-            return x;
+        int cheapLookups;
+
+        /*
+         * Avoid the modulo operation until we wrap.
+         */
+        if (x >= hashI) {
+            cheapLookups = (map->mySpace - x + 1) / SEARCH_INCR;
+        } else {
+            cheapLookups = (hashI - x + 1) / SEARCH_INCR;
         }
 
-        x += SEARCH_INCR;
+        ASSERT(x < map->mySpace);
+        for (int loop = 0; loop < cheapLookups; loop++) {
+            ASSERT(x < map->mySpace);
+            if (!BitVector_Get(&map->myFullFlags, x)) {
+                return useInsertion ? x : -1;
+            } else if (CMBIntVec_GetValue(&map->myKeys, x) == key &&
+                       (useInsertion || BitVector_Get(&map->myActiveFlags, x))) {
+                return x;
+            }
+
+            x += SEARCH_INCR;
+        }
+        ASSERT(x == hashI || x >= map->mySpace);
         x %= map->mySpace;
     } while (x != hashI);
 
     //We've been through the whole table.
     return -1;
+}
+
+/*
+ * Return the index of valid key, or -1.
+ */
+static int CIntMapFindKey(const CIntMap *map, int key)
+{
+   return CIntMapFindHelper(map, key, FALSE);
 }
 
 /*
@@ -227,25 +259,7 @@ static int CIntMapFindKey(const CIntMap *map, int key)
  */
 static int CIntMapGetInsertionIndex(const CIntMap *map, int key)
 {
-    int hashI = CIntMapHash(map, key);
-    int x = hashI;
-
-    ASSERT(hashI % map->mySpace == hashI);
-
-    do {
-        if (!BitVector_Get(&map->myFullFlags, x)) {
-            return x;
-        } else if (CMBIntVec_GetValue(&map->myKeys, x) == key) {
-            return x;
-        }
-
-        x += SEARCH_INCR;
-        x %= map->mySpace;
-
-    } while (x != hashI);
-
-    //We've been through the whole table without finding a free spot.
-    return -1;
+   return CIntMapFindHelper(map, key, TRUE);
 }
 
 //Puts a key at the specified index.
