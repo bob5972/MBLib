@@ -27,6 +27,8 @@
 #include <stdlib.h>
 #include <iostream>
 
+#include "MBRegistry.h"
+
 #include "MBString.hpp"
 #include "MBStack.hpp"
 #include "mbassert.h"
@@ -38,7 +40,6 @@
 #include "MBMap.hpp"
 #include "MBQueue.hpp"
 #include "IntMap.hpp"
-#include "MBRegistry.hpp"
 
 static int seed;
 
@@ -962,23 +963,19 @@ void testMBQueue(void)
 
 void testMBRegistry(void)
 {
-    MBRegistry cppreg;
-    CMBRegistry *mreg;
+    MBRegistry *mreg;
     const char *s;
-
-    cppreg.put("Hello", "World");
-    TEST(strcmp(cppreg.get("Hello"), "World") == 0);
 
     mreg = MBRegistry_Alloc();
     MBRegistry_Free(mreg);
 
     mreg = MBRegistry_Alloc();
-    MBRegistry_Put(mreg, "key", "value");
+    MBRegistry_PutConst(mreg, "key", "value");
     TEST(strcmp(MBRegistry_Get(mreg, "key"), "value") == 0);
     s = "OtherValue";
-    MBRegistry_Put(mreg, "OtherKey", s);
+    MBRegistry_PutConst(mreg, "OtherKey", s);
     TEST(MBRegistry_Get(mreg, "OtherKey") == s);
-    MBRegistry_Put(mreg, "key", s);
+    MBRegistry_PutConst(mreg, "key", s);
     TEST(MBRegistry_Get(mreg, "key") == s);
     MBRegistry_Remove(mreg, "key");
     MBRegistry_Remove(mreg, "OtherKey");

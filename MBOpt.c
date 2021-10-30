@@ -89,8 +89,8 @@ void MBOpt_Init(MBOption *opts, int numOpts, int argc, char **argv)
                     }
                 }
 
-                MBRegistry_Put(mbopt.mreg, &mbopt.values[o].opt.longOpt[2],
-                               mbopt.values[o].string);
+                MBRegistry_PutCopy(mbopt.mreg, &mbopt.values[o].opt.longOpt[2],
+                                   mbopt.values[o].string);
                 break;
             }
         }

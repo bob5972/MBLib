@@ -29,6 +29,10 @@
 #include "mbtypes.h"
 #include "mbbasic.h"
 
+#ifdef __cplusplus
+    extern "C" {
+#endif
+
 struct MBRegistry;
 typedef struct MBRegistry MBRegistry;
 
@@ -50,7 +54,7 @@ void MBRegistry_DebugDump(MBRegistry *mreg);
 
 void MBRegistry_MakeEmpty(MBRegistry *mreg);
 
-void MBRegistry_Put(MBRegistry *mreg, const char *key, const char *value);
+void MBRegistry_PutConst(MBRegistry *mreg, const char *key, const char *value);
 void MBRegistry_PutCopy(MBRegistry *mreg, const char *key, const char *value);
 void MBRegistry_PutAll(MBRegistry *dest, MBRegistry *src, const char *prefix);
 
@@ -98,5 +102,9 @@ static INLINE float MBRegistry_GetFloat(MBRegistry *mreg, const char *key)
 {
     return MBRegistry_GetFloatD(mreg, key, 0.0f);
 }
+
+#ifdef __cplusplus
+    }
+#endif
 
 #endif //MBRegistry_H_202006121226

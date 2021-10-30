@@ -154,7 +154,7 @@ const char *MBRegistry_Get(MBRegistry *mreg, const char *key)
  * Assumes the supplied strings are constants, and the caller won't
  * change them.
  */
-void MBRegistry_Put(MBRegistry *mreg, const char *key, const char *value)
+void MBRegistry_PutConst(MBRegistry *mreg, const char *key, const char *value)
 {
     MBRegistryNode *n;
     ASSERT(mreg != NULL);
@@ -181,7 +181,7 @@ void MBRegistry_PutCopy(MBRegistry *mreg, const char *key, const char *value)
     const char *newKey = MBRegistryDupToFreeList(mreg, key);
     const char *newValue = MBRegistryDupToFreeList(mreg, value);
 
-    MBRegistry_Put(mreg, newKey, newValue);
+    MBRegistry_PutConst(mreg, newKey, newValue);
 }
 
 const char *MBRegistry_Remove(MBRegistry *mreg, const char *key)
@@ -297,7 +297,7 @@ MBRegistryLoad(MBRegistry *mreg, const char *filename,
             ASSERT(MBRegistry_ContainsKey(mreg, ckey));
         }
 
-        MBRegistry_Put(mreg, ckey, cvalue);
+        MBRegistry_PutConst(mreg, ckey, cvalue);
     }
 
     MBString_Destroy(&key);
