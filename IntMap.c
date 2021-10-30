@@ -26,7 +26,7 @@
 #include "IntMap.h"
 
 #define DEFAULT_SPACE 15
-#define DEFAULT_LOAD  (0.60)
+#define DEFAULT_LOAD  (0.60f)
 #define SEARCH_INCR   2
 
 static int CIntMapFindKey(const CIntMap *map, int key);
@@ -256,7 +256,7 @@ static void CIntMapPutHelper(CIntMap *map, int index, int key, int value)
         ASSERT(map->myFreeSpace == 0 || map->myFullSpace == map->mySpace);
     }
 
-    if (index == -1 || ((double)map->myFullSpace+1)/map->mySpace >= map->myLoad) {
+    if (index == -1 || ((float)map->myFullSpace+1)/map->mySpace >= map->myLoad) {
         CIntMapRehash(map);
         ASSERT(map->mySpace % SEARCH_INCR == 1);
 
@@ -328,7 +328,7 @@ static void CIntMapRehash(CIntMap *map)
     CMBIntVec_CreateEmpty(&oldKeys);
     CMBIntVec_CreateEmpty(&oldValues);
 
-    while (map->mySize/((double)newSpace) > map->myLoad) {
+    while (map->mySize/((float)newSpace) > map->myLoad) {
         newSpace = newSpace*2 + 1;
     }
 
