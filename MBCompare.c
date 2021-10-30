@@ -59,4 +59,7 @@ MBCompare_SortFallback(void *items, uint32 numItems, uint32 itemSize,
     }
 
     free(swapSpace);
+
+#undef GET_ITEM
+#undef COMPARE
 }
