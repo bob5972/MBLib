@@ -45,9 +45,13 @@ static INLINE void CMBVector_Create(CMBVector *vector, int itemSize,
                                     int size, int capacity)
 {
     ASSERT(itemSize > 0);
-    ASSERT(capacity >= size);
+    ASSERT(itemSize < MAX_INT32 / 2);
     ASSERT(capacity > 0);
+    ASSERT(capacity < MAX_INT32 / 2);
     ASSERT(size >= 0);
+    ASSERT(size < MAX_INT32 / 2);
+
+    ASSERT(capacity >= size);
 
     vector->size = size;
     vector->capacity = capacity;

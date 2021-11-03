@@ -23,39 +23,36 @@
  * SOFTWARE.
  */
 
-#include "MBVector.h"
 #include <stdlib.h>
+
+#include "MBVector.h"
 
 void CMBVector_EnsureCapacity(CMBVector *vector, int capacity)
 {
-    uint32 newCap;
-    uint32 oldCapacity;
-    uint32 newSize;
-    void *newItems;
-
     ASSERT(vector->capacity > 0);
+    ASSERT(vector->capacity < MAX_INT32 / 2);
     ASSERT(vector->size >= 0);
+    ASSERT(vector->size < MAX_INT32 / 2);
     ASSERT(capacity >= 0);
+    ASSERT(capacity < MAX_INT32 / 2);
     ASSERT(vector->itemSize > 0);
+    ASSERT(vector->itemSize < MAX_INT32 / 2);
 
     if (vector->capacity >= capacity) {
         return;
     }
 
-    ASSERT(vector->capacity < MAX_INT32 / 2);
-    ASSERT(capacity < MAX_INT32 / 2);
-    oldCapacity = vector->capacity;
+    ASSERT(vector->pinCount == 0);
 
-    newCap = MAX(capacity, vector->capacity * 2);
+    uint32 oldCapacity = vector->capacity;
+
+    uint32 newCap = MAX(capacity, vector->capacity * 2);
     ASSERT(newCap > vector->capacity);
+    ASSERT(newCap >= capacity);
+    ASSERT(newCap < MAX_INT32 / 2);
     vector->capacity = newCap;
 
-    newSize = newCap * vector->itemSize;
-    ASSERT(newSize > newCap);
-    ASSERT(newSize > vector->itemSize);
-
-    ASSERT(vector->pinCount == 0);
-    newItems = realloc(vector->items, newSize);
+    void *newItems = reallocarray(vector->items, newCap, vector->itemSize);
     if (newItems != NULL) {
         vector->items = newItems;
     } else {
