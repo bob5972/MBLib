@@ -5,29 +5,6 @@
 project('MBLib', 'c', 'cpp',
         default_options : 'default_library=static')
 
-# Configuration
-myconf = []
-if host_machine.system() == 'linux'
-    myconf += ['MB_LINUX']
-elif host_machine.system() == 'darwin'
-    myconf += ['MB_MACOS']
-else
-    error('Unknown host system:' + host_machine.system())
-endif
-if get_option('debug')
-    myconf += ['MB_DEBUG']
-endif
-if get_option('devel')
-    myconf += ['MB_DEVEL']
-endif
-conf_data = configuration_data()
-foreach c : myconf
-    conf_data.set(c, 1)
-endforeach
-configure_file(input : 'mbconfig.h.in',
-               output : 'mbconfig.h',
-               configuration : conf_data)
-
 src = [
     'BitVector.c',
     'Dumper.cpp',
@@ -85,6 +62,30 @@ endif
 # -Wno-constant-logical-operand
 # -Wno-unused-function
 
+# Configuration
+myconf = []
+if host_machine.system() == 'linux'
+    myconf += ['MB_LINUX']
+elif host_machine.system() == 'darwin'
+    myconf += ['MB_MACOS']
+else
+    error('Unknown host system:' + host_machine.system())
+endif
+if get_option('debug')
+    myconf += ['MB_DEBUG']
+endif
+if get_option('devel')
+    myconf += ['MB_DEVEL']
+endif
+conf_data = configuration_data()
+foreach c : myconf
+    conf_data.set(c, 1)
+endforeach
+configure_file(input : 'mbconfig.h.in',
+               output : 'mbconfig.h',
+               configuration : conf_data)
+
+# Language arugments
 add_project_arguments(cargs, language : 'c')
 add_project_arguments('--std=gnu11', language : 'c')
 add_project_arguments(cargs, language : 'cpp')
