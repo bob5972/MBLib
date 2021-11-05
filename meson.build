@@ -5,6 +5,22 @@
 project('MBLib', 'c', 'cpp',
         default_options : 'default_library=static')
 
+# Configuration
+conf_data = configuration_data()
+if host_machine.system() == 'linux'
+    conf_data.set('MB_LINUX', 1)
+    conf_data.set('MB_MACOS', 0)
+elif host_machine.system() == 'darwin'
+    conf_data.set('MB_LINUX', 0)
+    conf_data.set('MB_MACOS', 1)
+else
+    error('Unknown host system:' + host_machine.system())
+endif
+conf_data.set('MB_DEBUG', get_option('debug') ? 1 : 0)
+conf_data.set('MB_DEVEL', get_option('devel') ? 1 : 0)
+configure_file(output : 'config.h',
+               configuration : conf_data)
+
 src = [
     'BitVector.c',
     'Dumper.cpp',
@@ -29,24 +45,38 @@ src = [
 cargs = [
     '-D_GNU_SOURCE',
     '-march=native',
-    '-Wall', '-Wextra', '-Werror',
-    '-Wno-attributes',
-    '-Wno-unused-parameter',
-    '-Wno-sign-compare',
-    '-Wno-format-truncation',
-    '-Wno-unused-result',
 ]
 
+if get_option('devel')
+    message('Enabling devel options')
+    cargs += ['-Wall', '-Wextra', '-Werror']
+    cargs += ['-Wno-attributes']
+    cargs += ['-Wno-unused-parameter']
+    cargs += ['-Wno-sign-compare']
+    cargs += ['-Wno-unused-result']
+
+    # Needs to be skipped on MacOS/Clang
+    cargs += ['-Wno-format-truncation']
+else
+    message('Disabling devel options')
+endif
+
 if get_option('debug')
+    message('Enabling debug options')
     cargs += ['-g', '-Og']
     cargs += ['-fno-omit-frame-pointer']
     cargs += ['-Wno-type-limits']
 else
+    message('Disabling debug options')
     cargs += ['-O2']
     cargs += ['-fomit-frame-pointer']
     cargs += ['-Wno-unused-variable']
     cargs += ['-Wno-unused-function']
 endif
+
+# Clang needs:
+# -Wno-constant-logical-operand
+# -Wno-unused-function
 
 add_project_arguments(cargs, language : 'c')
 add_project_arguments('--std=gnu11', language : 'c')
