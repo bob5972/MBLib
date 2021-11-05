@@ -6,19 +6,26 @@ project('MBLib', 'c', 'cpp',
         default_options : 'default_library=static')
 
 # Configuration
-conf_data = configuration_data()
+myconf = []
 if host_machine.system() == 'linux'
-    conf_data.set('MB_LINUX', 1)
-    conf_data.set('MB_MACOS', 0)
+    myconf += ['MB_LINUX']
 elif host_machine.system() == 'darwin'
-    conf_data.set('MB_LINUX', 0)
-    conf_data.set('MB_MACOS', 1)
+    myconf += ['MB_MACOS']
 else
     error('Unknown host system:' + host_machine.system())
 endif
-conf_data.set('MB_DEBUG', get_option('debug') ? 1 : 0)
-conf_data.set('MB_DEVEL', get_option('devel') ? 1 : 0)
-configure_file(output : 'config.h',
+if get_option('debug')
+    myconf += ['MB_DEBUG']
+endif
+if get_option('devel')
+    myconf += ['MB_DEVEL']
+endif
+conf_data = configuration_data()
+foreach c : myconf
+    conf_data.set(c, 1)
+endforeach
+configure_file(input : 'mbconfig.h.in',
+               output : 'mbconfig.h',
                configuration : conf_data)
 
 src = [
