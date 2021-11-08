@@ -39,8 +39,9 @@ if get_option('devel')
     cargs += ['-Wno-sign-compare']
     cargs += ['-Wno-unused-result']
 
-    # Needs to be skipped on MacOS/Clang
-    cargs += ['-Wno-format-truncation']
+    if host_machine.system() != 'darwin'
+        cargs += ['-Wno-format-truncation']
+    endif
 else
     message('Disabling devel options')
 endif
@@ -58,9 +59,10 @@ else
     cargs += ['-Wno-unused-function']
 endif
 
-# Clang needs:
-# -Wno-constant-logical-operand
-# -Wno-unused-function
+if host_machine.system() == 'darwin'
+    cargs += ['-Wno-constant-logical-operand']
+    cargs += ['-Wno-unused-function']
+endif
 
 # Configuration
 myconf = []
@@ -85,7 +87,7 @@ configure_file(input : 'mbconfig.h.in',
                output : 'mbconfig.h',
                configuration : conf_data)
 
-# Language arugments
+# Language arguments
 add_project_arguments(cargs, language : 'c')
 add_project_arguments('--std=gnu11', language : 'c')
 add_project_arguments(cargs, language : 'cpp')
