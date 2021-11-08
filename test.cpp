@@ -36,7 +36,7 @@
 #include "MBSet.hpp"
 #include "BitVector.hpp"
 #include "MBUtil.h"
-#include "random.h"
+#include "Random.h"
 #include "MBMap.hpp"
 #include "MBQueue.hpp"
 #include "IntMap.hpp"

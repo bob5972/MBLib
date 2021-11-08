@@ -23,7 +23,7 @@ src = [
     'MBString.cpp',
     'MBVector.c',
     'MBVector.cpp',
-    'random.c',
+    'Random.c',
 ]
 
 cargs = [

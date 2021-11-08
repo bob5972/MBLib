@@ -29,7 +29,7 @@
 #include <fcntl.h>
 
 #include "MBUtil.h"
-#include "random.h"
+#include "Random.h"
 #include "MBAssert.h"
 
 typedef struct RandomGlobalData {
