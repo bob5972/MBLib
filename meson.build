@@ -94,9 +94,11 @@ add_project_arguments(cargs, language : 'cpp')
 lib = library('MBLib', sources : src,
               include_directories : 'public')
 
-executable('test.bin', 'test.cpp',
-           link_with : lib,
-           include_directories : 'public')
+test = executable('test.bin', 'test.cpp',
+                  link_with : lib,
+                  include_directories : 'public')
+
+test('test.bin', test)
 
 executable('benchmark.bin', 'test.cpp',
            link_with : lib,

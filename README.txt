@@ -28,3 +28,6 @@ meson configure -Ddevel=true -Ddebug=true build
 
 # Compile!
 meson compile -C build
+
+# Unit Tests
+meson test -C build
