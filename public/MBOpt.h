@@ -1,7 +1,7 @@
 /*
  * MBOpt.h -- part of MBLib
  *
- * Copyright (c) 2020 Michael Banack <github@banack.net>
+ * Copyright (c) 2020-2021 Michael Banack <github@banack.net>
  *
  * MIT License
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -26,7 +26,7 @@
 #ifndef MBOpt_H_202006121333
 #define MBOpt_H_202006121333
 
-#include "mbtypes.h"
+#include "MBTypes.h"
 
 typedef struct MBOption {
     const char *shortOpt;

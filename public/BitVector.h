@@ -1,7 +1,7 @@
 /*
  * BitVector.h -- part of MBLib
  *
- * Copyright (c) 2015-2020 Michael Banack <github@banack.net>
+ * Copyright (c) 2015-2021 Michael Banack <github@banack.net>
  *
  * MIT License
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -26,9 +26,9 @@
 #ifndef BitVector_H_201001192326
 #define BitVector_H_201001192326
 
-#include "mbtypes.h"
-#include "mbutil.h"
-#include "mbassert.h"
+#include "MBTypes.h"
+#include "MBUtil.h"
+#include "MBAssert.h"
 #include <string.h>
 
 typedef struct BitVector {

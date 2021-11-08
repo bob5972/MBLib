@@ -1,7 +1,7 @@
 /*
  * MBCompare.h -- part of MBLib
  *
- * Copyright (c) 2020 Michael Banack <github@banack.net>
+ * Copyright (c) 2020-2021 Michael Banack <github@banack.net>
  *
  * MIT License
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -26,8 +26,8 @@
 #ifndef MBCOMPARE_H_202008151217
 #define MBCOMPARE_H_202008151217
 
-#include "mbtypes.h"
-#include "mbbasic.h"
+#include "MBTypes.h"
+#include "MBBasic.h"
 
 /**
  * Java-like comparator function.

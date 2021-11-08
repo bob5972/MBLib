@@ -1,7 +1,7 @@
 /*
  * MBString.cpp -- part of MBLib
  *
- * Copyright (c) 2015-2020 Michael Banack <github@banack.net>
+ * Copyright (c) 2015-2021 Michael Banack <github@banack.net>
  *
  * MIT License
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -31,9 +31,9 @@
 #include <istream>
 #include <ostream>
 
-#include "mbtypes.h"
-#include "mbdebug.h"
-#include "mbassert.h"
+#include "MBTypes.h"
+#include "MBDebug.h"
+#include "MBAssert.h"
 
 using std::istream;
 using std::ostream;

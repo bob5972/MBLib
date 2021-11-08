@@ -31,11 +31,11 @@
 
 #include "MBString.hpp"
 #include "MBStack.hpp"
-#include "mbassert.h"
+#include "MBAssert.h"
 #include "MBVector.hpp"
 #include "MBSet.hpp"
 #include "BitVector.hpp"
-#include "mbutil.h"
+#include "MBUtil.h"
 #include "random.h"
 #include "MBMap.hpp"
 #include "MBQueue.hpp"

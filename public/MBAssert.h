@@ -1,7 +1,7 @@
 /*
- * mbassert.h -- part of MBLib
+ * MBAssert.h -- part of MBLib
  *
- * Copyright (c) 2015-2020 Michael Banack <github@banack.net>
+ * Copyright (c) 2015-2021 Michael Banack <github@banack.net>
  *
  * MIT License
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -26,10 +26,10 @@
 #ifndef MBASSERT_H_201001091250
 #define MBASSERT_H_201001091250
 
-#include "mbconfig.h"
-#include "mbtypes.h"
-#include "mbdebug.h"
-#include "mbutil.h"
+#include "MBConfig.h"
+#include "MBTypes.h"
+#include "MBDebug.h"
+#include "MBUtil.h"
 
 #ifdef __cplusplus
 	extern "C" {

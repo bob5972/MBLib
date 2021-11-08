@@ -1,7 +1,7 @@
 /*
  * MBVector.hpp -- part of MBLib
  *
- * Copyright (c) 2015-2020 Michael Banack <github@banack.net>
+ * Copyright (c) 2015-2021 Michael Banack <github@banack.net>
  *
  * MIT License
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -26,7 +26,7 @@
 #ifndef MBVECTOR_HPP_201001091353
 #define MBVECTOR_HPP_201001091353
 
-#include "mbassert.h"
+#include "MBAssert.h"
 #include "MBCompare.hpp"
 
 /*

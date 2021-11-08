@@ -1,7 +1,7 @@
 /*
  * MBMatrix.cpp -- part of MBLib
  *
- * Copyright (c) 2015-2020 Michael Banack <github@banack.net>
+ * Copyright (c) 2015-2021 Michael Banack <github@banack.net>
  *
  * MIT License
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -27,9 +27,9 @@
 #define MBMatrix_CPP_201002052320
 
 #include "MBMatrix.hpp"
-#include "mbtypes.h"
-#include "mbdebug.h"
-#include "mbassert.h"
+#include "MBTypes.h"
+#include "MBDebug.h"
+#include "MBAssert.h"
 
 template<class itemType>
 MBMatrix<itemType>::MBMatrix()

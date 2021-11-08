@@ -1,7 +1,7 @@
 /*
  * BitVector.c -- part of MBLib
  *
- * Copyright (c) 2015-2020 Michael Banack <github@banack.net>
+ * Copyright (c) 2015-2021 Michael Banack <github@banack.net>
  *
  * MIT License
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -28,8 +28,8 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include "mbassert.h"
-#include "mbutil.h"
+#include "MBAssert.h"
+#include "MBUtil.h"
 
 #define BITVECTOR_DEFAULT_SPACE 2
 

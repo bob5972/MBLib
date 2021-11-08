@@ -1,7 +1,7 @@
 /*
- * mbutil.h -- part of MBLib
+ * MBDebug.h -- part of MBLib
  *
- * Copyright (c) 2015-2020 Michael Banack <github@banack.net>
+ * Copyright (c) 2015-2021 Michael Banack <github@banack.net>
  *
  * MIT License
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,79 +23,40 @@
  * SOFTWARE.
  */
 
-#ifndef _MBUTIL_H_201106111445
-#define _MBUTIL_H_201106111445
+#ifndef MBDEBUG_H_201001091239
+#define MBDEBUG_H_201001091239
 
-#include <string.h>
-#include <stdlib.h>
-
-#include "mbbasic.h"
-#include "mbtypes.h"
+#include "MBBasic.h"
 
 #ifdef __cplusplus
 	extern "C" {
 #endif
 
-static INLINE bool
-MBUtil_IsDigit(char c)
-{
-    return '0' <= c && c <= '9';
-}
 
-static INLINE bool
-MBUtil_IsWhitespace(char c)
-{
-    switch (c) {
-        case ' ':
-        case '\t':
-        case '\n':
-        case '\r':
-            return TRUE;
-        default:
-            return FALSE;
-    }
-}
+//backtraces and logfile not implemented
 
-static INLINE void
-MBUtil_Zero(void *p, uint size)
-{
-	memset(p, 0, size);
-}
+void Warning(const char *fmt, ...);
+void Log(int level, const char *fmt, ...);
 
-static INLINE bool
-MBUtil_IsZero(void *p, uint size)
-{
-    uint8 *byte = (uint8 *)p;
-    while (size > 0) {
-        if (*byte != 0) {
-            return FALSE;
-        }
-        byte++;
-        size--;
-    }
-    return TRUE;
-}
+#define NOT_TESTED() DebugPrintHelper( __FILE__, __LINE__, "NOT_TESTED\n")
 
-static INLINE void *
-MBUtil_ZAlloc(uint size)
-{
-    return calloc(1, size);
-}
+#define RTRACE() DebugPrintHelper( __FILE__, __LINE__, "TRACE: %s:%d\n", __FUNCTION__, __LINE__)
 
-static INLINE uint8
-MBUtil_Popcount(uint32 x)
-{
-	return __builtin_popcount(x);
-}
+#ifdef MB_DEBUG
+	#define DebugPrint(...) DebugPrintHelper( __FILE__, __LINE__, __VA_ARGS__)
+	#define TRACE() RTRACE()
+    #define DEBUG_ONLY(x) x
+#else
+	#define DebugPrint(...)
+	#define TRACE()
+    #define DEBUG_ONLY(x)
+#endif
 
-static INLINE uint8
-MBUtil_Popcountl(uint64 x)
-{
-	return __builtin_popcountl(x);
-}
+void DebugPrintHelper(const char *file, int line, const char *fmt, ...);
+
 
 #ifdef __cplusplus
 	}
 #endif
 
-#endif //_MBUTIL_H_201106111445
+#endif //MBDEBUG_H_201001091239

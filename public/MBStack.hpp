@@ -1,7 +1,7 @@
 /*
  * MBStack.hpp -- part of MBLib
  *
- * Copyright (c) 2015-2020 Michael Banack <github@banack.net>
+ * Copyright (c) 2015-2021 Michael Banack <github@banack.net>
  *
  * MIT License
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -25,7 +25,7 @@
 #ifndef MBStack_HPP_201001091426
 #define MBStack_HPP_201001091426
 
-#include "mbtypes.h"
+#include "MBTypes.h"
 #include "MBVector.hpp"
 
 template<class itemType>

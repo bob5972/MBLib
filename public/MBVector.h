@@ -1,7 +1,7 @@
 /*
  * MBVector.h -- part of MBLib
  *
- * Copyright (c) 2015-2020 Michael Banack <github@banack.net>
+ * Copyright (c) 2015-2021 Michael Banack <github@banack.net>
  *
  * MIT License
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -28,7 +28,7 @@
 
 #include <stdlib.h>
 
-#include "mbassert.h"
+#include "MBAssert.h"
 #include "MBCompare.h"
 
 typedef struct CMBVector {

@@ -1,7 +1,7 @@
 /*
  * MBSocket.hpp -- part of MBLib
  *
- * Copyright (c) 2015-2020 Michael Banack <github@banack.net>
+ * Copyright (c) 2015-2021 Michael Banack <github@banack.net>
  *
  * MIT License
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -34,8 +34,8 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 
-#include "mbassert.h"
-#include "mbtypes.h"
+#include "MBAssert.h"
+#include "MBTypes.h"
 #include "MBString.hpp"
 
 class MBSocket

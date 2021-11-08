@@ -1,7 +1,7 @@
 /*
  * MBCompare.c -- part of MBLib
  *
- * Copyright (c) 2020 Michael Banack <github@banack.net>
+ * Copyright (c) 2020-2021 Michael Banack <github@banack.net>
  *
  * MIT License
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -26,7 +26,7 @@
 #include <stdlib.h>
 
 #include "MBCompare.h"
-#include "mbassert.h"
+#include "MBAssert.h"
 
 void
 MBCompare_SortFallback(void *items, uint32 numItems, uint32 itemSize,

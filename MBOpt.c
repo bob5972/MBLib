@@ -26,8 +26,8 @@
 #include <stdlib.h>
 
 #include "MBOpt.h"
-#include "mbtypes.h"
-#include "mbassert.h"
+#include "MBTypes.h"
+#include "MBAssert.h"
 #include "MBRegistry.h"
 
 typedef struct MBOptionValue {

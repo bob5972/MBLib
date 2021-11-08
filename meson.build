@@ -9,9 +9,9 @@ src = [
     'BitVector.c',
     'Dumper.cpp',
     'IntMap.c',
-    'mbassert.c',
+    'MBAssert.c',
     'MBCompare.c',
-    'mbdebug.c',
+    'MBDebug.c',
     'MBMatrix.cpp',
     'MBOpt.c',
     'MBQueue.cpp',
@@ -83,8 +83,8 @@ conf_data = configuration_data()
 foreach c : myconf
     conf_data.set(c, 1)
 endforeach
-configure_file(input : 'mbconfig.h.in',
-               output : 'mbconfig.h',
+configure_file(input : 'public/MBConfig.h.in',
+               output : 'MBConfig.h',
                configuration : conf_data)
 
 # Language arguments

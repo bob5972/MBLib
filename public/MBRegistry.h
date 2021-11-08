@@ -26,8 +26,8 @@
 #ifndef MBRegistry_H_202006121226
 #define MBRegistry_H_202006121226
 
-#include "mbtypes.h"
-#include "mbbasic.h"
+#include "MBTypes.h"
+#include "MBBasic.h"
 
 #ifdef __cplusplus
     extern "C" {
