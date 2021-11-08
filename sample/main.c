@@ -7,9 +7,14 @@
 
 #include <stdio.h>
 
+#include "MBConfig.h"
+
 int main()
 {
     printf("Hello World!\n");
+    printf("\n");
+    printf("MBLib sample project\n");
+    printf("debug=%d, devel=%d\n", mb_debug, mb_devel);
     return 0;
 }
 

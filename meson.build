@@ -34,17 +34,17 @@ cargs = [
 if get_option('devel')
     message('Enabling devel options')
     cargs += ['-Wall', '-Wextra', '-Werror']
-    cargs += ['-Wno-attributes']
-    cargs += ['-Wno-unused-parameter']
-    cargs += ['-Wno-sign-compare']
-    cargs += ['-Wno-unused-result']
-
     if host_machine.system() != 'darwin'
         cargs += ['-Wno-format-truncation']
     endif
 else
     message('Disabling devel options')
 endif
+
+cargs += ['-Wno-attributes']
+cargs += ['-Wno-unused-parameter']
+cargs += ['-Wno-sign-compare']
+cargs += ['-Wno-unused-result']
 
 if get_option('debug')
     message('Enabling debug options')
@@ -91,17 +91,23 @@ configure_file(input : 'public/MBConfig.h.in',
 add_project_arguments(cargs, language : 'c')
 add_project_arguments(cargs, language : 'cpp')
 
-lib = library('MBLib', sources : src,
-              include_directories : 'public')
+MBLib_inc = ['.', 'public']
+
+MBLib = library('MBLib', sources : src,
+                include_directories : MBLib_inc)
+
+MBLib_dep = declare_dependency(include_directories: MBLib_inc,
+                               link_with : MBLib)
 
 test = executable('test.bin', 'test.cpp',
-                  link_with : lib,
-                  include_directories : 'public')
+                  link_with : MBLib,
+                  include_directories : MBLib_inc)
 
 test('test.bin', test)
 
 executable('benchmark.bin', 'test.cpp',
-           link_with : lib,
-           include_directories : 'public',
+           link_with : MBLib,
+           include_directories : MBLib_inc,
            c_args : '-DBENCHMARK',
            cpp_args : '-DBENCHMARK')
+
