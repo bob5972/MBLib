@@ -89,7 +89,6 @@ configure_file(input : 'mbconfig.h.in',
 
 # Language arguments
 add_project_arguments(cargs, language : 'c')
-add_project_arguments('--std=gnu11', language : 'c')
 add_project_arguments(cargs, language : 'cpp')
 
 lib = library('MBLib', sources : src,
