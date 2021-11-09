@@ -30,12 +30,9 @@
 	extern "C" {
 #endif
 
-/* Begin Auto-Generated Meson Defines */
-#mesondefine MB_LINUX
-#mesondefine MB_MACOS
-#mesondefine MB_DEBUG
-#mesondefine MB_DEVEL
-/* End Auto-Generated Meson Defines */
+#define ALLOW_MBBUILD_CONFIG_H
+#include "config.h"
+#undef ALLOW_MBBUILD_CONFIG_H
 
 #ifdef MB_LINUX
 #define mb_linux 1

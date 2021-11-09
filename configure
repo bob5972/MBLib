@@ -1,0 +1,32 @@
+#!/usr/bin/perl
+## configure -- part of MBLib
+
+use FindBin qw($Bin);
+use lib "$Bin/MBPerl";
+
+use MBBasic;
+use MBBuild;
+
+$MBBasic::PROGRAM_AUTHOR = "Michael Banack";
+$MBBasic::PROGRAM_COPYRIGHT_DATE = "2021";
+
+my $gScriptOptions = {
+    "MBLibOutputDirPrefix=s" => { desc => "Prefix for MBLib output dirs",
+                                  default => "",
+                                  override => 'MBBuild',},
+};
+
+
+sub Main() {
+    MBBasic::LoadOptions($gScriptOptions, __PACKAGE__);
+    MBBuild::Init();
+    MBBuild::Configure();
+    MBBuild::Exit();
+}
+
+# Call the Main function.
+my $exitCode;
+eval {
+   $exitCode = Main();
+}; Panic($@) if $@;
+exit $exitCode;
