@@ -1093,7 +1093,7 @@ int main(int argc, char *argv[])
             { 1, 800,  testMBStack      },
             { 1, 35,   testMBMap        },
             { 1, 400,  testIntMap       },
-            { 1, 45,   testRandomIntMap },
+            { 1, 25,   testRandomIntMap },
             { 1, 4,    testMBSet        },
             { 1, 22,   testBitVector    },
             { 1, 410,  testMBQueue      },
@@ -1103,9 +1103,6 @@ int main(int argc, char *argv[])
 
     //Functional tests
     if (!benchmark) {
-#if !MB_DEBUG
-        printf("Warning: Running tests with assertions disabled.\n");
-#endif
         testTypes();
         testRandom();
     }
