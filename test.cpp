@@ -1048,9 +1048,10 @@ int main(int argc, char *argv[])
     MBString arg;
     bool benchmark;
 
-    benchmark = FALSE;
 #ifdef BENCHMARK
     benchmark = TRUE;
+#else
+    benchmark = FALSE;
 #endif
 
     if (argc > 1) {
@@ -1063,7 +1064,16 @@ int main(int argc, char *argv[])
         }
     }
 
-    printf("\nStarting MBLib %s ...\n", benchmark ? "Benchmark" : "Tests");
+    printf("\n");
+    printf("Starting MBLib %s ...\n", benchmark ? "Benchmark" : "Tests");
+    printf("DEBUG=%d, DEVEL=%d\n", mb_debug, mb_devel);
+    printf("\n");
+
+    if (benchmark && mb_debug) {
+        printf("WARNING: Running benchmark with assertions enabled.\n");
+    } else if (!benchmark && !mb_debug) {
+        printf("WARNING: Running tests with assertions disabled.\n");
+    }
 
     /*
      * Make benchmark mode deterministic.
