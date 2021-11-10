@@ -35,7 +35,7 @@
 	extern "C" {
 #endif
 
-#if MB_DEBUG
+#ifdef MB_DEBUG
 #define ASSERT(x) \
     do { \
         if (UNLIKELY(!(x))) { \
@@ -46,7 +46,7 @@
 #define ASSERT(x)
 #endif
 
-#if MB_DEBUG
+#ifdef MB_DEBUG
 #define VERIFY(x) \
     do { \
         if (UNLIKELY(!(x))) { \
