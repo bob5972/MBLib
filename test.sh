@@ -1,3 +1,3 @@
 #!/bin/bash
 
-./compile.sh debug && build/MBLib/test.bin
+./compile.sh debug && build/test.bin
