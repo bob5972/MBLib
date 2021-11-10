@@ -895,7 +895,7 @@ void testRandomIntMap()
      * causes it to spend a bunch of it's time in system calls
      * (presumably calling malloc?).
      */
-    const int count = 2000;
+    const int count = 10 * 1000;
 
     for (int x = 0; x < count; x++) {
         num = Random_Uint32();
@@ -904,6 +904,11 @@ void testRandomIntMap()
         m.put(num, x);
         result = m.get(num);
         TEST(x == result);
+
+        if (Random_Bit()) {
+            m.remove(num);
+            TEST(!m.containsKey(num));
+        }
     }
 }
 

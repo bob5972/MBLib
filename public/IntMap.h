@@ -41,6 +41,7 @@ typedef struct CIntMap {
     int myFullSpace;
     int myTargetLoad;
     int myEmptyValue;
+    uint myIndexMask;
 } CIntMap;
 
 typedef struct CIntMapIterator {

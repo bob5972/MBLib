@@ -94,6 +94,12 @@ MBUtil_Popcountl(uint64 x)
 	return __builtin_popcountl(x);
 }
 
+static INLINE bool
+MBUtil_IsPow2(uint32 x)
+{
+    return MBUtil_Popcount(x) == 1;
+}
+
 #ifdef __cplusplus
 	}
 #endif

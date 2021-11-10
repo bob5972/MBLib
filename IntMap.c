@@ -25,9 +25,9 @@
 
 #include "IntMap.h"
 
-#define DEFAULT_SPACE 15
-#define DEFAULT_LOAD  (0.60f)
-#define SEARCH_INCR   2
+#define DEFAULT_SPACE 16
+#define DEFAULT_LOAD  (0.66f)
+#define SEARCH_INCR   3
 
 static int CIntMapFindHelper(const CIntMap *map, int key, bool useInsertion);
 static int CIntMapFindKey(const CIntMap *map, int key);
@@ -52,6 +52,9 @@ void CIntMap_Create(CIntMap *map)
     map->myFreeSpace = DEFAULT_SPACE;
     map->myFullSpace = 0;
     map->myTargetLoad = DEFAULT_LOAD * map->mySpace;
+
+    ASSERT(MBUtil_IsPow2(map->mySpace));
+    map->myIndexMask = map->mySpace - 1;
 
     // Zero is the default emptyValue.
     map->myEmptyValue = 0;
@@ -183,7 +186,8 @@ static int CIntMapHash(const CIntMap *map, int key)
     uint32 mix1 = 0xF7345678;
     uint32 rotKey = (key >> 19);
     uint32 hash = (key ^ mix1) ^ rotKey;
-    hash %= map->mySpace;
+    hash &= map->myIndexMask;
+    ASSERT(hash < map->mySpace);
     return hash;
 }
 
@@ -199,34 +203,23 @@ static int CIntMapFindHelper(const CIntMap *map, int key, bool useInsertion)
 {
     int hashI = CIntMapHash(map, key);
     int x = hashI;
+    int i;
+    int mySpace = map->mySpace;
 
-    do {
-        int cheapLookups;
-
-        /*
-         * Avoid the modulo operation until we wrap.
-         */
-        if (x >= hashI) {
-            cheapLookups = (map->mySpace - x + 1) / SEARCH_INCR;
-        } else {
-            cheapLookups = (hashI - x + 1) / SEARCH_INCR;
-        }
-
+    for (i = 0; i < mySpace; i++) {
         ASSERT(x < map->mySpace);
-        for (int loop = 0; loop < cheapLookups; loop++) {
-            ASSERT(x < map->mySpace);
-            if (!BitVector_Get(&map->myFullFlags, x)) {
-                return useInsertion ? x : -1;
-            } else if (CMBIntVec_GetValue(&map->myKeys, x) == key &&
-                       (useInsertion || BitVector_Get(&map->myActiveFlags, x))) {
-                return x;
-            }
-
-            x += SEARCH_INCR;
+        if (!BitVector_Get(&map->myFullFlags, x)) {
+            return useInsertion ? x : -1;
+        } else if (CMBIntVec_GetValue(&map->myKeys, x) == key &&
+                   (useInsertion || BitVector_Get(&map->myActiveFlags, x))) {
+            return x;
         }
-        ASSERT(x == hashI || x >= map->mySpace);
-        x %= map->mySpace;
-    } while (x != hashI);
+
+        x += SEARCH_INCR;
+        x &= map->myIndexMask;
+        ASSERT(x < map->mySpace);
+    }
+    ASSERT(x == hashI);
 
     //We've been through the whole table.
     return -1;
@@ -261,7 +254,6 @@ static void CIntMapPutHelper(CIntMap *map, int index, int key, int value)
 
     if (index == -1 || map->myFullSpace + 1 >= map->myTargetLoad) {
         CIntMapRehash(map);
-        ASSERT(map->mySpace % SEARCH_INCR == 1);
 
         index = CIntMapGetInsertionIndex(map, key);
     }
@@ -269,7 +261,6 @@ static void CIntMapPutHelper(CIntMap *map, int index, int key, int value)
     //we are guaranteed to have an empty spot
     ASSERT(map->mySize < map->mySpace);
     ASSERT(map->myFreeSpace > 0);
-    ASSERT(map->mySpace % SEARCH_INCR == 1);
 
     ASSERT(index >= 0);
     ASSERT(index < map->mySpace);
@@ -319,7 +310,7 @@ void CIntMap_DebugDump(CIntMap *map)
 //Make the underlying table larger
 static void CIntMapRehash(CIntMap *map)
 {
-    int newSpace = map->mySpace*2 + 1;
+    int newSpace;
     BitVector oldFull;
     BitVector oldActive;
     CMBIntVec oldKeys;
@@ -331,12 +322,13 @@ static void CIntMapRehash(CIntMap *map)
     CMBIntVec_CreateEmpty(&oldKeys);
     CMBIntVec_CreateEmpty(&oldValues);
 
-    while (map->mySize/((float)newSpace) > DEFAULT_LOAD) {
-        newSpace = newSpace*2 + 1;
+    newSpace = map->mySpace;
+    while (map->mySize / ((float)newSpace) > DEFAULT_LOAD) {
+        newSpace *= 2;
     }
-
-    ASSERT(newSpace > map->mySpace);
-    ASSERT(newSpace % SEARCH_INCR == 1);
+    ASSERT(newSpace > 0);
+    ASSERT(MBUtil_IsPow2(newSpace));
+    ASSERT(newSpace >= map->mySpace);
 
     BitVector_Consume(&oldFull, &map->myFullFlags);
     BitVector_Consume(&oldActive, &map->myActiveFlags);
@@ -354,15 +346,14 @@ static void CIntMapRehash(CIntMap *map)
     map->myFullSpace = 0;
     map->myFreeSpace = map->mySpace;
     map->myTargetLoad = map->mySpace * DEFAULT_LOAD;
+    map->myIndexMask = map->mySpace - 1;
 
     for (x = 0; x < CMBIntVec_Size(&oldKeys); x++) {
         if (BitVector_Get(&oldFull,x) && BitVector_Get(&oldActive, x)) {
             CIntMap_Put(map, CMBIntVec_GetValue(&oldKeys, x),
-                       CMBIntVec_GetValue(&oldValues, x));
+                        CMBIntVec_GetValue(&oldValues, x));
         }
     }
-
-    ASSERT(map->mySpace % SEARCH_INCR == 1);
 
     BitVector_Destroy(&oldFull);
     BitVector_Destroy(&oldActive);
