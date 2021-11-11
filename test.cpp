@@ -31,6 +31,7 @@
 
 #ifdef MB_HAS_SDL2
 #include <SDL2/SDL.h>
+#include "MBLock.h"
 #endif
 
 #include "MBRegistry.h"
@@ -1038,6 +1039,20 @@ void testMBCompare(void)
     }
 }
 
+void testMBLock(void)
+{
+#ifdef MB_HAS_SDL2
+    MBLock lock;
+
+    MBLock_Create(&lock);
+    TEST(!MBLock_IsLocked(&lock));
+    MBLock_Lock(&lock);
+    TEST(MBLock_IsLocked(&lock));
+    MBLock_Unlock(&lock);
+    MBLock_Destroy(&lock);
+#endif
+}
+
 typedef struct
 {
         bool enabled;
@@ -1113,6 +1128,7 @@ int main(int argc, char *argv[])
             { 1, 410,  testMBQueue      },
             { 1, 4,    testMBRegistry   },
             { 1, 1,    testMBCompare    },
+            { 1, 1,    testMBLock       },
     };
 
     //Functional tests
