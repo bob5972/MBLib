@@ -12,6 +12,11 @@ INCLUDE_FLAGS=-I $(MBLIB_SRCDIR)/ -I $(MBLIB_SRCDIR)/public
 CFLAGS = --std=gnu11 ${DEFAULT_CFLAGS} ${INCLUDE_FLAGS} -I $(BUILDROOT)
 CPPFLAGS = ${DEFAULT_CFLAGS} ${INCLUDE_FLAGS} -I $(BUILDROOT)
 
+LIBFLAGS =
+ifeq ($(MB_HAS_SDL2), 1)
+	LIBFLAGS += -lSDL2
+endif
+
 $(MBLIB_BUILDDIR)/%.opp: $(MBLIB_SRCDIR)/%.cpp
 	${CXX} -c ${CPPFLAGS} -o $(MBLIB_BUILDDIR)/$*.opp $<;
 
@@ -49,13 +54,13 @@ C_SOURCES = BitVector.c \
             MBRegistry.c \
             MBString.c \
             MBVector.c \
-	    MBCompare.c \
+            MBCompare.c \
             Random.c
 
 OBJECTS=$(addprefix $(MBLIB_BUILDDIR)/, \
-            $(subst .cpp,.opp, $(CPP_SOURCES))) \
+          $(subst .cpp,.opp, $(CPP_SOURCES))) \
         $(addprefix $(MBLIB_BUILDDIR)/, \
-            $(subst .c,.o, $(C_SOURCES)))
+          $(subst .c,.o, $(C_SOURCES)))
 
 #The config check is to test if we've been configured
 all: $(BUILDROOT)/config.h $(MBLIB_BUILDDIR)/MBLib.a testbin benchmarkbin
@@ -70,10 +75,16 @@ test: testbin
 benchmarkbin: $(MBLIB_BUILDDIR)/benchmark.bin
 
 $(MBLIB_BUILDDIR)/test.bin: $(MBLIB_BUILDDIR)/MBLib.a $(MBLIB_SRCDIR)/test.cpp
-	${CXX} ${CPPFLAGS} -g $(MBLIB_SRCDIR)/test.cpp $(MBLIB_BUILDDIR)/MBLib.a -o $(MBLIB_BUILDDIR)/test.bin
+	${CXX} ${CPPFLAGS} -g $(MBLIB_SRCDIR)/test.cpp \
+					   $(MBLIB_BUILDDIR)/MBLib.a \
+					   $(LIBFLAGS) \
+					   -o $(MBLIB_BUILDDIR)/test.bin
 
 $(MBLIB_BUILDDIR)/benchmark.bin: $(MBLIB_BUILDDIR)/MBLib.a $(MBLIB_SRCDIR)/test.cpp
-	${CXX} -D BENCHMARK ${CPPFLAGS} $(MBLIB_SRCDIR)/test.cpp $(MBLIB_BUILDDIR)/MBLib.a -o $(MBLIB_BUILDDIR)/benchmark.bin
+	${CXX} -D BENCHMARK ${CPPFLAGS} $(MBLIB_SRCDIR)/test.cpp \
+									$(MBLIB_BUILDDIR)/MBLib.a \
+									$(LIBFLAGS) \
+									-o $(MBLIB_BUILDDIR)/benchmark.bin
 
 $(MBLIB_BUILDDIR)/MBLib.a: ${OBJECTS}
 	ar cr $(MBLIB_BUILDDIR)/MBLib.a ${OBJECTS}

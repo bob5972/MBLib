@@ -58,6 +58,12 @@
 #define mb_devel 0
 #endif
 
+#ifdef MB_HAS_SDL2
+#define mb_has_sdl2 1
+#else
+#define mb_has_sdl2 0
+#endif
+
 #ifdef __cplusplus
 	}
 #endif

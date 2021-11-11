@@ -27,6 +27,12 @@
 #include <stdlib.h>
 #include <iostream>
 
+#include "MBConfig.h"
+
+#ifdef MB_HAS_SDL2
+#include <SDL2/SDL.h>
+#endif
+
 #include "MBRegistry.h"
 
 #include "MBString.hpp"
@@ -1064,9 +1070,13 @@ int main(int argc, char *argv[])
         }
     }
 
+    /*
+     * Print Configuration
+     */
     printf("\n");
     printf("Starting MBLib %s ...\n", benchmark ? "Benchmark" : "Tests");
     printf("DEBUG=%d, DEVEL=%d\n", mb_debug, mb_devel);
+    printf("MB_HAS_SDL2=%d\n", mb_has_sdl2);
     printf("\n");
 
     if (benchmark && mb_debug) {
@@ -1084,6 +1094,10 @@ int main(int argc, char *argv[])
         Random_GenerateSeed();
     }
     Random_Init();
+
+#ifdef MB_HAS_SDL2
+    SDL_Init(0);
+#endif
 
     BenchmarkTest tests[] = {
             // enabled, weight, function
@@ -1150,7 +1164,11 @@ int main(int argc, char *argv[])
 
     Random_Exit();
 
-    printf("\n%s successful!\n\n", benchmark ? "Benchmark" : "Tests");
+    printf("%s successful!\n\n", benchmark ? "Benchmark" : "Tests");
+
+#ifdef MB_HAS_SDL2
+    SDL_Quit();
+#endif
 
     printf("Done.\n");
     return 0;
