@@ -36,7 +36,7 @@
 #include <istream>
 #include <ostream>
 
-#define MBString MBStringData
+#define MBString CMBString
 extern "C" {
 #include "MBString.h"
 }
