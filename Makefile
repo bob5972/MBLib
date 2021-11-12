@@ -54,6 +54,7 @@ C_SOURCES = BitVector.c \
             MBRegistry.c \
             MBString.c \
             MBVector.c \
+            MBRing.c \
             MBCompare.c \
             Random.c
 

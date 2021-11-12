@@ -78,6 +78,12 @@ static INLINE void CMBVector_Destroy(CMBVector *vector)
     vector->items = NULL;
 }
 
+static INLINE int CMBVector_ItemSize(const CMBVector *vector)
+{
+    ASSERT(vector != NULL);
+    return vector->itemSize;
+}
+
 static INLINE void CMBVector_Pin(CMBVector *vector)
 {
     if (mb_debug) {
