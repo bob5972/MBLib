@@ -31,6 +31,7 @@
 #endif
 
 #include <SDL2/SDL_mutex.h>
+#include <SDL2/SDL_thread.h>
 
 #include "MBBasic.h"
 #include "MBAssert.h"
@@ -49,7 +50,9 @@ MBLock_Create(MBLock *lock)
     lock->sdlMutex = SDL_CreateMutex();
     VERIFY(lock->sdlMutex != NULL);
 
-    lock->thread = MB_THREAD_ID_INVALID;
+    if (mb_debug) {
+        lock->thread = MB_THREAD_ID_INVALID;
+    }
 }
 
 static INLINE
@@ -58,7 +61,10 @@ void MBLock_Destroy(MBLock *lock)
     ASSERT(lock != NULL);
     ASSERT(lock->sdlMutex != NULL);
 
-    ASSERT(lock->thread == MB_THREAD_ID_INVALID);
+    if (mb_debug) {
+        ASSERT(lock->thread == MB_THREAD_ID_INVALID);
+    }
+
     SDL_DestroyMutex(lock->sdlMutex);
     lock->sdlMutex = NULL;
 }
@@ -67,6 +73,11 @@ static INLINE bool
 MBLock_IsLocked(MBLock *lock)
 {
     ASSERT(lock != NULL);
+
+    if (!mb_debug) {
+        NOT_IMPLEMENTED();
+    }
+
     if (lock->thread == MB_THREAD_ID_INVALID) {
         return FALSE;
     }
@@ -81,7 +92,12 @@ MBLock_Lock(MBLock *lock)
     ASSERT(!MBLock_IsLocked(lock));
     int ret = SDL_LockMutex(lock->sdlMutex);
     ASSERT(ret == 0);
-    lock->thread = SDL_GetThreadID(NULL);
+
+    if (mb_debug) {
+        ASSERT(lock->thread == MB_THREAD_ID_INVALID);
+        lock->thread = SDL_GetThreadID(NULL);
+        ASSERT(lock->thread != MB_THREAD_ID_INVALID);
+    }
 }
 
 static INLINE void
@@ -89,8 +105,12 @@ MBLock_Unlock(MBLock *lock)
 {
     ASSERT(lock != NULL);
     ASSERT(lock->sdlMutex != NULL);
-    ASSERT(MBLock_IsLocked(lock));
-    lock->thread = MB_THREAD_ID_INVALID;
+
+    if (mb_debug) {
+        ASSERT(MBLock_IsLocked(lock));
+        lock->thread = MB_THREAD_ID_INVALID;
+    }
+
     int ret = SDL_UnlockMutex(lock->sdlMutex);
     ASSERT(ret == 0);
 }
