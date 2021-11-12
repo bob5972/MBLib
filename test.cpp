@@ -1062,62 +1062,62 @@ void testMBRing(void)
 
     for (int x = 0; x < 100; x++) {
         TEST(MBRing_Size(&r) == x);
-        MBRing_InsertHead(&r, &x);
+        MBRing_InsertHead(&r, &x, sizeof(x));
         TEST(MBRing_Size(&r) == x + 1);
     }
     for (int x = 0; x < 100; x++) {
         int v;
-        MBRing_RemoveTail(&r, &v);
+        MBRing_RemoveTail(&r, &v, sizeof(v));
         TEST(v == x);
     }
     TEST(MBRing_Size(&r) == 0);
 
     for (int x = 0; x < 100; x++) {
         TEST(MBRing_Size(&r) == x);
-        MBRing_InsertTail(&r, &x);
+        MBRing_InsertTail(&r, &x, sizeof(x));
         TEST(MBRing_Size(&r) == x + 1);
     }
     for (int x = 0; x < 100; x++) {
         int v;
-        MBRing_RemoveHead(&r, &v);
+        MBRing_RemoveHead(&r, &v, sizeof(v));
         TEST(v == x);
     }
     TEST(MBRing_Size(&r) == 0);
 
     for (int x = 0; x < 100; x++) {
         TEST(MBRing_Size(&r) == x);
-        MBRing_InsertHead(&r, &x);
+        MBRing_InsertHead(&r, &x, sizeof(x));
         TEST(MBRing_Size(&r) == x + 1);
     }
     for (int x = 99; x >= 0; x--) {
         int v;
-        MBRing_RemoveHead(&r, &v);
+        MBRing_RemoveHead(&r, &v, sizeof(v));
         TEST(v == x);
     }
     TEST(MBRing_Size(&r) == 0);
 
     for (int x = 0; x < 100; x++) {
         TEST(MBRing_Size(&r) == x);
-        MBRing_InsertTail(&r, &x);
+        MBRing_InsertTail(&r, &x, sizeof(x));
         TEST(MBRing_Size(&r) == x + 1);
     }
     for (int x = 99; x >= 0; x--) {
         int v;
-        MBRing_RemoveTail(&r, &v);
+        MBRing_RemoveTail(&r, &v, sizeof(v));
         TEST(v == x);
     }
     TEST(MBRing_Size(&r) == 0);
 
     for (int x = 0; x < 100; x++) {
-        MBRing_InsertHead(&r, &x);
-        MBRing_InsertTail(&r, &x);
+        MBRing_InsertHead(&r, &x, sizeof(x));
+        MBRing_InsertTail(&r, &x, sizeof(x));
     }
     for (int x = 99; x >= 0; x--) {
         int v;
-        MBRing_RemoveHead(&r, &v);
+        MBRing_RemoveHead(&r, &v, sizeof(v));
         TEST(v == x);
 
-        MBRing_RemoveTail(&r, &v);
+        MBRing_RemoveTail(&r, &v, sizeof(v));
         TEST(v == x);
     }
     TEST(MBRing_Size(&r) == 0);
@@ -1130,18 +1130,18 @@ void testMBRing(void)
         int z = RandomState_Int(&rs, 0, 3);
         if (z == 0) {
             count++;
-            MBRing_InsertHead(&r, &v);
+            MBRing_InsertHead(&r, &v, sizeof(v));
         } else if (z == 1) {
             count++;
-            MBRing_InsertTail(&r, &v);
+            MBRing_InsertTail(&r, &v, sizeof(v));
         } else if (z == 2) {
             if (count > 0) {
-                MBRing_RemoveHead(&r, &v);
+                MBRing_RemoveHead(&r, &v, sizeof(v));
                 count--;
             }
         } else {
             if (count > 0) {
-                MBRing_RemoveTail(&r, &v);
+                MBRing_RemoveTail(&r, &v, sizeof(v));
                 count--;
             }
         }
