@@ -73,6 +73,10 @@ class IntMap {
             return CIntMap_Get(&myData, key);
         }
 
+        bool lookup(int key, int *value) const
+        {
+            return CIntMap_Lookup(&myData, key, value);
+        }
 
         //returns the new value
         int increment(int key) {
