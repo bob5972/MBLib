@@ -47,7 +47,7 @@ CPP_SOURCES = MBString.cpp \
               Dumper.cpp
 
 C_SOURCES = BitVector.c \
-            IntMap.c \
+	    MBVarMap.c \
             MBAssert.c \
             MBDebug.c \
             MBOpt.c \

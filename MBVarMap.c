@@ -1,7 +1,7 @@
 /*
- * IntMap.c -- part of MBLib
+ * MBVarMap.c -- part of MBLib
  *
- * Copyright (c) 2015-2020 Michael Banack <github@banack.net>
+ * Copyright (c) 2021 Michael Banack <github@banack.net>
  *
  * MIT License
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,24 +23,24 @@
  * SOFTWARE.
  */
 
-#include "IntMap.h"
+#include "MBVarMap.h"
 
 #define DEFAULT_SPACE 16
 #define DEFAULT_LOAD  (0.66f)
 #define SEARCH_INCR   3
 
-static int CIntMapFindHelper(const CIntMap *map, int key, bool useInsertion);
-static int CIntMapFindKey(const CIntMap *map, int key);
-static int CIntMapGetInsertionIndex(const CIntMap *map, int key);
-static int CIntMapHash(const CIntMap *map, int key);
-static void CIntMapPutHelper(CIntMap *map, int index, int key, int value);
-static void CIntMapRehash(CIntMap *map);
+static int CMBVarMapFindHelper(const CMBVarMap *map, MBVar key, bool useInsertion);
+static int CMBVarMapFindKey(const CMBVarMap *map, MBVar key);
+static int CMBVarMapGetInsertionIndex(const CMBVarMap *map, MBVar key);
+static int CMBVarMapHash(const CMBVarMap *map, MBVar key);
+static void CMBVarMapPutHelper(CMBVarMap *map, int index, MBVar key, MBVar value);
+static void CMBVarMapRehash(CMBVarMap *map);
 
 
-void CIntMap_Create(CIntMap *map)
+void CMBVarMap_Create(CMBVarMap *map)
 {
-    CMBIntVec_CreateWithSize(&map->myKeys, DEFAULT_SPACE);
-    CMBIntVec_CreateWithSize(&map->myValues, DEFAULT_SPACE);
+    CMBVarVec_CreateWithSize(&map->myKeys, DEFAULT_SPACE);
+    CMBVarVec_CreateWithSize(&map->myValues, DEFAULT_SPACE);
 
     BitVector_CreateWithSize(&map->myActiveFlags, DEFAULT_SPACE);
     ASSERT(BitVector_GetFillValue(&map->myActiveFlags) == FALSE);
@@ -57,23 +57,23 @@ void CIntMap_Create(CIntMap *map)
     map->myIndexMask = map->mySpace - 1;
 
     // Zero is the default emptyValue.
-    map->myEmptyValue = 0;
+    map->myEmptyValue.vUint64 = 0;
 }
 
-void CIntMap_Destroy(CIntMap *map)
+void CMBVarMap_Destroy(CMBVarMap *map)
 {
-    CMBIntVec_Destroy(&map->myKeys);
-    CMBIntVec_Destroy(&map->myValues);
+    CMBVarVec_Destroy(&map->myKeys);
+    CMBVarVec_Destroy(&map->myValues);
     BitVector_Destroy(&map->myActiveFlags);
     BitVector_Destroy(&map->myFullFlags);
 }
 
-void CIntMap_SetEmptyValue(CIntMap *map, int emptyValue)
+void CMBVarMap_SetEmptyValue(CMBVarMap *map, MBVar emptyValue)
 {
     map->myEmptyValue = emptyValue;
 }
 
-void CIntMap_MakeEmpty(CIntMap *map)
+void CMBVarMap_MakeEmpty(CMBVarMap *map)
 {
     BitVector_ResetAll(&map->myFullFlags);
     BitVector_ResetAll(&map->myActiveFlags);
@@ -82,31 +82,31 @@ void CIntMap_MakeEmpty(CIntMap *map)
     map->myFreeSpace = map->mySpace;
 }
 
-bool CIntMap_ContainsKey(const CIntMap *map, int key)
+bool CMBVarMap_ContainsKey(const CMBVarMap *map, MBVar key)
 {
-    return CIntMapFindKey(map, key) != -1;
+    return CMBVarMapFindKey(map, key) != -1;
 }
 
 // Defaults to zero for missing keys.
-int CIntMap_Get(const CIntMap *map, int key)
+MBVar CMBVarMap_Get(const CMBVarMap *map, MBVar key)
 {
-    int value;
-    CIntMap_Lookup(map, key, &value);
+    MBVar value;
+    CMBVarMap_Lookup(map, key, &value);
     return value;
 }
 
-bool CIntMap_Lookup(const CIntMap *map, int key, int *value)
+bool CMBVarMap_Lookup(const CMBVarMap *map, MBVar key, MBVar *value)
 {
-    int v;
+    MBVar v;
     bool found;
 
-    int i = CIntMapFindKey(map, key);
+    int i = CMBVarMapFindKey(map, key);
     if (i == -1) {
         v = map->myEmptyValue;
         found = FALSE;
     } else {
-        ASSERT(CMBIntVec_GetValue(&map->myKeys, i) == key);
-        v = CMBIntVec_GetValue(&map->myValues, i);
+        ASSERT(CMBVarVec_GetValue(&map->myKeys, i).all == key.all);
+        v = CMBVarVec_GetValue(&map->myValues, i);
         found = TRUE;
     }
 
@@ -118,26 +118,26 @@ bool CIntMap_Lookup(const CIntMap *map, int key, int *value)
 }
 
 // Returns the new value.
-int CIntMap_IncrementBy(CIntMap *map, int key, int amount)
+int CMBVarMap_IncrementByInt32(CMBVarMap *map, MBVar key, int amount)
 {
-    int *value;
-    int i = CIntMapGetInsertionIndex(map, key);
+    MBVar *value;
+    int i = CMBVarMapGetInsertionIndex(map, key);
 
     if (i == -1 || !BitVector_Get(&map->myActiveFlags, i)) {
-        CIntMapPutHelper(map, i, key, map->myEmptyValue);
-        i = CIntMapGetInsertionIndex(map, key);
+        CMBVarMapPutHelper(map, i, key, map->myEmptyValue);
+        i = CMBVarMapGetInsertionIndex(map, key);
     }
 
-    ASSERT(CMBIntVec_GetValue(&map->myKeys, i) == key);
-    value = CMBIntVec_GetPtr(&map->myValues, i);
-    *value += amount;
-    return *value;
+    ASSERT(CMBVarVec_GetValue(&map->myKeys, i).all == key.all);
+    value = CMBVarVec_GetPtr(&map->myValues, i);
+    value->vInt32 += amount;
+    return value->vInt32;
 }
 
-void CIntMap_Put(CIntMap *map, int key, int value)
+void CMBVarMap_Put(CMBVarMap *map, MBVar key, MBVar value)
 {
-    int i = CIntMapGetInsertionIndex(map, key);
-    CIntMapPutHelper(map, i, key, value);
+    int i = CMBVarMapGetInsertionIndex(map, key);
+    CMBVarMapPutHelper(map, i, key, value);
 }
 
 /*
@@ -147,16 +147,16 @@ void CIntMap_Put(CIntMap *map, int key, int value)
  * even though Get(1) will return DEFAULT before and after the Remove call, due
  * to the default value of DEFAULT.
  */
-bool CIntMap_Remove(CIntMap *map, int key)
+bool CMBVarMap_Remove(CMBVarMap *map, MBVar key)
 {
-    int i = CIntMapFindKey(map, key);
+    int i = CMBVarMapFindKey(map, key);
     if (i == -1) {
         return FALSE;
     }
 
     ASSERT(BitVector_Get(&map->myActiveFlags, i));
     ASSERT(BitVector_Get(&map->myFullFlags, i));
-    ASSERT(CMBIntVec_GetValue(&map->myKeys, i) == key);
+    ASSERT(CMBVarVec_GetValue(&map->myKeys, i).all == key.all);
 
     BitVector_Reset(&map->myActiveFlags, i);
     map->mySize--;
@@ -164,7 +164,7 @@ bool CIntMap_Remove(CIntMap *map, int key)
     return TRUE;
 }
 
-void CIntMap_InsertAll(CIntMap *dest, const CIntMap *src)
+void CMBVarMap_InsertAll(CMBVarMap *dest, const CMBVarMap *src)
 {
     int i = 0;
     int count = 0;
@@ -173,19 +173,20 @@ void CIntMap_InsertAll(CIntMap *dest, const CIntMap *src)
         ASSERT(i < src->mySpace);
 
         if (BitVector_Get(&src->myActiveFlags, i)) {
-            CIntMap_Put(dest, CMBIntVec_GetValue(&src->myKeys, i),
-                       CMBIntVec_GetValue(&src->myValues, i));
+            CMBVarMap_Put(dest, CMBVarVec_GetValue(&src->myKeys, i),
+                       CMBVarVec_GetValue(&src->myValues, i));
             count++;
         }
         i++;
     }
 }
 
-static int CIntMapHash(const CIntMap *map, int key)
+static int CMBVarMapHash(const CMBVarMap *map, MBVar key)
 {
-    uint32 mix1 = 0xF7345678;
-    uint32 rotKey = (key >> 19);
-    uint32 hash = (key ^ mix1) ^ rotKey;
+    uint64 ukey = key.all;
+    uint64 mix1 = 0x87654321F7345678;
+    uint64 rotKey = (ukey >> 19);
+    uint64 hash = (ukey ^ mix1) ^ rotKey;
     hash &= map->myIndexMask;
     ASSERT(hash < map->mySpace);
     return hash;
@@ -199,9 +200,9 @@ static int CIntMapHash(const CIntMap *map, int key)
  *
  * If useInsertion is FALSE, return the index of valid key, or -1.
  */
-static int CIntMapFindHelper(const CIntMap *map, int key, bool useInsertion)
+static int CMBVarMapFindHelper(const CMBVarMap *map, MBVar key, bool useInsertion)
 {
-    int hashI = CIntMapHash(map, key);
+    int hashI = CMBVarMapHash(map, key);
     int x = hashI;
     int i;
     int mySpace = map->mySpace;
@@ -210,7 +211,7 @@ static int CIntMapFindHelper(const CIntMap *map, int key, bool useInsertion)
         ASSERT(x < map->mySpace);
         if (!BitVector_Get(&map->myFullFlags, x)) {
             return useInsertion ? x : -1;
-        } else if (CMBIntVec_GetValue(&map->myKeys, x) == key &&
+        } else if (CMBVarVec_GetValue(&map->myKeys, x).all == key.all &&
                    (useInsertion || BitVector_Get(&map->myActiveFlags, x))) {
             return x;
         }
@@ -228,9 +229,9 @@ static int CIntMapFindHelper(const CIntMap *map, int key, bool useInsertion)
 /*
  * Return the index of valid key, or -1.
  */
-static int CIntMapFindKey(const CIntMap *map, int key)
+static int CMBVarMapFindKey(const CMBVarMap *map, MBVar key)
 {
-   return CIntMapFindHelper(map, key, FALSE);
+   return CMBVarMapFindHelper(map, key, FALSE);
 }
 
 /*
@@ -239,13 +240,13 @@ static int CIntMapFindKey(const CIntMap *map, int key)
  * In other words, if the key is in the map, return it,
  * and if not, return the next free index.
  */
-static int CIntMapGetInsertionIndex(const CIntMap *map, int key)
+static int CMBVarMapGetInsertionIndex(const CMBVarMap *map, MBVar key)
 {
-   return CIntMapFindHelper(map, key, TRUE);
+   return CMBVarMapFindHelper(map, key, TRUE);
 }
 
 //Puts a key at the specified index.
-static void CIntMapPutHelper(CIntMap *map, int index, int key, int value)
+static void CMBVarMapPutHelper(CMBVarMap *map, int index, MBVar key, MBVar value)
 {
     ASSERT(index == -1 || index >= 0);
     if (index == -1) {
@@ -253,9 +254,9 @@ static void CIntMapPutHelper(CIntMap *map, int index, int key, int value)
     }
 
     if (index == -1 || map->myFullSpace + 1 >= map->myTargetLoad) {
-        CIntMapRehash(map);
+        CMBVarMapRehash(map);
 
-        index = CIntMapGetInsertionIndex(map, key);
+        index = CMBVarMapGetInsertionIndex(map, key);
     }
 
     //we are guaranteed to have an empty spot
@@ -265,7 +266,7 @@ static void CIntMapPutHelper(CIntMap *map, int index, int key, int value)
     ASSERT(index >= 0);
     ASSERT(index < map->mySpace);
     ASSERT(!BitVector_Get(&map->myActiveFlags, index) ||
-           CMBIntVec_GetValue(&map->myKeys, index) == key);
+           CMBVarVec_GetValue(&map->myKeys, index).all == key.all);
 
     if (!BitVector_Get(&map->myActiveFlags, index)) {
         map->mySize++;
@@ -277,30 +278,30 @@ static void CIntMapPutHelper(CIntMap *map, int index, int key, int value)
         }
 
         BitVector_Set(&map->myActiveFlags, index);
-        CMBIntVec_PutValue(&map->myKeys, index, key);
+        CMBVarVec_PutValue(&map->myKeys, index, key);
     } else {
-        ASSERT(CMBIntVec_GetValue(&map->myKeys, index) == key);
+        ASSERT(CMBVarVec_GetValue(&map->myKeys, index).all == key.all);
         ASSERT(BitVector_Get(&map->myFullFlags, index));
         ASSERT(BitVector_Get(&map->myActiveFlags, index));
     }
 
-    ASSERT(CMBIntVec_GetValue(&map->myKeys, index) == key);
+    ASSERT(CMBVarVec_GetValue(&map->myKeys, index).all == key.all);
     ASSERT(BitVector_Get(&map->myFullFlags, index));
     ASSERT(BitVector_Get(&map->myActiveFlags, index));
 
-    CMBIntVec_PutValue(&map->myValues, index, value);
+    CMBVarVec_PutValue(&map->myValues, index, value);
 }
 
-void CIntMap_DebugDump(CIntMap *map)
+void CMBVarMap_DebugDump(const CMBVarMap *map)
 {
     uint32 i;
     DebugPrint("mySize=%d, mySpace=%d, myFreeSpace=%d\n",
                map->mySize, map->mySpace, map->myFreeSpace);
-    for (i = 0; i < CMBIntVec_Size(&map->myKeys); i++) {
+    for (i = 0; i < CMBVarVec_Size(&map->myKeys); i++) {
         if (BitVector_Get(&map->myActiveFlags, i)) {
             DebugPrint("myKeys[%d]=%d, myValues[%d]=%d\n",
-                       i, CMBIntVec_GetValue(&map->myKeys, i),
-                       i, CMBIntVec_GetValue(&map->myValues, i));
+                       i, CMBVarVec_GetValue(&map->myKeys, i),
+                       i, CMBVarVec_GetValue(&map->myValues, i));
         } else if (BitVector_Get(&map->myFullFlags, i)) {
             DebugPrint("myKeys[%d]=full\n", i);
         }
@@ -308,19 +309,19 @@ void CIntMap_DebugDump(CIntMap *map)
 }
 
 //Make the underlying table larger
-static void CIntMapRehash(CIntMap *map)
+static void CMBVarMapRehash(CMBVarMap *map)
 {
     int newSpace;
     BitVector oldFull;
     BitVector oldActive;
-    CMBIntVec oldKeys;
-    CMBIntVec oldValues;
+    CMBVarVec oldKeys;
+    CMBVarVec oldValues;
     int x;
 
     BitVector_Create(&oldFull);
     BitVector_Create(&oldActive);
-    CMBIntVec_CreateEmpty(&oldKeys);
-    CMBIntVec_CreateEmpty(&oldValues);
+    CMBVarVec_CreateEmpty(&oldKeys);
+    CMBVarVec_CreateEmpty(&oldValues);
 
     newSpace = map->mySpace;
     while (map->mySize / ((float)newSpace) > DEFAULT_LOAD) {
@@ -332,14 +333,14 @@ static void CIntMapRehash(CIntMap *map)
 
     BitVector_Consume(&oldFull, &map->myFullFlags);
     BitVector_Consume(&oldActive, &map->myActiveFlags);
-    CMBIntVec_Consume(&oldKeys, &map->myKeys);
-    CMBIntVec_Consume(&oldValues, &map->myValues);
+    CMBVarVec_Consume(&oldKeys, &map->myKeys);
+    CMBVarVec_Consume(&oldValues, &map->myValues);
 
     //the flags should all be false
     BitVector_Resize(&map->myFullFlags, newSpace);
     BitVector_Resize(&map->myActiveFlags, newSpace);
-    CMBIntVec_Resize(&map->myKeys, newSpace);
-    CMBIntVec_Resize(&map->myValues, newSpace);
+    CMBVarVec_Resize(&map->myKeys, newSpace);
+    CMBVarVec_Resize(&map->myValues, newSpace);
 
     map->mySpace = newSpace;
     map->mySize = 0;
@@ -348,15 +349,15 @@ static void CIntMapRehash(CIntMap *map)
     map->myTargetLoad = map->mySpace * DEFAULT_LOAD;
     map->myIndexMask = map->mySpace - 1;
 
-    for (x = 0; x < CMBIntVec_Size(&oldKeys); x++) {
+    for (x = 0; x < CMBVarVec_Size(&oldKeys); x++) {
         if (BitVector_Get(&oldFull,x) && BitVector_Get(&oldActive, x)) {
-            CIntMap_Put(map, CMBIntVec_GetValue(&oldKeys, x),
-                        CMBIntVec_GetValue(&oldValues, x));
+            CMBVarMap_Put(map, CMBVarVec_GetValue(&oldKeys, x),
+                        CMBVarVec_GetValue(&oldValues, x));
         }
     }
 
     BitVector_Destroy(&oldFull);
     BitVector_Destroy(&oldActive);
-    CMBIntVec_Destroy(&oldKeys);
-    CMBIntVec_Destroy(&oldValues);
+    CMBVarVec_Destroy(&oldKeys);
+    CMBVarVec_Destroy(&oldValues);
 }

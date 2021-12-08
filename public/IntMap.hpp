@@ -31,74 +31,76 @@
 #error Including C++ Header in a C file.
 #endif
 
-extern "C" {
-#include "IntMap.h"
-}
+#include "MBVarMap.h"
 
 class IntMap {
     public:
         IntMap() {
-            CIntMap_Create(&myData);
+            CMBIntMap_Create(&myData);
+        }
+
+        ~IntMap() {
+            CMBIntMap_Destroy(&myData);
         }
 
         IntMap(const IntMap &m) {
-            CIntMap_Create(&myData);
-            CIntMap_InsertAll(&myData, &m.myData);
+            CMBIntMap_Create(&myData);
+            CMBIntMap_InsertAll(&myData, &m.myData);
         }
 
         void setEmptyValue(int emptyValue) {
-            CIntMap_SetEmptyValue(&myData, emptyValue);
+            CMBIntMap_SetEmptyValue(&myData, emptyValue);
         }
 
         void makeEmpty() {
-            CIntMap_MakeEmpty(&myData);
+            CMBIntMap_MakeEmpty(&myData);
         }
 
         bool containsKey(int key) const
         {
-            return CIntMap_ContainsKey(&myData, key);
+            return CMBIntMap_ContainsKey(&myData, key);
         }
 
         bool isEmpty() const {
-            return CIntMap_IsEmpty(&myData);
+            return CMBIntMap_IsEmpty(&myData);
         }
 
         int size() const {
-            return CIntMap_Size(&myData);
+            return CMBIntMap_Size(&myData);
         }
 
         //defaults to a value of 0 for missing keys
         int get(int key) const
         {
-            return CIntMap_Get(&myData, key);
+            return CMBIntMap_Get(&myData, key);
         }
 
         bool lookup(int key, int *value) const
         {
-            return CIntMap_Lookup(&myData, key, value);
+            return CMBIntMap_Lookup(&myData, key, value);
         }
 
         //returns the new value
         int increment(int key) {
-            return CIntMap_Increment(&myData, key);
+            return CMBIntMap_Increment(&myData, key);
         }
 
         //returns the new value
         int decrement(int key) {
-            return CIntMap_Decrement(&myData, key);
+            return CMBIntMap_Decrement(&myData, key);
         }
 
         //returns the new value
         int increment(int key, int amount) {
-            return CIntMap_IncrementBy(&myData, key, amount);
+            return CMBIntMap_IncrementBy(&myData, key, amount);
         }
         //returns the new value
         int decrement(int key, int amount) {
-            return CIntMap_DecrementBy(&myData, key, amount);
+            return CMBIntMap_DecrementBy(&myData, key, amount);
         }
 
         void put(int key, int value) {
-            CIntMap_Put(&myData, key, value);
+            CMBIntMap_Put(&myData, key, value);
         }
 
         //returns true iff the map changed
@@ -107,18 +109,22 @@ class IntMap {
         //  before an after the delete call
         //  (due to the default value of 0)
         bool remove(int key) {
-            return CIntMap_Remove(&myData, key);
+            return CMBIntMap_Remove(&myData, key);
         }
 
         //insert all keys from m into this map
         //  if the key already exists, use the new value
         //  linear time to the capacity (NOT size) of m
         void insertAll(const IntMap &m) {
-            return CIntMap_InsertAll(&myData, &m.myData);
+            return CMBIntMap_InsertAll(&myData, &m.myData);
+        }
+
+        void debugDump() const {
+            CMBIntMap_DebugDump(&myData);
         }
 
     private:
-        CIntMap myData;
+        CMBIntMap myData;
 };
 
 

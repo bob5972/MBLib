@@ -28,8 +28,13 @@
 
 #include <stdlib.h>
 
+#ifdef __cplusplus
+    extern "C" {
+#endif
+
 #include "MBAssert.h"
 #include "MBCompare.h"
+#include "MBTypes.h"
 
 typedef struct CMBVector {
     int size;
@@ -262,7 +267,7 @@ static INLINE void CMBVector_Sort(CMBVector *v, const CMBComparator *comp)
     (_name *v) \
     { CMBVector_Unpin(&v->v); } \
     static INLINE int _name ## _Size \
-    (_name *v) \
+    (const _name *v) \
     { return CMBVector_Size(&v->v); } \
     static INLINE void _name ## _Resize \
     (_name *v, int size) \
@@ -322,5 +327,11 @@ static INLINE void CMBVector_Sort(CMBVector *v, const CMBComparator *comp)
 
 
 DECLARE_CMBVECTOR_TYPE(int, CMBIntVec);
+DECLARE_CMBVECTOR_TYPE(void *, CMBPtrVec);
+DECLARE_CMBVECTOR_TYPE(MBVar, CMBVarVec);
+
+#ifdef __cplusplus
+    }
+#endif
 
 #endif // MBVECTOR_H_201202060000

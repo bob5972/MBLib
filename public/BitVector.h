@@ -26,6 +26,10 @@
 #ifndef BitVector_H_201001192326
 #define BitVector_H_201001192326
 
+#ifdef __cplusplus
+    extern "C" {
+#endif
+
 #include "MBTypes.h"
 #include "MBUtil.h"
 #include "MBAssert.h"
@@ -523,5 +527,9 @@ static INLINE int BitVector_PopCount(const BitVector *b)
 
     return sum;
 }
+
+#ifdef __cplusplus
+    }
+#endif
 
 #endif //BitVector_H_201001192326

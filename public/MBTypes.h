@@ -116,6 +116,29 @@ typedef unsigned long ulong;
 	#error Unknown word size
 #endif
 
+typedef union MBVar32 {
+    int32 vInt32;
+    float vFloat;
+    uint32 vUint32;
+
+    uint32 all;
+} MBVar32;
+
+typedef union MBVar64 {
+    int32 vInt32;
+    float vFloat;
+    uint32 vUint32;
+
+    int64 vInt64;
+    double vDouble;
+    void *vPtr;
+    uint64 vUint64;
+
+    uint64 all;
+} MBVar64;
+
+typedef MBVar64 MBVar;
+
 #ifdef __cplusplus
     }
 #endif

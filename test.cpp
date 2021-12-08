@@ -758,11 +758,40 @@ void testIntMap()
     int num;
     const int count = 1000;
 
+    TEST(m.get(0) == 0);
+    m.put(0, 0);
+    TEST(m.get(0) == 0);
+    m.increment(0);
+    TEST(m.get(0) == 1);
+    m.decrement(0);
+    TEST(m.get(0) == 0);
+    m.makeEmpty();
+
+    TEST(m.get(0) == 0);
+    m.increment(0);
+    TEST(m.get(0) == 1);
+    m.makeEmpty();
+
+    TEST(m.get(1) == 0);
+    m.put(1, 1);
+    TEST(m.get(1) == 1);
+    m.increment(1);
+    TEST(m.get(1) == 2);
+    m.decrement(1);
+    TEST(m.get(1) == 1);
+    m.makeEmpty();
+
+    TEST(m.get(1) == 0);
+    m.increment(1);
+    TEST(m.get(1) == 1);
+    m.makeEmpty();
+
     for (int x = 0; x < count; x++) {
         m.put(x, x + seed);
         result = m.get(x);
         TEST(x + seed == result);
-        m.increment(x);
+        result = m.increment(x);
+        TEST(result == x + seed + 1);
         result = m.get(x);
         TEST(result == x + seed + 1);
         m.decrement(x);
@@ -840,55 +869,55 @@ void testIntMap()
         /*
          * Test EmptyValue
          */
-        CIntMap map;
-        CIntMap_Create(&map);
-        CIntMap_SetEmptyValue(&map, -1);
-        TEST(CIntMap_Get(&map, 0) == -1);
-        CIntMap_Destroy(&map);
+        CMBIntMap map;
+        CMBIntMap_Create(&map);
+        CMBIntMap_SetEmptyValue(&map, -1);
+        TEST(CMBIntMap_Get(&map, 0) == -1);
+        CMBIntMap_Destroy(&map);
     }
 
     {
         /*
          * Test Put/Remove
          */
-        CIntMap map;
-        CIntMap_Create(&map);
-        CIntMap_SetEmptyValue(&map, -1);
+        CMBIntMap map;
+        CMBIntMap_Create(&map);
+        CMBIntMap_SetEmptyValue(&map, -1);
 
-        CIntMap_Put(&map,   2, 1);
-        CIntMap_Put(&map,   7, 1);
-        CIntMap_Put(&map,   8, 1);
-        CIntMap_Put(&map,  10, 1);
-        CIntMap_Remove(&map, 8);
+        CMBIntMap_Put(&map,   2, 1);
+        CMBIntMap_Put(&map,   7, 1);
+        CMBIntMap_Put(&map,   8, 1);
+        CMBIntMap_Put(&map,  10, 1);
+        CMBIntMap_Remove(&map, 8);
 
-        CIntMap_Put(&map,  10, 2);
-        CIntMap_Remove(&map, 10);
-        CIntMap_Put(&map,  12, 1);
-        CIntMap_Remove(&map, 12);
-        CIntMap_Put(&map,  18, 1);
-        CIntMap_Remove(&map, 18);
-        CIntMap_Put(&map,  22, 1);
-        CIntMap_Remove(&map, 22);
-        CIntMap_Put(&map,  26, 1);
-        CIntMap_Remove(&map, 26);
-        CIntMap_Put(&map,  29, 1);
-        CIntMap_Remove(&map, 29);
-        CIntMap_Put(&map,  31, 1);
-        CIntMap_Remove(&map, 31);
-        CIntMap_Put(&map,  33, 1);
-        CIntMap_Remove(&map, 33);
-        CIntMap_Put(&map,  36, 1);
-        CIntMap_Remove(&map, 36);
-        CIntMap_Put(&map,  38, 1);
-        CIntMap_Remove(&map, 38);
-        CIntMap_Put(&map,  41, 1);
-        CIntMap_Remove(&map, 41);
-        CIntMap_Put(&map,  43, 1);
-        CIntMap_Remove(&map, 43);
+        CMBIntMap_Put(&map,  10, 2);
+        CMBIntMap_Remove(&map, 10);
+        CMBIntMap_Put(&map,  12, 1);
+        CMBIntMap_Remove(&map, 12);
+        CMBIntMap_Put(&map,  18, 1);
+        CMBIntMap_Remove(&map, 18);
+        CMBIntMap_Put(&map,  22, 1);
+        CMBIntMap_Remove(&map, 22);
+        CMBIntMap_Put(&map,  26, 1);
+        CMBIntMap_Remove(&map, 26);
+        CMBIntMap_Put(&map,  29, 1);
+        CMBIntMap_Remove(&map, 29);
+        CMBIntMap_Put(&map,  31, 1);
+        CMBIntMap_Remove(&map, 31);
+        CMBIntMap_Put(&map,  33, 1);
+        CMBIntMap_Remove(&map, 33);
+        CMBIntMap_Put(&map,  36, 1);
+        CMBIntMap_Remove(&map, 36);
+        CMBIntMap_Put(&map,  38, 1);
+        CMBIntMap_Remove(&map, 38);
+        CMBIntMap_Put(&map,  41, 1);
+        CMBIntMap_Remove(&map, 41);
+        CMBIntMap_Put(&map,  43, 1);
+        CMBIntMap_Remove(&map, 43);
 
-        CIntMap_Put(&map,  45, 1);
+        CMBIntMap_Put(&map,  45, 1);
 
-        CIntMap_Destroy(&map);
+        CMBIntMap_Destroy(&map);
     }
 }
 
