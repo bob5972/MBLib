@@ -247,7 +247,9 @@ MBRegistryLoad(MBRegistry *mreg, const char *filename,
 
 
     file = fopen(filename, "r");
-    VERIFY(file != NULL);
+    if (file == NULL) {
+        PANIC("Failed to open file: %s\n", filename);
+    }
 
     read = getline(&line, &len, file);
 
