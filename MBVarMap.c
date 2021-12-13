@@ -185,8 +185,15 @@ static int CMBVarMapHash(const CMBVarMap *map, MBVar key)
 {
     uint64 ukey = key.all;
     uint64 mix1 = 0x87654321F7345678;
-    uint64 rotKey = (ukey >> 19);
-    uint64 hash = (ukey ^ mix1) ^ rotKey;
+    uint64 rotKey;
+
+    rotKey = ((ukey & 0xFF00FF00FF00FF00) >> 8) +
+             (ukey & 0x00FF00FF00FF00FF);
+    rotKey = (rotKey >> 16) + rotKey;
+    rotKey = (rotKey >> 32) + rotKey;
+
+    uint64 hash = (ukey ^ mix1) + (rotKey ^ (ukey >> 19));
+
     hash &= map->myIndexMask;
     ASSERT(hash < map->mySpace);
     return hash;
