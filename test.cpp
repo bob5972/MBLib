@@ -1251,12 +1251,12 @@ int main(int argc, char *argv[])
 
     BenchmarkTest tests[] = {
             // enabled, weight, function
-            { 1, 9000, testMBString     },
-            { 1, 6000, testMBVector     },
-            { 1, 6000, testCMBVector    },
-            { 1, 800,  testMBStack      },
+            { 1, 900,  testMBString     },
+            { 1, 600,  testMBVector     },
+            { 1, 600,  testCMBVector    },
+            { 1, 400,  testMBStack      },
             { 1, 35,   testMBMap        },
-            { 1, 400,  testIntMap       },
+            { 1, 100,  testIntMap       },
             { 1, 25,   testRandomIntMap },
             { 1, 4,    testMBSet        },
             { 1, 22,   testBitVector    },
