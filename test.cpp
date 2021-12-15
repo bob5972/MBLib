@@ -1075,9 +1075,16 @@ void testMBLock(void)
     MBLock lock;
 
     MBLock_Create(&lock);
-    TEST(!MBLock_IsLocked(&lock));
+
+    if (mb_debug) {
+        TEST(!MBLock_IsLocked(&lock));
+    }
     MBLock_Lock(&lock);
-    TEST(MBLock_IsLocked(&lock));
+
+    if (mb_debug) {
+        TEST(MBLock_IsLocked(&lock));
+    }
+
     MBLock_Unlock(&lock);
     MBLock_Destroy(&lock);
 #endif
