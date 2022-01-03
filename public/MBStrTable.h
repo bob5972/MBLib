@@ -42,6 +42,9 @@ MBStrTable *MBStrTable_Alloc();
 MBStrTable *MBStrTable_AllocChild(MBStrTable *parent);
 void MBStrTable_Free(MBStrTable *st);
 
+void MBStrTable_Reference(MBStrTable *st);
+void MBStrTable_Unreference(MBStrTable *st);
+
 const char *MBStrTable_AddCopy(MBStrTable *st, const char *cstr);
 void MBStrTable_AddFree(MBStrTable *st, const char *cstr);
 

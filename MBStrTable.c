@@ -35,7 +35,7 @@ typedef struct MBStrTable {
 
     uint referenceCount;
     MBStrTable *parent;
-    bool hasChild;
+    bool everHadReference;
     CMBCStrVec strings;
 } MBStrTable;
 
@@ -107,30 +107,60 @@ MBStrTable *MBStrTable_AllocChild(MBStrTable *parent)
 
     ASSERT(parent->magic == ((uintptr_t)parent ^ MBSTRTABLE_MAGIC));
 
-    MBStrTableLock();
-    parent->referenceCount++;
-    parent->hasChild = TRUE;
-    MBStrTableUnlock();
-
+    MBStrTable_Reference(parent);
     return st;
 }
 
-void MBStrTable_Free(MBStrTable *st)
+static void MBStrTableFreeHelper(MBStrTable *st)
 {
     uint i;
-    bool doFree = FALSE;
-    bool freeParent = FALSE;
 
-    if (st == NULL) {
-        return;
-    }
+    ASSERT(st != NULL);
+    ASSERT(st->parent == NULL);
+    ASSERT(st->referenceCount == 0);
 
     DEBUG_ONLY(
         ASSERT(st->magic == ((uintptr_t)st ^ MBSTRTABLE_MAGIC));
         st->magic = 0;
     );
 
-    if (st->hasChild || st->parent != NULL) {
+    for (i = 0; i < CMBCStrVec_Size(&st->strings); i++) {
+        const char *cstr;
+        cstr = CMBCStrVec_GetValue(&st->strings, i);
+        if (cstr != NULL) {
+            free((char *)cstr);
+        }
+    }
+
+    CMBCStrVec_Destroy(&st->strings);
+    free(st);
+}
+
+void MBStrTable_Free(MBStrTable *st)
+{
+    if (st == NULL) {
+        return;
+    }
+
+    MBStrTable_Unreference(st);
+}
+
+void MBStrTable_Reference(MBStrTable *st)
+{
+    MBStrTableLock();
+    st->referenceCount++;
+    st->everHadReference = TRUE;
+    MBStrTableUnlock();
+}
+
+void MBStrTable_Unreference(MBStrTable *st)
+{
+    bool doFree = FALSE;
+    bool freeParent = FALSE;
+
+    ASSERT(st->magic == ((uintptr_t)st ^ MBSTRTABLE_MAGIC));
+
+    if (st->everHadReference || st->parent != NULL) {
         MBStrTableLock();
 
         ASSERT(st->referenceCount > 0);
@@ -140,10 +170,10 @@ void MBStrTable_Free(MBStrTable *st)
             doFree = TRUE;
 
             if (st->parent != NULL) {
-                ASSERT(st->parent->referenceCount > 0);
-                st->parent->referenceCount--;
-
-                if (st->parent->referenceCount == 0) {
+                ASSERT(st->parent->referenceCount >= 1);
+                if (st->parent->referenceCount > 1) {
+                    st->parent->referenceCount--;
+                } else {
                     freeParent = TRUE;
                 }
             }
@@ -151,36 +181,22 @@ void MBStrTable_Free(MBStrTable *st)
         MBStrTableUnlock();
     } else {
         ASSERT(st->parent == NULL);
-        ASSERT(!st->hasChild);
+        ASSERT(!st->everHadReference);
 
         ASSERT(st->referenceCount == 1);
-        st->referenceCount--;
+        st->referenceCount = 0;
+        doFree = TRUE;
     }
 
     if (freeParent) {
-        /*
-         * We now own the parent's threading, so we can do this
-         * unlocked.
-         */
-        MBStrTable_Free(st->parent);
+        ASSERT(doFree);
+        ASSERT(st->parent->referenceCount == 1);
+        MBStrTable_Unreference(st->parent);
         st->parent = NULL;
     }
 
     if (doFree) {
-        for (i = 0; i < CMBCStrVec_Size(&st->strings); i++) {
-            const char *cstr;
-            cstr = CMBCStrVec_GetValue(&st->strings, i);
-            if (cstr != NULL) {
-                free((char *)cstr);
-            }
-        }
-
-        CMBCStrVec_Destroy(&st->strings);
-        free(st);
-    } else {
-        /*
-         * Do nothing.  Let the children free this.
-         */
+        MBStrTableFreeHelper(st);
     }
 }
 

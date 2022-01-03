@@ -40,6 +40,7 @@ typedef struct MBRegistry {
     );
     CMBVector data;
     MBStrTable *backingTable;
+    bool ownTable;
 } MBRegistry;
 
 
@@ -61,6 +62,7 @@ MBRegistry *MBRegistry_Alloc()
     );
     CMBVector_CreateEmpty(&mreg->data, sizeof(MBRegistryNode));
     mreg->backingTable = NULL;
+    mreg->ownTable = FALSE;
     return mreg;
 }
 
@@ -76,7 +78,13 @@ MBRegistry *MBRegistry_AllocCopy(MBRegistry *toCopy)
     ASSERT(toCopy->magic == ((uintptr_t)toCopy ^ MBREGISTRY_MAGIC));
 
     CMBVector_Copy(&mreg->data, &toCopy->data);
-    mreg->backingTable = MBStrTable_AllocChild(toCopy->backingTable);
+
+    if (toCopy->backingTable != NULL) {
+        MBStrTable_Reference(mreg->backingTable);
+        mreg->backingTable = toCopy->backingTable;
+        ASSERT(!mreg->ownTable);
+    }
+
     return mreg;
 }
 
@@ -92,7 +100,13 @@ void MBRegistry_Free(MBRegistry *mreg)
     );
 
     CMBVector_Destroy(&mreg->data);
-    MBStrTable_Free(mreg->backingTable);
+
+    if (mreg->ownTable) {
+        MBStrTable_Free(mreg->backingTable);
+    } else if (mreg->backingTable != NULL) {
+        MBStrTable_Unreference(mreg->backingTable);
+    }
+
     free(mreg);
 }
 
@@ -184,7 +198,6 @@ const char *MBRegistry_Remove(MBRegistry *mreg, const char *key)
     return NULL;
 }
 
-
 void MBRegistry_MakeEmpty(MBRegistry *mreg)
 {
     ASSERT(mreg != NULL);
@@ -193,8 +206,19 @@ void MBRegistry_MakeEmpty(MBRegistry *mreg)
 
 static void MBRegistryAllocTable(MBRegistry *mreg)
 {
+    /*
+     * We defer the creation of our own table until first use.
+     * It's safe to interact with the parent table because the MBStrTable
+     * reference counts only use global locks.
+     */
     if (mreg->backingTable == NULL) {
         mreg->backingTable = MBStrTable_Alloc();
+        mreg->ownTable = TRUE;
+    } else if (!mreg->ownTable) {
+        MBStrTable *parent = mreg->backingTable;
+        mreg->backingTable = MBStrTable_AllocChild(parent);
+        MBStrTable_Unreference(parent);
+        mreg->ownTable = TRUE;
     }
 }
 
