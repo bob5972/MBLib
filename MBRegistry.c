@@ -80,7 +80,7 @@ MBRegistry *MBRegistry_AllocCopy(MBRegistry *toCopy)
     CMBVector_Copy(&mreg->data, &toCopy->data);
 
     if (toCopy->backingTable != NULL) {
-        MBStrTable_Reference(mreg->backingTable);
+        MBStrTable_Reference(toCopy->backingTable);
         mreg->backingTable = toCopy->backingTable;
         ASSERT(!mreg->ownTable);
     }
