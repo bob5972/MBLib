@@ -30,6 +30,7 @@
 #include "MBRegistry.h"
 #include "MBVector.h"
 #include "MBString.h"
+#include "MBStrTable.h"
 
 #define MBREGISTRY_MAGIC 0x8255349905402963
 
@@ -38,17 +39,19 @@ typedef struct MBRegistry {
         uint64 magic;
     );
     CMBVector data;
-    CMBVector freeList;
+    MBStrTable *backingTable;
 } MBRegistry;
 
 
 typedef struct MBRegistryNode {
     const char *key;
     const char *value;
+    bool constKey;
+    bool constValue;
 } MBRegistryNode;
 
-static void MBRegistryAddToFreeList(MBRegistry *mreg, char *s);
-static const char *MBRegistryDupToFreeList(MBRegistry *mreg, const char *s);
+static void MBRegistryAddToTable(MBRegistry *mreg, char *s);
+static const char *MBRegistryDupToTable(MBRegistry *mreg, const char *s);
 
 
 MBRegistry *MBRegistry_Alloc()
@@ -59,7 +62,7 @@ MBRegistry *MBRegistry_Alloc()
         mreg->magic = ((uintptr_t)mreg) ^ MBREGISTRY_MAGIC;
     );
     CMBVector_CreateEmpty(&mreg->data, sizeof(MBRegistryNode));
-    CMBVector_CreateEmpty(&mreg->freeList, sizeof(char *));
+    mreg->backingTable = MBStrTable_Alloc();
     return mreg;
 }
 MBRegistry *MBRegistry_AllocCopy(MBRegistry *toCopy)
@@ -73,25 +76,16 @@ MBRegistry *MBRegistry_AllocCopy(MBRegistry *toCopy)
     ASSERT(mreg->magic == ((uintptr_t)mreg ^ MBREGISTRY_MAGIC));
     ASSERT(toCopy->magic == ((uintptr_t)toCopy ^ MBREGISTRY_MAGIC));
 
-    CMBVector_Copy(&mreg->data, &toCopy->data);
-
+    CMBVector_EnsureCapacity(&mreg->data, CMBVector_Size(&toCopy->data));
     uint ksize = CMBVector_Size(&mreg->data);
-    uint fsize = CMBVector_Size(&toCopy->freeList);
-    CMBVector_Resize(&mreg->freeList, fsize);
-    for (uint i = 0; i < fsize; i++) {
-        char **p = CMBVector_GetPtr(&toCopy->freeList, i);
-        char *s = strdup(*p);
-        char **n = CMBVector_GetPtr(&mreg->freeList, i);
-        *n = s;
 
-        for (uint x = 0; x < ksize; x++) {
-            MBRegistryNode *node = CMBVector_GetPtr(&mreg->data, x);
-            if (node->key == *p) {
-                node->key = s;
-            }
-            if (node->value == *p) {
-                node->value = s;
-            }
+    for (uint i = 0; i < ksize; i++) {
+        MBRegistryNode *node = CMBVector_GetPtr(&toCopy->data, i);
+
+        if (node->constKey && node->constValue) {
+            MBRegistry_PutConst(mreg, node->key, node->value);
+        } else {
+            MBRegistry_PutCopy(mreg, node->key, node->value);
         }
     }
 
@@ -104,23 +98,13 @@ void MBRegistry_Free(MBRegistry *mreg)
         return;
     }
 
-
     DEBUG_ONLY(
         ASSERT(mreg->magic == ((uintptr_t)mreg ^ MBREGISTRY_MAGIC));
         mreg->magic = 0;
     );
 
     CMBVector_Destroy(&mreg->data);
-
-    uint fsize = CMBVector_Size(&mreg->freeList);
-    for (uint i = 0; i < fsize; i++) {
-        char *s;
-        char **p = CMBVector_GetPtr(&mreg->freeList, i);
-        s = *p;
-        free(s);
-    }
-
-    CMBVector_Destroy(&mreg->freeList);
+    MBStrTable_Free(mreg->backingTable);
     free(mreg);
 }
 
@@ -150,11 +134,9 @@ const char *MBRegistry_Get(MBRegistry *mreg, const char *key)
     return NULL;
 }
 
-/*
- * Assumes the supplied strings are constants, and the caller won't
- * change them.
- */
-void MBRegistry_PutConst(MBRegistry *mreg, const char *key, const char *value)
+static void MBRegistryPutHelper(MBRegistry *mreg,
+                                const char *key, bool constKey,
+                                const char *value, bool constValue)
 {
     MBRegistryNode *n;
     ASSERT(mreg != NULL);
@@ -163,6 +145,7 @@ void MBRegistry_PutConst(MBRegistry *mreg, const char *key, const char *value)
         n = CMBVector_GetPtr(&mreg->data, i);
         if (strcmp(n->key, key) == 0) {
             n->value = value;
+            n->constValue = constValue;
             return;
         }
     }
@@ -171,6 +154,17 @@ void MBRegistry_PutConst(MBRegistry *mreg, const char *key, const char *value)
     n = CMBVector_GetLastPtr(&mreg->data);
     n->key = key;
     n->value = value;
+    n->constKey = constKey;
+    n->constValue = constValue;
+}
+
+/*
+ * Assumes the supplied strings are constants, and the caller won't
+ * change them.
+ */
+void MBRegistry_PutConst(MBRegistry *mreg, const char *key, const char *value)
+{
+    MBRegistryPutHelper(mreg, key, TRUE, value, TRUE);
 }
 
 /*
@@ -178,10 +172,10 @@ void MBRegistry_PutConst(MBRegistry *mreg, const char *key, const char *value)
  */
 void MBRegistry_PutCopy(MBRegistry *mreg, const char *key, const char *value)
 {
-    const char *newKey = MBRegistryDupToFreeList(mreg, key);
-    const char *newValue = MBRegistryDupToFreeList(mreg, value);
+    const char *newKey = MBRegistryDupToTable(mreg, key);
+    const char *newValue = MBRegistryDupToTable(mreg, value);
 
-    MBRegistry_PutConst(mreg, newKey, newValue);
+    MBRegistryPutHelper(mreg, newKey, FALSE, newValue, FALSE);
 }
 
 const char *MBRegistry_Remove(MBRegistry *mreg, const char *key)
@@ -212,20 +206,14 @@ void MBRegistry_MakeEmpty(MBRegistry *mreg)
     CMBVector_MakeEmpty(&mreg->data);
 }
 
-static void MBRegistryAddToFreeList(MBRegistry *mreg, char *s)
+static void MBRegistryAddToTable(MBRegistry *mreg, char *s)
 {
-    char **p;
-    CMBVector_Grow(&mreg->freeList);
-    p = CMBVector_GetLastPtr(&mreg->freeList);
-    *p = s;
+    MBStrTable_Add(mreg->backingTable, s);
 }
 
-static const char *MBRegistryDupToFreeList(MBRegistry *mreg, const char *s)
+static const char *MBRegistryDupToTable(MBRegistry *mreg, const char *s)
 {
-    char *newS = strdup(s);
-    ASSERT(newS != NULL);
-    MBRegistryAddToFreeList(mreg, newS);
-    return newS;
+    return MBStrTable_AddCopy(mreg->backingTable, s);
 }
 
 static void
@@ -292,8 +280,8 @@ MBRegistryLoad(MBRegistry *mreg, const char *filename,
         char *ckey = MBString_DupCStr(&key);
         char *cvalue = MBString_DupCStr(&value);
 
-        MBRegistryAddToFreeList(mreg, ckey);
-        MBRegistryAddToFreeList(mreg, cvalue);
+        MBRegistryAddToTable(mreg, ckey);
+        MBRegistryAddToTable(mreg, cvalue);
 
         if (subset) {
             ASSERT(MBRegistry_ContainsKey(mreg, ckey));

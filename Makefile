@@ -53,6 +53,7 @@ C_SOURCES = BitVector.c \
             MBOpt.c \
             MBRegistry.c \
             MBString.c \
+            MBStrTable.c \
             MBVector.c \
             MBRing.c \
             MBCompare.c \

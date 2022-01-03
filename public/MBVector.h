@@ -329,6 +329,25 @@ static INLINE void CMBVector_Sort(CMBVector *v, const CMBComparator *comp)
 DECLARE_CMBVECTOR_TYPE(int, CMBIntVec);
 DECLARE_CMBVECTOR_TYPE(void *, CMBPtrVec);
 DECLARE_CMBVECTOR_TYPE(MBVar, CMBVarVec);
+DECLARE_CMBVECTOR_TYPE(const char *, CMBCStrVec);
+
+static INLINE int
+CMBIntVec_DecrementValue(CMBIntVec *vec, int index)
+{
+    int v = CMBIntVec_GetValue(vec, index);
+    v--;
+    CMBIntVec_PutValue(vec, index, v);
+    return v;
+}
+
+static INLINE int
+CMBIntVec_IncrementValue(CMBIntVec *vec, int index)
+{
+    int v = CMBIntVec_GetValue(vec, index);
+    v++;
+    CMBIntVec_PutValue(vec, index, v);
+    return v;
+}
 
 #ifdef __cplusplus
     }
