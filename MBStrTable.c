@@ -26,7 +26,13 @@
 #include "MBStrTable.h"
 #include "MBLock.h"
 
+#define MBSTRTABLE_MAGIC 0x1874919423812155
+
 typedef struct MBStrTable {
+    DEBUG_ONLY(
+        uint64 magic;
+    );
+
     uint referenceCount;
     MBStrTable *parent;
     bool hasChild;
@@ -81,6 +87,11 @@ MBStrTable *MBStrTable_Alloc()
     st = MBUtil_ZAlloc(sizeof(*st));
     CMBCStrVec_Create(&st->strings, 0, 16);
     st->referenceCount = 1;
+
+    DEBUG_ONLY(
+        st->magic = ((uintptr_t)st) ^ MBSTRTABLE_MAGIC;
+    );
+
     return st;
 }
 
@@ -88,6 +99,8 @@ MBStrTable *MBStrTable_AllocChild(MBStrTable *parent)
 {
     MBStrTable *st = MBStrTable_Alloc();
     st->parent = parent;
+
+    ASSERT(parent->magic == ((uintptr_t)parent ^ MBSTRTABLE_MAGIC));
 
     MBStrTableLock();
     parent->referenceCount++;
@@ -104,6 +117,11 @@ void MBStrTable_Free(MBStrTable *st)
     bool freeParent = FALSE;
 
     ASSERT(st != NULL);
+
+    DEBUG_ONLY(
+        ASSERT(st->magic == ((uintptr_t)st ^ MBSTRTABLE_MAGIC));
+        st->magic = 0;
+    );
 
     if (st->hasChild || st->parent != NULL) {
         MBStrTableLock();

@@ -54,7 +54,7 @@ static const char *MBRegistryDupToTable(MBRegistry *mreg, const char *s);
 
 MBRegistry *MBRegistry_Alloc()
 {
-    MBRegistry *mreg = malloc(sizeof(*mreg));
+    MBRegistry *mreg = MBUtil_ZAlloc(sizeof(*mreg));
     ASSERT(mreg != NULL);
     DEBUG_ONLY(
         mreg->magic = ((uintptr_t)mreg) ^ MBREGISTRY_MAGIC;
