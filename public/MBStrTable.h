@@ -39,7 +39,7 @@ MBStrTable *MBStrTable_Alloc();
 void MBStrTable_Free(MBStrTable *st);
 
 const char *MBStrTable_AddCopy(MBStrTable *st, const char *cstr);
-void MBStrTable_Add(MBStrTable *st, const char *cstr);
+void MBStrTable_AddFree(MBStrTable *st, const char *cstr);
 
 #ifdef __cplusplus
     }

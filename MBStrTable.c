@@ -64,7 +64,7 @@ const char *MBStrTable_AddCopy(MBStrTable *st, const char *cstr)
      * XXX: Could use hashes to check if the string was already here?
      */
     const char *newCStr = strdup(cstr);
-    MBStrTable_Add(st, newCStr);
+    MBStrTable_AddFree(st, newCStr);
     return newCStr;
 }
 
@@ -72,7 +72,7 @@ const char *MBStrTable_AddCopy(MBStrTable *st, const char *cstr)
  * Adds the provided string to this table.  It will free it when
  * the table is freed.
  */
-void MBStrTable_Add(MBStrTable *st, const char *cstr)
+void MBStrTable_AddFree(MBStrTable *st, const char *cstr)
 {
     ASSERT(st != NULL);
     ASSERT(cstr != NULL);

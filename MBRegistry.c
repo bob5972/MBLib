@@ -65,6 +65,7 @@ MBRegistry *MBRegistry_Alloc()
     mreg->backingTable = MBStrTable_Alloc();
     return mreg;
 }
+
 MBRegistry *MBRegistry_AllocCopy(MBRegistry *toCopy)
 {
     MBRegistry *mreg = MBRegistry_Alloc();
@@ -208,7 +209,7 @@ void MBRegistry_MakeEmpty(MBRegistry *mreg)
 
 static void MBRegistryAddToTable(MBRegistry *mreg, char *s)
 {
-    MBStrTable_Add(mreg->backingTable, s);
+    MBStrTable_AddFree(mreg->backingTable, s);
 }
 
 static const char *MBRegistryDupToTable(MBRegistry *mreg, const char *s)
