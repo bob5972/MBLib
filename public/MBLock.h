@@ -26,17 +26,56 @@
 #ifndef _MBLOCK_H_20211110
 #define _MBLOCK_H_20211110
 
-#ifndef MB_HAS_SDL2
-#error MBLock.h requires SDL2
-#endif
-
-#include <SDL2/SDL_mutex.h>
-#include <SDL2/SDL_thread.h>
-
 #include "MBBasic.h"
 #include "MBAssert.h"
 
 #define MB_THREAD_ID_INVALID 0
+
+#ifndef MB_HAS_SDL2
+
+#define mb_lock 0
+
+typedef struct MBLock {
+    uint8 pad;
+} MBLock;
+
+static INLINE void
+MBLock_Create(MBLock *lock)
+{
+    NOT_IMPLEMENTED();
+}
+
+static INLINE
+void MBLock_Destroy(MBLock *lock)
+{
+    NOT_IMPLEMENTED();
+}
+
+static INLINE bool
+MBLock_IsLocked(MBLock *lock)
+{
+    NOT_IMPLEMENTED();
+}
+
+static INLINE void
+MBLock_Lock(MBLock *lock)
+{
+    NOT_IMPLEMENTED();
+}
+
+static INLINE void
+MBLock_Unlock(MBLock *lock)
+{
+    NOT_IMPLEMENTED();
+}
+
+#else // MB_HAS_SDL2
+
+#define MB_HAS_MBLOCK
+#define mb_lock 1
+
+#include <SDL2/SDL_mutex.h>
+#include <SDL2/SDL_thread.h>
 
 typedef struct MBLock {
     SDL_mutex *sdlMutex;
@@ -114,5 +153,7 @@ MBLock_Unlock(MBLock *lock)
     int ret = SDL_UnlockMutex(lock->sdlMutex);
     ASSERT(ret == 0);
 }
+
+#endif // MB_HAS_SDL2
 
 #endif // _MBLOCK_H_20211110

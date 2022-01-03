@@ -46,8 +46,6 @@ typedef struct MBRegistry {
 typedef struct MBRegistryNode {
     const char *key;
     const char *value;
-    bool constKey;
-    bool constValue;
 } MBRegistryNode;
 
 static void MBRegistryAddToTable(MBRegistry *mreg, char *s);
@@ -77,19 +75,8 @@ MBRegistry *MBRegistry_AllocCopy(MBRegistry *toCopy)
     ASSERT(mreg->magic == ((uintptr_t)mreg ^ MBREGISTRY_MAGIC));
     ASSERT(toCopy->magic == ((uintptr_t)toCopy ^ MBREGISTRY_MAGIC));
 
-    CMBVector_EnsureCapacity(&mreg->data, CMBVector_Size(&toCopy->data));
-    uint ksize = CMBVector_Size(&mreg->data);
-
-    for (uint i = 0; i < ksize; i++) {
-        MBRegistryNode *node = CMBVector_GetPtr(&toCopy->data, i);
-
-        if (node->constKey && node->constValue) {
-            MBRegistry_PutConst(mreg, node->key, node->value);
-        } else {
-            MBRegistry_PutCopy(mreg, node->key, node->value);
-        }
-    }
-
+    CMBVector_Copy(&mreg->data, &toCopy->data);
+    mreg->backingTable = MBStrTable_AllocChild(toCopy->backingTable);
     return mreg;
 }
 
@@ -146,7 +133,6 @@ static void MBRegistryPutHelper(MBRegistry *mreg,
         n = CMBVector_GetPtr(&mreg->data, i);
         if (strcmp(n->key, key) == 0) {
             n->value = value;
-            n->constValue = constValue;
             return;
         }
     }
@@ -155,8 +141,6 @@ static void MBRegistryPutHelper(MBRegistry *mreg,
     n = CMBVector_GetLastPtr(&mreg->data);
     n->key = key;
     n->value = value;
-    n->constKey = constKey;
-    n->constValue = constValue;
 }
 
 /*

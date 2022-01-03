@@ -48,6 +48,7 @@
 #include "MBQueue.hpp"
 #include "IntMap.hpp"
 #include "MBRing.h"
+#include "MBStrTable.h"
 
 static int seed;
 
@@ -1248,6 +1249,8 @@ int main(int argc, char *argv[])
 #ifdef MB_HAS_SDL2
     SDL_Init(0);
 #endif
+
+    MBStrTable_Init();
 
     BenchmarkTest tests[] = {
             // enabled, weight, function

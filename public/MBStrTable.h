@@ -35,7 +35,11 @@
 struct MBStrTable;
 typedef struct MBStrTable MBStrTable;
 
+void MBStrTable_Init();
+void MBStrTable_Exit();
+
 MBStrTable *MBStrTable_Alloc();
+MBStrTable *MBStrTable_AllocChild(MBStrTable *parent);
 void MBStrTable_Free(MBStrTable *st);
 
 const char *MBStrTable_AddCopy(MBStrTable *st, const char *cstr);

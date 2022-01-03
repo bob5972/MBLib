@@ -24,35 +24,139 @@
  */
 
 #include "MBStrTable.h"
+#include "MBLock.h"
 
 typedef struct MBStrTable {
+    uint referenceCount;
+    MBStrTable *parent;
+    bool hasChild;
     CMBCStrVec strings;
 } MBStrTable;
+
+struct {
+    MBLock lock;
+    bool lockInitialized;
+} gMBStrTableData;
+
+void MBStrTable_Init()
+{
+    if (!mb_lock) {
+        ASSERT(!gMBStrTableData.lockInitialized);
+    } else {
+        MBLock_Create(&gMBStrTableData.lock);
+        gMBStrTableData.lockInitialized = TRUE;
+    }
+}
+
+void MBStrTable_Exit()
+{
+    if (!mb_lock) {
+        ASSERT(!gMBStrTableData.lockInitialized);
+    } else {
+        ASSERT(gMBStrTableData.lockInitialized);
+        MBLock_Destroy(&gMBStrTableData.lock);
+        gMBStrTableData.lockInitialized = FALSE;
+    }
+}
+
+static void MBStrTableLock()
+{
+    if (mb_lock) {
+        ASSERT(gMBStrTableData.lockInitialized);
+        MBLock_Lock(&gMBStrTableData.lock);
+    }
+}
+
+static void MBStrTableUnlock()
+{
+    if (mb_lock) {
+        ASSERT(gMBStrTableData.lockInitialized);
+        MBLock_Unlock(&gMBStrTableData.lock);
+    }
+}
 
 MBStrTable *MBStrTable_Alloc()
 {
     MBStrTable *st;
-    st = malloc(sizeof(*st));
+    st = MBUtil_ZAlloc(sizeof(*st));
     CMBCStrVec_Create(&st->strings, 0, 16);
+    st->referenceCount = 1;
+    return st;
+}
+
+MBStrTable *MBStrTable_AllocChild(MBStrTable *parent)
+{
+    MBStrTable *st = MBStrTable_Alloc();
+    st->parent = parent;
+
+    MBStrTableLock();
+    parent->referenceCount++;
+    parent->hasChild = TRUE;
+    MBStrTableUnlock();
+
     return st;
 }
 
 void MBStrTable_Free(MBStrTable *st)
 {
     uint i;
+    bool doFree = FALSE;
+    bool freeParent = FALSE;
 
     ASSERT(st != NULL);
 
-    for (i = 0; i < CMBCStrVec_Size(&st->strings); i++) {
-        const char *cstr;
-        cstr = CMBCStrVec_GetValue(&st->strings, i);
-        if (cstr != NULL) {
-            free((char *)cstr);
+    if (st->hasChild || st->parent != NULL) {
+        MBStrTableLock();
+
+        ASSERT(st->referenceCount > 0);
+        st->referenceCount--;
+
+        if (st->referenceCount == 0) {
+            doFree = TRUE;
+
+            if (st->parent != NULL) {
+                ASSERT(st->parent->referenceCount > 0);
+                st->parent->referenceCount--;
+
+                if (st->parent->referenceCount == 0) {
+                    freeParent = TRUE;
+                }
+            }
         }
+        MBStrTableUnlock();
+    } else {
+        ASSERT(st->parent == NULL);
+        ASSERT(!st->hasChild);
+
+        ASSERT(st->referenceCount == 1);
+        st->referenceCount--;
     }
 
-    CMBCStrVec_Destroy(&st->strings);
-    free(st);
+    if (freeParent) {
+        /*
+         * We now own the parent's threading, so we can do this
+         * unlocked.
+         */
+        MBStrTable_Free(st->parent);
+        st->parent = NULL;
+    }
+
+    if (doFree) {
+        for (i = 0; i < CMBCStrVec_Size(&st->strings); i++) {
+            const char *cstr;
+            cstr = CMBCStrVec_GetValue(&st->strings, i);
+            if (cstr != NULL) {
+                free((char *)cstr);
+            }
+        }
+
+        CMBCStrVec_Destroy(&st->strings);
+        free(st);
+    } else {
+        /*
+         * Do nothing.  Let the children free this.
+         */
+    }
 }
 
 const char *MBStrTable_AddCopy(MBStrTable *st, const char *cstr)
