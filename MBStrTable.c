@@ -85,7 +85,7 @@ MBStrTable *MBStrTable_Alloc()
 {
     MBStrTable *st;
     st = MBUtil_ZAlloc(sizeof(*st));
-    CMBCStrVec_Create(&st->strings, 0, 16);
+    CMBCStrVec_CreateEmpty(&st->strings);
     st->referenceCount = 1;
 
     DEBUG_ONLY(
@@ -97,7 +97,12 @@ MBStrTable *MBStrTable_Alloc()
 
 MBStrTable *MBStrTable_AllocChild(MBStrTable *parent)
 {
+    if (parent == NULL) {
+        return NULL;
+    }
+
     MBStrTable *st = MBStrTable_Alloc();
+
     st->parent = parent;
 
     ASSERT(parent->magic == ((uintptr_t)parent ^ MBSTRTABLE_MAGIC));
@@ -116,7 +121,9 @@ void MBStrTable_Free(MBStrTable *st)
     bool doFree = FALSE;
     bool freeParent = FALSE;
 
-    ASSERT(st != NULL);
+    if (st == NULL) {
+        return;
+    }
 
     DEBUG_ONLY(
         ASSERT(st->magic == ((uintptr_t)st ^ MBSTRTABLE_MAGIC));

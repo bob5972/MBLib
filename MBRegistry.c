@@ -60,7 +60,7 @@ MBRegistry *MBRegistry_Alloc()
         mreg->magic = ((uintptr_t)mreg) ^ MBREGISTRY_MAGIC;
     );
     CMBVector_CreateEmpty(&mreg->data, sizeof(MBRegistryNode));
-    mreg->backingTable = MBStrTable_Alloc();
+    mreg->backingTable = NULL;
     return mreg;
 }
 
@@ -191,13 +191,22 @@ void MBRegistry_MakeEmpty(MBRegistry *mreg)
     CMBVector_MakeEmpty(&mreg->data);
 }
 
+static void MBRegistryAllocTable(MBRegistry *mreg)
+{
+    if (mreg->backingTable == NULL) {
+        mreg->backingTable = MBStrTable_Alloc();
+    }
+}
+
 static void MBRegistryAddToTable(MBRegistry *mreg, char *s)
 {
+    MBRegistryAllocTable(mreg);
     MBStrTable_AddFree(mreg->backingTable, s);
 }
 
 static const char *MBRegistryDupToTable(MBRegistry *mreg, const char *s)
 {
+    MBRegistryAllocTable(mreg);
     return MBStrTable_AddCopy(mreg->backingTable, s);
 }
 
