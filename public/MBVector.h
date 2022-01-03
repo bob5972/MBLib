@@ -62,7 +62,12 @@ static INLINE void CMBVector_Create(CMBVector *vector, int itemSize,
     vector->capacity = capacity;
     vector->itemSize = itemSize;
     vector->pinCount = 0;
-    vector->items = malloc(itemSize * vector->capacity);
+
+    if (capacity > 0) {
+        vector->items = malloc(itemSize * vector->capacity);
+    } else {
+        vector->items = NULL;
+    }
 }
 
 static INLINE void CMBVector_CreateEmpty(CMBVector *vector, int itemSize)
