@@ -147,6 +147,13 @@ void MBStrTable_Free(MBStrTable *st)
 
 void MBStrTable_Reference(MBStrTable *st)
 {
+    /*
+     * Callers probably shouldn't be using this without the
+     * locking system initialized.
+     */
+    VERIFY(mb_lock);
+    ASSERT(gMBStrTableData.lockInitialized);
+
     MBStrTableLock();
     st->referenceCount++;
     st->everHadReference = TRUE;
