@@ -50,8 +50,12 @@ typedef enum BitVectorWriteType {
     BITVECTOR_WRITE_FLIP,
 } BitVectorWriteType;
 
-void BitVector_Create(BitVector *b);
 void BitVector_CreateWithSize(BitVector *b, int size);
+static INLINE void BitVector_Create(BitVector *b)
+{
+    BitVector_CreateWithSize(b, 0);
+}
+
 void BitVector_Destroy(BitVector *b);
 void BitVector_Copy(BitVector *dest, const BitVector *src);
 

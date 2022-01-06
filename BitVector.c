@@ -31,8 +31,9 @@
 #include "MBAssert.h"
 #include "MBUtil.h"
 
-static void BitVectorCreateHelper(BitVector *b, int size)
+void BitVector_CreateWithSize(BitVector *b, int size)
 {
+	ASSERT(size >= 0);
 	ASSERT(b != NULL);
 	ASSERT(sizeof(b->bits[0]) * 8 == BVUNITBITS);
 
@@ -40,20 +41,12 @@ static void BitVectorCreateHelper(BitVector *b, int size)
 	b->arrSize = 1 + (size / BVUNITBITS);
 	b->fill = FALSE;
 	b->bits = malloc(b->arrSize * sizeof(b->bits[0]));
-}
 
-void BitVector_Create(BitVector *b)
-{
-	BitVectorCreateHelper(b, 64);
-}
-
-void BitVector_CreateWithSize(BitVector *b, int size)
-{
-	ASSERT(size >= 0);
-	BitVectorCreateHelper(b, size);
 	b->size = size;
-	ASSERT(!b->fill);
-	BitVector_ResetRange(b, 0, b->size - 1);
+
+	if (size > 0) {
+		BitVector_ResetRange(b, 0, b->size - 1);
+	}
 }
 
 void BitVector_Destroy(BitVector *b)
