@@ -36,8 +36,7 @@
 typedef struct CMBVarMap {
     CMBVarVec myKeys;
     CMBVarVec myValues;
-    CBitVector myActiveFlags;
-    CBitVector myFullFlags;
+    CBitVector myFlags;
 
     int mySize;
     int mySpace;
@@ -73,7 +72,33 @@ bool CMBVarMap_Remove(CMBVarMap *map, MBVar key);
 void CMBVarMap_InsertAll(CMBVarMap *dest, const CMBVarMap *src);
 void CMBVarMap_DebugDump(const CMBVarMap *map);
 
-static INLINE void CMBVarMapIterator_Start(CMBVarMapIterator *it, CMBVarMap *map)
+static INLINE bool CMBVarMapGetFullFlag(const CMBVarMap *map, int x)
+{
+    return BitVector_Get(&map->myFlags, x * 2 + 0);
+}
+
+static INLINE void CMBVarMapSetFullFlag(CMBVarMap *map, int x)
+{
+    BitVector_Set(&map->myFlags, x * 2 + 0);
+}
+
+static INLINE bool CMBVarMapGetActiveFlag(const CMBVarMap *map, int x)
+{
+    return BitVector_Get(&map->myFlags, x * 2 + 1);
+}
+
+static INLINE void CMBVarMapResetActiveFlag(CMBVarMap *map, int x)
+{
+    BitVector_Reset(&map->myFlags, x * 2 + 1);
+}
+
+static INLINE void CMBVarMapSetActiveFlag(CMBVarMap *map, int x)
+{
+    BitVector_Set(&map->myFlags, x * 2 + 1);
+}
+
+static INLINE void CMBVarMapIterator_Start(CMBVarMapIterator *it,
+                                           CMBVarMap *map)
 {
     it->index = 0;
     it->used = 0;
@@ -91,7 +116,7 @@ static INLINE MBVar CMBVarMapIterator_GetNext(CMBVarMapIterator *it)
     ASSERT(CMBVarMapIterator_HasNext(it));
     ASSERT(it->index < it->map->mySpace);
 
-    while (!BitVector_Get(&it->map->myActiveFlags, it->index)) {
+    while (!CMBVarMapGetActiveFlag(it->map, it->index)) {
         it->index++;
         ASSERT(it->index < it->map->mySpace);
     }

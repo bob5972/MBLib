@@ -42,10 +42,8 @@ void CMBVarMap_Create(CMBVarMap *map)
     CMBVarVec_CreateWithSize(&map->myKeys, DEFAULT_SPACE);
     CMBVarVec_CreateWithSize(&map->myValues, DEFAULT_SPACE);
 
-    BitVector_CreateWithSize(&map->myActiveFlags, DEFAULT_SPACE);
-    ASSERT(BitVector_GetFillValue(&map->myActiveFlags) == FALSE);
-    BitVector_CreateWithSize(&map->myFullFlags, DEFAULT_SPACE);
-    ASSERT(BitVector_GetFillValue(&map->myFullFlags) == FALSE);
+    BitVector_CreateWithSize(&map->myFlags, DEFAULT_SPACE * 2);
+    ASSERT(BitVector_GetFillValue(&map->myFlags) == FALSE);
 
     map->mySize = 0;
     map->mySpace = DEFAULT_SPACE;
@@ -64,8 +62,7 @@ void CMBVarMap_Destroy(CMBVarMap *map)
 {
     CMBVarVec_Destroy(&map->myKeys);
     CMBVarVec_Destroy(&map->myValues);
-    BitVector_Destroy(&map->myActiveFlags);
-    BitVector_Destroy(&map->myFullFlags);
+    BitVector_Destroy(&map->myFlags);
 }
 
 void CMBVarMap_SetEmptyValue(CMBVarMap *map, MBVar emptyValue)
@@ -75,8 +72,7 @@ void CMBVarMap_SetEmptyValue(CMBVarMap *map, MBVar emptyValue)
 
 void CMBVarMap_MakeEmpty(CMBVarMap *map)
 {
-    BitVector_ResetAll(&map->myFullFlags);
-    BitVector_ResetAll(&map->myActiveFlags);
+    BitVector_ResetAll(&map->myFlags);
     map->mySize = 0;
     map->myFullSpace = 0;
     map->myFreeSpace = map->mySpace;
@@ -123,7 +119,7 @@ int CMBVarMap_IncrementByInt32(CMBVarMap *map, MBVar key, int amount)
     MBVar *value;
     int i = CMBVarMapGetInsertionIndex(map, key);
 
-    if (i == -1 || !BitVector_Get(&map->myActiveFlags, i)) {
+    if (i == -1 || !CMBVarMapGetActiveFlag(map, i)) {
         CMBVarMapPutHelper(map, i, key, map->myEmptyValue);
         i = CMBVarMapGetInsertionIndex(map, key);
     }
@@ -154,11 +150,11 @@ bool CMBVarMap_Remove(CMBVarMap *map, MBVar key)
         return FALSE;
     }
 
-    ASSERT(BitVector_Get(&map->myActiveFlags, i));
-    ASSERT(BitVector_Get(&map->myFullFlags, i));
+    ASSERT(CMBVarMapGetActiveFlag(map, i));
+    ASSERT(CMBVarMapGetFullFlag(map, i));
     ASSERT(CMBVarVec_GetValue(&map->myKeys, i).all == key.all);
 
-    BitVector_Reset(&map->myActiveFlags, i);
+    CMBVarMapResetActiveFlag(map, i);
     map->mySize--;
     map->myFreeSpace++;
     return TRUE;
@@ -172,7 +168,7 @@ void CMBVarMap_InsertAll(CMBVarMap *dest, const CMBVarMap *src)
     while (count < src->mySize) {
         ASSERT(i < src->mySpace);
 
-        if (BitVector_Get(&src->myActiveFlags, i)) {
+        if (CMBVarMapGetActiveFlag(src, i)) {
             CMBVarMap_Put(dest, CMBVarVec_GetValue(&src->myKeys, i),
                        CMBVarVec_GetValue(&src->myValues, i));
             count++;
@@ -217,10 +213,10 @@ static int CMBVarMapFindHelper(const CMBVarMap *map, MBVar key, bool useInsertio
 
     for (i = 0; i < mySpace; i++) {
         ASSERT(x < map->mySpace);
-        if (!BitVector_Get(&map->myFullFlags, x)) {
+        if (!CMBVarMapGetFullFlag(map, x)) {
             return useInsertion ? x : -1;
         } else if (CMBVarVec_GetValue(&map->myKeys, x).all == key.all &&
-                   (useInsertion || BitVector_Get(&map->myActiveFlags, x))) {
+                   (useInsertion || CMBVarMapGetActiveFlag(map, x))) {
             return x;
         }
 
@@ -273,29 +269,29 @@ static void CMBVarMapPutHelper(CMBVarMap *map, int index, MBVar key, MBVar value
 
     ASSERT(index >= 0);
     ASSERT(index < map->mySpace);
-    ASSERT(!BitVector_Get(&map->myActiveFlags, index) ||
+    ASSERT(!CMBVarMapGetActiveFlag(map, index) ||
            CMBVarVec_GetValue(&map->myKeys, index).all == key.all);
 
-    if (!BitVector_Get(&map->myActiveFlags, index)) {
+    if (!CMBVarMapGetActiveFlag(map, index)) {
         map->mySize++;
 
-        if (!BitVector_Get(&map->myFullFlags, index)) {
+        if (!CMBVarMapGetFullFlag(map, index)) {
             map->myFreeSpace--;
             map->myFullSpace++;
-            BitVector_Set(&map->myFullFlags, index);
+            CMBVarMapSetFullFlag(map, index);
         }
 
-        BitVector_Set(&map->myActiveFlags, index);
+        CMBVarMapSetActiveFlag(map, index);
         CMBVarVec_PutValue(&map->myKeys, index, key);
     } else {
         ASSERT(CMBVarVec_GetValue(&map->myKeys, index).all == key.all);
-        ASSERT(BitVector_Get(&map->myFullFlags, index));
-        ASSERT(BitVector_Get(&map->myActiveFlags, index));
+        ASSERT(CMBVarMapGetFullFlag(map, index));
+        ASSERT(CMBVarMapGetActiveFlag(map, index));
     }
 
     ASSERT(CMBVarVec_GetValue(&map->myKeys, index).all == key.all);
-    ASSERT(BitVector_Get(&map->myFullFlags, index));
-    ASSERT(BitVector_Get(&map->myActiveFlags, index));
+    ASSERT(CMBVarMapGetFullFlag(map, index));
+    ASSERT(CMBVarMapGetActiveFlag(map, index));
 
     CMBVarVec_PutValue(&map->myValues, index, value);
 }
@@ -306,11 +302,11 @@ void CMBVarMap_DebugDump(const CMBVarMap *map)
     DebugPrint("mySize=%d, mySpace=%d, myFreeSpace=%d\n",
                map->mySize, map->mySpace, map->myFreeSpace);
     for (i = 0; i < CMBVarVec_Size(&map->myKeys); i++) {
-        if (BitVector_Get(&map->myActiveFlags, i)) {
+        if (CMBVarMapGetActiveFlag(map, i)) {
             DebugPrint("myKeys[%d]=%d, myValues[%d]=%d\n",
                        i, CMBVarVec_GetValue(&map->myKeys, i),
                        i, CMBVarVec_GetValue(&map->myValues, i));
-        } else if (BitVector_Get(&map->myFullFlags, i)) {
+        } else if (CMBVarMapGetFullFlag(map, i)) {
             DebugPrint("myKeys[%d]=full\n", i);
         }
     }
@@ -320,14 +316,12 @@ void CMBVarMap_DebugDump(const CMBVarMap *map)
 static void CMBVarMapRehash(CMBVarMap *map)
 {
     int newSpace;
-    BitVector oldFull;
-    BitVector oldActive;
+    BitVector oldFlags;
     CMBVarVec oldKeys;
     CMBVarVec oldValues;
     int x;
 
-    BitVector_Create(&oldFull);
-    BitVector_Create(&oldActive);
+    BitVector_Create(&oldFlags);
     CMBVarVec_CreateEmpty(&oldKeys);
     CMBVarVec_CreateEmpty(&oldValues);
 
@@ -339,14 +333,12 @@ static void CMBVarMapRehash(CMBVarMap *map)
     ASSERT(MBUtil_IsPow2(newSpace));
     ASSERT(newSpace >= map->mySpace);
 
-    BitVector_Consume(&oldFull, &map->myFullFlags);
-    BitVector_Consume(&oldActive, &map->myActiveFlags);
+    BitVector_Consume(&oldFlags, &map->myFlags);
     CMBVarVec_Consume(&oldKeys, &map->myKeys);
     CMBVarVec_Consume(&oldValues, &map->myValues);
 
     //the flags should all be false
-    BitVector_Resize(&map->myFullFlags, newSpace);
-    BitVector_Resize(&map->myActiveFlags, newSpace);
+    BitVector_Resize(&map->myFlags, newSpace * 2);
     CMBVarVec_Resize(&map->myKeys, newSpace);
     CMBVarVec_Resize(&map->myValues, newSpace);
 
@@ -358,14 +350,15 @@ static void CMBVarMapRehash(CMBVarMap *map)
     map->myIndexMask = map->mySpace - 1;
 
     for (x = 0; x < CMBVarVec_Size(&oldKeys); x++) {
-        if (BitVector_Get(&oldFull,x) && BitVector_Get(&oldActive, x)) {
+        bool oldFull = BitVector_Get(&oldFlags, x * 2 + 0);
+        bool oldActive = BitVector_Get(&oldFlags, x * 2 + 1);
+        if (oldFull && oldActive) {
             CMBVarMap_Put(map, CMBVarVec_GetValue(&oldKeys, x),
                         CMBVarVec_GetValue(&oldValues, x));
         }
     }
 
-    BitVector_Destroy(&oldFull);
-    BitVector_Destroy(&oldActive);
+    BitVector_Destroy(&oldFlags);
     CMBVarVec_Destroy(&oldKeys);
     CMBVarVec_Destroy(&oldValues);
 }
