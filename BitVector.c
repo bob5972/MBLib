@@ -35,23 +35,21 @@ void BitVector_CreateWithSize(BitVector *b, int size)
 {
 	ASSERT(size >= 0);
 	ASSERT(b != NULL);
-	ASSERT(sizeof(b->bitStorage.ptr[0]) * 8 == BVUNITBITS);
+	ASSERT(sizeof(b->bits[0]) * 8 == BVUNITBITS);
 	ASSERT(BVUNITBYTES * 8 == BVUNITBITS);
 
 	b->size = 0;
 	b->arrSize = 0;
 	b->fill = FALSE;
-	b->usePtr = FALSE;
+	b->bits = NULL;
 	BitVector_Resize(b, size);
 }
 
 void BitVector_Destroy(BitVector *b)
 {
 	ASSERT(b != NULL);
-	if (b->usePtr) {
-		free(b->bitStorage.ptr);
-		b->bitStorage.ptr = NULL;
-	}
+	free(b->bits);
+	b->bits = NULL;
 }
 
 void BitVector_Copy(BitVector *dest, const BitVector *src)
@@ -74,11 +72,8 @@ void BitVector_Consume(BitVector *dest, BitVector *src)
 	ASSERT(src != NULL);
 	bool oldFill;
 
-	if (dest->usePtr) {
-		free(dest->bitStorage.ptr);
-	}
-	dest->bitStorage = src->bitStorage;
-	dest->usePtr = src->usePtr;
+	free(dest->bits);
+	dest->bits = src->bits;
 
 	dest->size = src->size;
 	dest->arrSize = src->arrSize;
@@ -108,31 +103,16 @@ void BitVector_Resize(BitVector *b, int size)
 
 	if (oldValidCellCount < newValidCellCount) {
 		int byteLength;
-		uint64 tempRaw;
 		uint64 *tempPtr;
-		bool useOldPtr = b->usePtr;
 
-		if (useOldPtr) {
-			tempPtr = b->bitStorage.ptr;
-		} else {
-			tempRaw = b->bitStorage.raw;
-			tempPtr = &tempRaw;
-		}
-
+		tempPtr = b->bits;
 		b->arrSize = newValidCellCount;
-		if (b->arrSize > 1) {
-			b->bitStorage.ptr = malloc(b->arrSize * BVUNITBYTES);
-			b->usePtr = TRUE;
-		} else {
-			b->usePtr = FALSE;
-		}
+		b->bits = malloc(b->arrSize * BVUNITBYTES);
 
 		byteLength = oldValidCellCount * BVUNITBYTES;
 		memcpy(BitVectorGetPtr(b), tempPtr, byteLength);
 
-		if (useOldPtr) {
-			free(tempPtr);
-		}
+		free(tempPtr);
 	}
 
 	if (oldSize < size) {

@@ -36,14 +36,10 @@
 #include <string.h>
 
 typedef struct BitVector {
-    union {
-        uint64 *ptr;
-        uint64 raw;
-    } bitStorage;
+    uint64 *bits;
     uint arrSize;
     uint size;
     bool fill;
-    bool usePtr;
 } BitVector;
 
 typedef BitVector CBitVector;
@@ -78,8 +74,7 @@ void BitVectorFlipRangeGeneric(BitVector *b, int first, int last);
 
 static INLINE uint64 *BitVectorGetPtr(const BitVector *b) {
     BitVector *bv = (BitVector *)b;
-    ASSERT(bv->arrSize <= 1 || bv->usePtr);
-    return (bv->usePtr) ? bv->bitStorage.ptr : &bv->bitStorage.raw;
+    return bv->bits;
 }
 
 #define BVUNITBITS 64
@@ -221,11 +216,7 @@ static INLINE bool BitVector_Get(const CBitVector *b, int x)
     ASSERT(x >= 0);
     ASSERT((uint) x < b->size);
 
-    if (!b->usePtr) {
-        return BitVector_GetRaw64(x, b->bitStorage.raw);
-    } else {
-       return BitVector_GetRaw(x, b->bitStorage.ptr);
-    }
+    return BitVector_GetRaw(x, BitVectorGetPtr(b));
 }
 
 static INLINE void BitVector_Put(BitVector *b, int x, bool v)
@@ -247,11 +238,7 @@ static INLINE void BitVector_Set(BitVector *b, int x)
     ASSERT(x >= 0);
     ASSERT((uint) x < b->size);
 
-    if (!b->usePtr) {
-        return BitVector_SetRaw64(x, &b->bitStorage.raw);
-    } else {
-        return BitVector_SetRaw(x, b->bitStorage.ptr);
-    }
+    BitVector_SetRaw(x, BitVectorGetPtr(b));
 }
 
 static INLINE void BitVector_Reset(BitVector *b, int x)
@@ -260,11 +247,7 @@ static INLINE void BitVector_Reset(BitVector *b, int x)
     ASSERT(x >= 0);
     ASSERT((uint) x < b->size);
 
-    if (!b->usePtr) {
-        return BitVector_ResetRaw64(x, &b->bitStorage.raw);
-    } else {
-        return BitVector_ResetRaw(x, b->bitStorage.ptr);
-    }
+    BitVector_ResetRaw(x, BitVectorGetPtr(b));
 }
 
 static INLINE void BitVector_Flip(BitVector *b, int x)
