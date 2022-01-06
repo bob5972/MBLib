@@ -221,7 +221,11 @@ static INLINE bool BitVector_Get(const CBitVector *b, int x)
     ASSERT(x >= 0);
     ASSERT((uint) x < b->size);
 
-    return BitVector_GetRaw(x, BitVectorGetPtr(b));
+    if (!b->usePtr) {
+        return BitVector_GetRaw64(x, b->bitStorage.raw);
+    } else {
+       return BitVector_GetRaw(x, b->bitStorage.ptr);
+    }
 }
 
 static INLINE void BitVector_Put(BitVector *b, int x, bool v)
@@ -243,7 +247,11 @@ static INLINE void BitVector_Set(BitVector *b, int x)
     ASSERT(x >= 0);
     ASSERT((uint) x < b->size);
 
-    BitVector_SetRaw(x, BitVectorGetPtr(b));
+    if (!b->usePtr) {
+        return BitVector_SetRaw64(x, &b->bitStorage.raw);
+    } else {
+        return BitVector_SetRaw(x, b->bitStorage.ptr);
+    }
 }
 
 static INLINE void BitVector_Reset(BitVector *b, int x)
@@ -252,7 +260,11 @@ static INLINE void BitVector_Reset(BitVector *b, int x)
     ASSERT(x >= 0);
     ASSERT((uint) x < b->size);
 
-    BitVector_ResetRaw(x, BitVectorGetPtr(b));
+    if (!b->usePtr) {
+        return BitVector_ResetRaw64(x, &b->bitStorage.raw);
+    } else {
+        return BitVector_ResetRaw(x, b->bitStorage.ptr);
+    }
 }
 
 static INLINE void BitVector_Flip(BitVector *b, int x)
