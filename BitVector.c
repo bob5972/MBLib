@@ -35,25 +35,23 @@ void BitVector_CreateWithSize(BitVector *b, int size)
 {
 	ASSERT(size >= 0);
 	ASSERT(b != NULL);
-	ASSERT(sizeof(b->bits[0]) * 8 == BVUNITBITS);
+	ASSERT(sizeof(b->bitStorage.ptr[0]) * 8 == BVUNITBITS);
+	ASSERT(BVUNITBYTES * 8 == BVUNITBITS);
 
 	b->size = 0;
-	b->arrSize = 1 + (size / BVUNITBITS);
+	b->arrSize = 0;
 	b->fill = FALSE;
-	b->bits = malloc(b->arrSize * sizeof(b->bits[0]));
-
-	b->size = size;
-
-	if (size > 0) {
-		BitVector_ResetRange(b, 0, b->size - 1);
-	}
+	b->usePtr = FALSE;
+	BitVector_Resize(b, size);
 }
 
 void BitVector_Destroy(BitVector *b)
 {
 	ASSERT(b != NULL);
-	free(b->bits);
-	b->bits = NULL;
+	if (b->usePtr) {
+		free(b->bitStorage.ptr);
+		b->bitStorage.ptr = NULL;
+	}
 }
 
 void BitVector_Copy(BitVector *dest, const BitVector *src)
@@ -62,14 +60,12 @@ void BitVector_Copy(BitVector *dest, const BitVector *src)
 	ASSERT(dest != NULL);
 	ASSERT(src != NULL);
 
+	BitVector_Resize(dest, src->size);
+	ASSERT(dest->size == src->size);
 	dest->fill = src->fill;
-	dest->size = src->size;
-	dest->arrSize = (dest->size/BVUNITBITS) + 1;
 
-	dest->bits = malloc(sizeof(dest->bits[0]) * dest->arrSize);
-
-	numBytes = dest->arrSize * sizeof(dest->bits[0]);
-	memcpy(dest->bits, src->bits, numBytes);
+	numBytes = dest->arrSize * BVUNITBYTES;
+	memcpy(BitVectorGetPtr(dest), BitVectorGetPtr(src), numBytes);
 }
 
 void BitVector_Consume(BitVector *dest, BitVector *src)
@@ -78,8 +74,12 @@ void BitVector_Consume(BitVector *dest, BitVector *src)
 	ASSERT(src != NULL);
 	bool oldFill;
 
-	free(dest->bits);
-	dest->bits = src->bits;
+	if (dest->usePtr) {
+		free(dest->bitStorage.ptr);
+	}
+	dest->bitStorage = src->bitStorage;
+	dest->usePtr = src->usePtr;
+
 	dest->size = src->size;
 	dest->arrSize = src->arrSize;
 
@@ -103,33 +103,44 @@ void BitVector_Resize(BitVector *b, int size)
 		return;
 	}
 
-	/*
-	 * Account for stray bits, and leave an extra cell at the end
-	 * even if there aren't any (makes PopCount easier).
-	 */
-	oldValidCellCount = oldSize / BVUNITBITS;
-	oldValidCellCount++;
-
-	newValidCellCount = size / BVUNITBITS;
-	newValidCellCount++;
+	oldValidCellCount = (oldSize + BVUNITBITS - 1) / BVUNITBITS;
+	newValidCellCount = (size + BVUNITBITS - 1) / BVUNITBITS;
 
 	if (oldValidCellCount < newValidCellCount) {
 		int byteLength;
-		uint64 *temp = b->bits;
-		b->bits = malloc(newValidCellCount * sizeof (b->bits[0]));
+		uint64 tempRaw;
+		uint64 *tempPtr;
+		bool useOldPtr = b->usePtr;
 
-		byteLength = oldValidCellCount * sizeof(b->bits[0]);
-		memcpy(&b->bits[0], temp, byteLength);
+		if (useOldPtr) {
+			tempPtr = b->bitStorage.ptr;
+		} else {
+			tempRaw = b->bitStorage.raw;
+			tempPtr = &tempRaw;
+		}
 
-		free(temp);
 		b->arrSize = newValidCellCount;
+		if (b->arrSize > 1) {
+			b->bitStorage.ptr = malloc(b->arrSize * BVUNITBYTES);
+			b->usePtr = TRUE;
+		} else {
+			b->usePtr = FALSE;
+		}
+
+		byteLength = oldValidCellCount * BVUNITBYTES;
+		memcpy(BitVectorGetPtr(b), tempPtr, byteLength);
+
+		if (useOldPtr) {
+			free(tempPtr);
+		}
 	}
 
 	if (oldSize < size) {
+		ASSERT(size > 0);
 		if (b->fill) {
-			BitVector_SetRange(b, oldSize, b->size - 1);
+			BitVector_SetRange(b, oldSize, size - 1);
 		} else {
-			BitVector_ResetRange(b, oldSize, b->size - 1);
+			BitVector_ResetRange(b, oldSize, size - 1);
 		}
 	}
 }

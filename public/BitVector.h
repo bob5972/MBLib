@@ -36,10 +36,14 @@
 #include <string.h>
 
 typedef struct BitVector {
-    uint64 *bits;
-    uint size;
+    union {
+        uint64 *ptr;
+        uint64 raw;
+    } bitStorage;
     uint arrSize;
+    uint size;
     bool fill;
+    bool usePtr;
 } BitVector;
 
 typedef BitVector CBitVector;
@@ -72,10 +76,14 @@ void BitVectorSetRangeGeneric(BitVector *b, int first, int last);
 void BitVectorResetRangeGeneric(BitVector *b, int first, int last);
 void BitVectorFlipRangeGeneric(BitVector *b, int first, int last);
 
-/*
- * Inline Functions
- */
+static INLINE uint64 *BitVectorGetPtr(const BitVector *b) {
+    BitVector *bv = (BitVector *)b;
+    ASSERT(bv->arrSize <= 1 || bv->usePtr);
+    return (bv->usePtr) ? bv->bitStorage.ptr : &bv->bitStorage.raw;
+}
+
 #define BVUNITBITS 64
+#define BVUNITBYTES (BVUNITBITS / 8)
 #define BVINDEX(x) (x / BVUNITBITS)
 #define BVMASK(x)  ( ((uint64)1) << (x % BVUNITBITS))
 
@@ -213,7 +221,7 @@ static INLINE bool BitVector_Get(const CBitVector *b, int x)
     ASSERT(x >= 0);
     ASSERT((uint) x < b->size);
 
-    return BitVector_GetRaw(x, b->bits);
+    return BitVector_GetRaw(x, BitVectorGetPtr(b));
 }
 
 static INLINE void BitVector_Put(BitVector *b, int x, bool v)
@@ -223,9 +231,9 @@ static INLINE void BitVector_Put(BitVector *b, int x, bool v)
     ASSERT((uint) x < b->size);
 
     if (v) {
-        BitVector_SetRaw(x, b->bits);
+        BitVector_SetRaw(x, BitVectorGetPtr(b));
     } else {
-        BitVector_ResetRaw(x, b->bits);
+        BitVector_ResetRaw(x, BitVectorGetPtr(b));
     }
 }
 
@@ -235,7 +243,7 @@ static INLINE void BitVector_Set(BitVector *b, int x)
     ASSERT(x >= 0);
     ASSERT((uint) x < b->size);
 
-    BitVector_SetRaw(x, b->bits);
+    BitVector_SetRaw(x, BitVectorGetPtr(b));
 }
 
 static INLINE void BitVector_Reset(BitVector *b, int x)
@@ -244,7 +252,7 @@ static INLINE void BitVector_Reset(BitVector *b, int x)
     ASSERT(x >= 0);
     ASSERT((uint) x < b->size);
 
-    BitVector_ResetRaw(x, b->bits);
+    BitVector_ResetRaw(x, BitVectorGetPtr(b));
 }
 
 static INLINE void BitVector_Flip(BitVector *b, int x)
@@ -253,7 +261,7 @@ static INLINE void BitVector_Flip(BitVector *b, int x)
     ASSERT(x >= 0);
     ASSERT((uint) x < b->size);
 
-    BitVector_FlipRaw(x, b->bits);
+    BitVector_FlipRaw(x, BitVectorGetPtr(b));
 }
 
 static INLINE_ALWAYS void
@@ -309,11 +317,11 @@ BitVectorWriteRangeOptimized(BitVector *b,
     uint32 startByte;
 
     numBytes = (last - first) / alignment + 1;
-    myBytes = (uint8 *) b->bits;
+    myBytes = (uint8 *) BitVectorGetPtr(b);
     startByte = first / alignment;
     myBytes += startByte;
 
-    ASSERT(startByte + numBytes <= b->arrSize * sizeof(b->bits[0]));
+    ASSERT(startByte + numBytes <= b->arrSize * BVUNITBYTES);
 
     switch (type) {
         case BITVECTOR_WRITE_SET:
@@ -473,8 +481,8 @@ static INLINE bool BitVector_TestAndSet(BitVector *b, int x)
     ASSERT(x >= 0);
     ASSERT((uint) x < b->size);
 
-    oup = BitVector_GetRaw(x, b->bits);
-    BitVector_SetRaw(x, b->bits);
+    oup = BitVector_GetRaw(x, BitVectorGetPtr(b));
+    BitVector_SetRaw(x, BitVectorGetPtr(b));
     return oup;
 }
 
@@ -519,7 +527,7 @@ static INLINE int BitVector_PopCount(const BitVector *b)
     cellSize = size / BVUNITBITS;
 
     for (x = 0; x < cellSize; x++) {
-        sum += MBUtil_Popcountl(b->bits[x]);
+        sum += MBUtil_Popcountl(BitVectorGetPtr(b)[x]);
     }
 
     strayBitCount = size % BVUNITBITS;
@@ -527,7 +535,7 @@ static INLINE int BitVector_PopCount(const BitVector *b)
 
     ASSERT(cellSize >= 0);
     ASSERT((uint) cellSize < b->arrSize);
-    sum += MBUtil_Popcountl(b->bits[cellSize] & strayBitMask);
+    sum += MBUtil_Popcountl(BitVectorGetPtr(b)[cellSize] & strayBitMask);
 
     return sum;
 }
