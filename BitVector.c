@@ -31,24 +31,29 @@
 #include "MBAssert.h"
 #include "MBUtil.h"
 
-#define BITVECTOR_DEFAULT_SPACE 2
-
-void BitVector_Create(BitVector *b)
+static void BitVectorCreateHelper(BitVector *b, int size)
 {
 	ASSERT(b != NULL);
 	ASSERT(sizeof(b->bits[0]) * 8 == BVUNITBITS);
 
 	b->size = 0;
-	b->arrSize = BITVECTOR_DEFAULT_SPACE;
+	b->arrSize = 1 + (size / BVUNITBITS);
 	b->fill = FALSE;
 	b->bits = malloc(b->arrSize * sizeof(b->bits[0]));
 }
 
+void BitVector_Create(BitVector *b)
+{
+	BitVectorCreateHelper(b, 64);
+}
+
 void BitVector_CreateWithSize(BitVector *b, int size)
 {
-    //XXX: This might malloc twice.
-    BitVector_Create(b);
-    BitVector_Resize(b, size);
+	ASSERT(size >= 0);
+	BitVectorCreateHelper(b, size);
+	b->size = size;
+	ASSERT(!b->fill);
+	BitVector_ResetRange(b, 0, b->size - 1);
 }
 
 void BitVector_Destroy(BitVector *b)
@@ -101,7 +106,7 @@ void BitVector_Resize(BitVector *b, int size)
 
 	oldSize = b->size;
 	b->size = size;
-	if(b->size <= oldSize) {
+	if (b->size <= oldSize) {
 		return;
 	}
 
@@ -115,7 +120,7 @@ void BitVector_Resize(BitVector *b, int size)
 	newValidCellCount = size / BVUNITBITS;
 	newValidCellCount++;
 
-	if(oldValidCellCount < newValidCellCount) {
+	if (oldValidCellCount < newValidCellCount) {
 		int byteLength;
 		uint64 *temp = b->bits;
 		b->bits = malloc(newValidCellCount * sizeof (b->bits[0]));
@@ -127,8 +132,8 @@ void BitVector_Resize(BitVector *b, int size)
 		b->arrSize = newValidCellCount;
 	}
 
-	if(oldSize < size) {
-		if(b->fill) {
+	if (oldSize < size) {
+		if (b->fill) {
 			BitVector_SetRange(b, oldSize, b->size - 1);
 		} else {
 			BitVector_ResetRange(b, oldSize, b->size - 1);
