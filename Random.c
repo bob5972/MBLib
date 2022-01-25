@@ -123,9 +123,7 @@ bool RandomState_Flip(RandomState *r, float trueProb)
 {
     //XXX: Naive implementation.
 
-    ASSERT(trueProb >= 0);
-
-    if (trueProb == 0) {
+    if (trueProb <= 0.0f) {
         return FALSE;
     }
 
@@ -133,7 +131,7 @@ bool RandomState_Flip(RandomState *r, float trueProb)
      * I could assert that it's <= 1, but I worry about people computing
      * probabilities having things round slightly above 1.
      */
-    if (trueProb >= 1.0) {
+    if (trueProb >= 1.0f) {
         return TRUE;
     }
 
