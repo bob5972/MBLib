@@ -384,7 +384,7 @@ void testBitVector(void)
 {
     int count;
     int result;
-    BitVector b;
+    CPBitVector b;
 
     // Test basic get/set
     {

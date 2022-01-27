@@ -31,35 +31,31 @@
 #include "MBAssert.h"
 #include <string.h>
 
-extern "C" {
-#define BitVector CBitVector
 #include "BitVector.h"
-#undef BitVector
-}
 
-class BitVector
+class CPBitVector
 {
     public:
-        BitVector() {
+        CPBitVector() {
             BitVector_Create(&b);
         }
 
-        BitVector(const BitVector &a) {
+        CPBitVector(const CPBitVector &a) {
             BitVector_Create(&b);
             BitVector_Copy(&b, &a.b);
         }
 
-        explicit BitVector(int size) {
+        explicit CPBitVector(int size) {
             BitVector_CreateWithSize(&b, size);
         }
 
-        BitVector(int size, bool initial) {
+        CPBitVector(int size, bool initial) {
             BitVector_Create(&b);
             BitVector_SetFillValue(&b, initial);
             BitVector_Resize(&b, size);
         }
 
-        ~BitVector() {
+        ~CPBitVector() {
             BitVector_Destroy(&b);
         }
 
@@ -135,12 +131,12 @@ class BitVector
             return BitVector_Get(&b, x);
         }
 
-        const BitVector &operator =(const BitVector & rhs) {
+        const CPBitVector &operator =(const CPBitVector & rhs) {
             BitVector_Copy(&b, &rhs.b);
             return *this;
         }
 
-        void consume(BitVector &src) {
+        void consume(CPBitVector &src) {
             BitVector_Consume(&b, &src.b);
         }
 

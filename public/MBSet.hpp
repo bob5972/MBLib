@@ -54,7 +54,7 @@ class MBSet
 
     private:
         MBVector<itemType> myItems;
-        BitVector isUsed;
+        CPBitVector isUsed;
 
         int mySize;
 };
