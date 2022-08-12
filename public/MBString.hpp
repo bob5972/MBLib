@@ -109,6 +109,10 @@ class MBString {
             return MBString_IsEmpty(&data);
         }
 
+        void makeEmpty() {
+            MBString_MakeEmpty(&data);
+        }
+
         /*
          * Return this string as a null-terminated C-String.
          *
