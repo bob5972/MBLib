@@ -116,7 +116,6 @@ static void MBStrTableFreeHelper(MBStrTable *st)
     uint i;
 
     ASSERT(st != NULL);
-    ASSERT(st->parent == NULL);
     ASSERT(st->referenceCount == 0);
 
     DEBUG_ONLY(
@@ -181,6 +180,7 @@ void MBStrTable_Unreference(MBStrTable *st)
                 if (st->parent->referenceCount > 1) {
                     st->parent->referenceCount--;
                 } else {
+                    ASSERT(st->parent->referenceCount == 1);
                     freeParent = TRUE;
                 }
             }
