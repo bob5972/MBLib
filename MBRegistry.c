@@ -292,8 +292,26 @@ MBRegistryLoad(MBRegistry *mreg, const char *filename,
         MBString_StripWS(&value);
 
         // This doesn't properly handle quoted entries.
-        VERIFY(MBString_GetChar(&key, 0) != '"');
-        VERIFY(MBString_GetChar(&key, 0) != '\'');
+        if (MBString_GetChar(&key, 0) == '"' ||
+            MBString_GetChar(&key, 0) == '\'') {
+            int length = MBString_Length(&key);
+            if (length <= 2 ||
+                MBString_GetChar(&key, length - 1) !=
+                MBString_GetChar(&key, 0)) {
+                PANIC("Malformatted key: %s\n", MBString_GetCStr(&key));
+            }
+            MBString_Truncate(&key, 1, length - 2);
+        }
+        if (MBString_GetChar(&value, 0) == '"' ||
+            MBString_GetChar(&value, 0) == '\'') {
+            int length = MBString_Length(&value);
+            if (length <= 2 ||
+                MBString_GetChar(&value, length - 1) !=
+                MBString_GetChar(&value, 0)) {
+                PANIC("Malformatted value: %s\n", MBString_GetCStr(&value));
+            }
+            MBString_Truncate(&value, 1, length - 2);
+        }
 
         char *ckey = MBString_DupCStr(&key);
         char *cvalue = MBString_DupCStr(&value);

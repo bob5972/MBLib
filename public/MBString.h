@@ -235,6 +235,12 @@ static INLINE void MBString_Copy(MBString *dest, const MBString *src)
 static INLINE void MBString_CopyCStr(MBString *dest, const char *cstr)
 {
     int len;
+
+    if (cstr == NULL) {
+        MBString_CopyCStr(dest, "");
+        return;
+    }
+
     ASSERT(cstr != NULL);
     ASSERT(MBStringIsNulTerminated(dest));
 
