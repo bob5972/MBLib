@@ -70,7 +70,8 @@
 
 #define PANIC(...) PanicWithMessage( __FILE__, __LINE__, __VA_ARGS__)
 
-NORETURN void PanicWithMessage(const char *file, int line, const char *fmt, ...);
+NORETURN void PanicWithMessage(const char *file, int line, const char *fmt, ...)
+              __attribute__((__format__ (__printf__, 3, 4)));
 NORETURN void PanicAssertFail(const char *file, int line, const char *cond);
 NORETURN void PanicVerifyFail(const char *file, int line, const char *cond);
 NORETURN void PanicExit();
