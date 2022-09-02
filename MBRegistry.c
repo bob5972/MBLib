@@ -343,14 +343,10 @@ void MBRegistry_LoadSubset(MBRegistry *mreg, const char *filename)
     MBRegistryLoad(mreg, filename, TRUE);
 }
 
-void
-MBRegistry_Save(MBRegistry *mreg, const char *filename)
+static void
+MBRegistrySave(MBRegistry *mreg, FILE *file)
 {
-    FILE *file;
-
     ASSERT(mreg != NULL);
-
-    file = fopen(filename, "w");
     VERIFY(file != NULL);
 
     fprintf(file, "MReg::MBLib::Version=5\n");
@@ -378,8 +374,26 @@ MBRegistry_Save(MBRegistry *mreg, const char *filename)
             fprintf(file, "%s\n", n->value);
         }
     }
+}
 
+void
+MBRegistry_Save(MBRegistry *mreg, const char *filename)
+{
+    FILE *file;
+
+    ASSERT(mreg != NULL);
+
+    file = fopen(filename, "w");
+    VERIFY(file != NULL);
+
+    MBRegistrySave(mreg, file);
     fclose(file);
+}
+
+void
+MBRegistry_SaveToConsole(MBRegistry *mreg)
+{
+    MBRegistrySave(mreg, stdout);
 }
 
 void MBRegistry_DebugDump(MBRegistry *mreg)

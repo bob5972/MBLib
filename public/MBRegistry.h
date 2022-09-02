@@ -49,6 +49,7 @@ void MBRegistry_SplitOnPrefix(MBRegistry *dest, MBRegistry *src,
 
 void MBRegistry_Load(MBRegistry *mreg, const char *filename);
 void MBRegistry_LoadSubset(MBRegistry *mreg, const char *filename);
+void MBRegistry_SaveToConsole(MBRegistry *mreg);
 void MBRegistry_Save(MBRegistry *mreg, const char *filename);
 void MBRegistry_DebugDump(MBRegistry *mreg);
 
