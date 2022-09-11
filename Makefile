@@ -44,6 +44,7 @@ CPP_SOURCES = MBString.cpp \
               MBSet.cpp \
               MBMatrix.cpp \
               MBSocket.cpp \
+              MBUnitTest.cpp \
               Dumper.cpp
 
 C_SOURCES = BitVector.c \

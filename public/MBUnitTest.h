@@ -1,7 +1,7 @@
 /*
- * test.cpp -- part of MBLib
+ * MBUnitTest.h -- part of MBLib
  *
- * Copyright (c) 2015-2021 Michael Banack <github@banack.net>
+ * Copyright (c) 2022 Michael Banack <github@banack.net>
  *
  * MIT License
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,40 +23,35 @@
  * SOFTWARE.
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <iostream>
+#ifndef _MBUNITTEST_H_202209111159
+#define _MBUNITTEST_H_202209111159
 
-#include "MBString.hpp"
-#include "MBUnitTest.h"
-
-int main(int argc, char *argv[])
-{
-    MBString arg;
-    bool benchmark;
-
-#ifdef BENCHMARK
-    benchmark = TRUE;
-#else
-    benchmark = FALSE;
+#ifdef __cplusplus
+	extern "C" {
 #endif
 
-    if (argc > 1) {
-        arg = argv[1];
+void MBUnitTest_RunTests();
+void MBUnitTest_RunBenchmark();
 
-        if (arg == "-b") {
-            benchmark = TRUE;
-        } else if (arg == "-f") {
-            benchmark = FALSE;
-        }
-    }
+void MBUnitTest_MBString();
+void MBUnitTest_MBVector();
+void MBUnitTest_CMBVector();
+void MBUnitTest_MBStack();
+void MBUnitTest_MBMap();
+void MBUnitTest_IntMap();
+void MBUnitTest_RandomIntMap();
+void MBUnitTest_MBSet();
+void MBUnitTest_BitVector();
+void MBUnitTest_MBQueue();
+void MBUnitTest_MBRegistry();
+void MBUnitTest_MBCompare();
+void MBUnitTest_MBLock();
+void MBUnitTest_MBRing();
+void MBUnitTest_Types();
+void MBUnitTest_Random();
 
-    if (benchmark) {
-        MBUnitTest_RunBenchmark();
-    } else {
-        MBUnitTest_RunTests();
-    }
+#ifdef __cplusplus
+	}
+#endif
 
-    printf("Done.\n");
-    return 0;
-}
+#endif // _MBUNITTEST_H_202209111159
