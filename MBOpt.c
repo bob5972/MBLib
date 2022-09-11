@@ -107,9 +107,18 @@ void MBOpt_Exit(void)
     mbopt.initialized = FALSE;
 }
 
-void MBOpt_PrintHelpText(void)
+void MBOpt_PrintMBLibVersion(void)
 {
     Warning("\n");
+    Warning("MBLib version %s\n", MBLIB_VERSION_STRING);
+    Warning("DEBUG=%d, DEVEL=%d\n", mb_debug, mb_devel);
+    Warning("MB_HAS_SDL2=%d\n", mb_has_sdl2);
+    Warning("\n");
+}
+
+void MBOpt_PrintHelpText(void)
+{
+    MBOpt_PrintMBLibVersion();
     Warning("%s Usage:\n", mbopt.arg0);
     for (uint32 i = 0; i < mbopt.numOpts; i++) {
         Warning("\t%s, %s: %s\n",

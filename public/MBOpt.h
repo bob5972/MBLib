@@ -28,6 +28,10 @@
 
 #include "MBTypes.h"
 
+#ifdef __cplusplus
+	extern "C" {
+#endif
+
 typedef struct MBOption {
     const char *shortOpt;
     const char *longOpt;
@@ -38,6 +42,7 @@ typedef struct MBOption {
 void MBOpt_Init(MBOption *opts, int numOpts, int argc, char **argv);
 void MBOpt_Exit(void);
 
+void MBOpt_PrintMBLibVersion(void);
 void MBOpt_PrintHelpText(void);
 
 bool MBOpt_IsValid(const char *option);
@@ -49,5 +54,9 @@ uint MBOpt_GetUint(const char *option);
 uint64 MBOpt_GetUint64(const char *option);
 bool MBOpt_GetBool(const char *option);
 float MBOpt_GetFloat(const char *option);
+
+#ifdef __cplusplus
+	}
+#endif
 
 #endif //MBOpt_H_202006121333

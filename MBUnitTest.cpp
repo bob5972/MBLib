@@ -32,8 +32,6 @@
 #include "MBLock.h"
 #endif
 
-#include "MBRegistry.h"
-
 #include "MBAssert.h"
 #include "MBString.hpp"
 #include "MBStack.hpp"
@@ -48,6 +46,8 @@
 #include "IntMap.hpp"
 #include "MBRing.h"
 #include "MBStrTable.h"
+#include "MBOpt.h"
+#include "MBRegistry.h"
 
 typedef struct MBUnitTestBenchmark {
     bool enabled;
@@ -55,14 +55,11 @@ typedef struct MBUnitTestBenchmark {
     void (*function)(void);
 } MBUnitTestBenchmark;
 
-
 typedef struct MBUnitTestGlobalData {
     int seed;
 } MBUnitTestGlobalData;
 
 static MBUnitTestGlobalData mbtest;
-
-static void MBUnitTestRunTests(bool benchmark);
 
 #define TEST(x) \
 do { \
@@ -71,6 +68,8 @@ do { \
         PANIC("Test failure: %s\n", #x); \
     } \
 } while (FALSE)
+
+static void MBUnitTestRunTests(bool benchmark);
 
 void MBUnitTest_RunTests()
 {
@@ -81,7 +80,6 @@ void MBUnitTest_RunBenchmark()
 {
     MBUnitTestRunTests(TRUE);
 }
-
 
 void MBUnitTestRunTests(bool benchmark)
 {
@@ -95,9 +93,7 @@ void MBUnitTestRunTests(bool benchmark)
      */
     printf("\n");
     printf("Starting MBLib %s ...\n", benchmark ? "Benchmark" : "Tests");
-    printf("DEBUG=%d, DEVEL=%d\n", mb_debug, mb_devel);
-    printf("MB_HAS_SDL2=%d\n", mb_has_sdl2);
-    printf("\n");
+    MBOpt_PrintMBLibVersion();
 
     if (benchmark && mb_debug) {
         printf("WARNING: Running benchmark with assertions enabled.\n");

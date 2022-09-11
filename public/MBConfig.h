@@ -30,6 +30,8 @@
 	extern "C" {
 #endif
 
+#define MBLIB_VERSION_STRING "1.20220911"
+
 #define ALLOW_MBBUILD_CONFIG_H
 #include "config.h"
 #undef ALLOW_MBBUILD_CONFIG_H
