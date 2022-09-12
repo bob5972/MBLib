@@ -136,17 +136,20 @@ const char *MBRegistry_Get(MBRegistry *mreg, const char *key)
 }
 
 static void MBRegistryPutHelper(MBRegistry *mreg,
-                                const char *key, bool constKey,
+                                const char *key, bool constKey, bool uniqueKey,
                                 const char *value, bool constValue)
 {
     MBRegistryNode *n;
     ASSERT(mreg != NULL);
 
-    for (uint32 i = 0; i < CMBVector_Size(&mreg->data); i++) {
-        n = CMBVector_GetPtr(&mreg->data, i);
-        if (strcmp(n->key, key) == 0) {
-            n->value = value;
-            return;
+    if (!uniqueKey || mb_debug) {
+        for (uint32 i = 0; i < CMBVector_Size(&mreg->data); i++) {
+            n = CMBVector_GetPtr(&mreg->data, i);
+            if (strcmp(n->key, key) == 0) {
+                ASSERT(!uniqueKey);
+                n->value = value;
+                return;
+            }
         }
     }
 
@@ -162,7 +165,7 @@ static void MBRegistryPutHelper(MBRegistry *mreg,
  */
 void MBRegistry_PutConst(MBRegistry *mreg, const char *key, const char *value)
 {
-    MBRegistryPutHelper(mreg, key, TRUE, value, TRUE);
+    MBRegistryPutHelper(mreg, key, TRUE, FALSE, value, TRUE);
 }
 
 /*
@@ -173,7 +176,20 @@ void MBRegistry_PutCopy(MBRegistry *mreg, const char *key, const char *value)
     const char *newKey = MBRegistryDupToTable(mreg, key);
     const char *newValue = MBRegistryDupToTable(mreg, value);
 
-    MBRegistryPutHelper(mreg, newKey, FALSE, newValue, FALSE);
+    MBRegistryPutHelper(mreg, newKey, FALSE, FALSE, newValue, FALSE);
+}
+
+/*
+ * Copies the supplied strings, so they need not be valid after the call.
+ * Assumes the key is not already in the registry.
+ */
+void MBRegistry_PutCopyUnique(MBRegistry *mreg, const char *key,
+                              const char *value)
+{
+    const char *newKey = MBRegistryDupToTable(mreg, key);
+    const char *newValue = MBRegistryDupToTable(mreg, value);
+
+    MBRegistryPutHelper(mreg, newKey, FALSE, TRUE, newValue, FALSE);
 }
 
 const char *MBRegistry_Remove(MBRegistry *mreg, const char *key)
@@ -404,10 +420,22 @@ void MBRegistry_DebugDump(MBRegistry *mreg)
     }
 }
 
-void MBRegistry_PutAll(MBRegistry *dest, MBRegistry *src, const char *prefix)
+void MBRegistryPutAllHelper(MBRegistry *dest, MBRegistry *src,
+                            const char *prefix,
+                            bool unique)
 {
     bool usePrefix;
     MBString key;
+
+    if (MBRegistry_NumEntries(dest) == 0) {
+        unique = TRUE;
+    }
+
+    /*
+     * We could optimize this for large registries if we don't use
+     * the normal PutCopy and do the unique check ourselves, since we know
+     * that all the original keys in src are unique.
+     */
 
     if (prefix == NULL || strcmp(prefix, "") == 0) {
         usePrefix = FALSE;
@@ -422,15 +450,34 @@ void MBRegistry_PutAll(MBRegistry *dest, MBRegistry *src, const char *prefix)
         if (usePrefix) {
             MBString_CopyCStr(&key, prefix);
             MBString_AppendCStr(&key, n->key);
-            MBRegistry_PutCopy(dest, MBString_GetCStr(&key), n->value);
+            if (unique) {
+                MBRegistry_PutCopyUnique(dest, MBString_GetCStr(&key), n->value);
+            } else {
+                MBRegistry_PutCopy(dest, MBString_GetCStr(&key), n->value);
+            }
         } else {
-            MBRegistry_PutCopy(dest, n->key, n->value);
+            if (unique) {
+                MBRegistry_PutCopyUnique(dest, n->key, n->value);
+            } else {
+                MBRegistry_PutCopy(dest, n->key, n->value);
+            }
         }
     }
 
     if (usePrefix) {
         MBString_Destroy(&key);
     }
+}
+
+void MBRegistry_PutAllUnique(MBRegistry *dest, MBRegistry *src,
+                             const char *prefix)
+{
+    MBRegistryPutAllHelper(dest, src, prefix, TRUE);
+}
+
+void MBRegistry_PutAll(MBRegistry *dest, MBRegistry *src, const char *prefix)
+{
+    MBRegistryPutAllHelper(dest, src, prefix, FALSE);
 }
 
 void MBRegistry_SplitOnPrefix(MBRegistry *dest, MBRegistry *src,

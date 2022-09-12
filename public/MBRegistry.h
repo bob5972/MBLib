@@ -57,7 +57,9 @@ void MBRegistry_MakeEmpty(MBRegistry *mreg);
 
 void MBRegistry_PutConst(MBRegistry *mreg, const char *key, const char *value);
 void MBRegistry_PutCopy(MBRegistry *mreg, const char *key, const char *value);
+void MBRegistry_PutCopyUnique(MBRegistry *mreg, const char *key, const char *value);
 void MBRegistry_PutAll(MBRegistry *dest, MBRegistry *src, const char *prefix);
+void MBRegistry_PutAllUnique(MBRegistry *dest, MBRegistry *src, const char *prefix);
 
 bool MBRegistry_ContainsKey(MBRegistry *mreg, const char *key);
 const char *MBRegistry_Get(MBRegistry *mreg, const char *key);
