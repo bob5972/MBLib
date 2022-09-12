@@ -211,8 +211,10 @@ void MBOpt_Init(int argc, char **argv)
 
             ASSERT(e->cmd == NULL || strcmp(e->cmd, mbopt.argCmd) == 0);
 
-            if (strcmp(argv[i], e->opt.shortOpt) == 0 ||
-                strcmp(argv[i], e->opt.longOpt) == 0) {
+            if ((e->opt.shortOpt != NULL &&
+                 strcmp(argv[i], e->opt.shortOpt) == 0) ||
+                (e->opt.longOpt != NULL &&
+                 strcmp(argv[i], e->opt.longOpt) == 0)) {
                 e->present = TRUE;
                 e->value = "TRUE";
 

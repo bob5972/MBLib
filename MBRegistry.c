@@ -52,7 +52,6 @@ typedef struct MBRegistryNode {
 static void MBRegistryAddToTable(MBRegistry *mreg, char *s);
 static const char *MBRegistryDupToTable(MBRegistry *mreg, const char *s);
 
-
 MBRegistry *MBRegistry_Alloc()
 {
     MBRegistry *mreg = MBUtil_ZAlloc(sizeof(*mreg));
