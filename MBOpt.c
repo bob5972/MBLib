@@ -104,6 +104,11 @@ const char *MBOpt_GetProgramVersion(void)
     }
 }
 
+const char *MBOpt_GetCmd(void)
+{
+    return mbopt.argCmd;
+}
+
 
 void MBOpt_LoadOptions(const char *cmd, MBOption *opts, int numOpts)
 {
@@ -224,6 +229,16 @@ void MBOpt_Init(int argc, char **argv)
             }
         }
     }
+
+
+    if (MBOpt_IsPresent("version")) {
+        MBOpt_PrintMBLibVersion();
+        exit(0);
+    }
+    if (MBOpt_IsPresent("help")) {
+        MBOpt_PrintHelpText();
+        exit(0);
+    }
 }
 
 void MBOpt_Exit(void)
@@ -267,23 +282,33 @@ void MBOpt_PrintHelpText(void)
 
     if (CMBCStrVec_Size(&mbopt.cmds) > 1) {
         Warning("Usage:\n");
-        Warning("\t%s [cmd] [options]\n", mbopt.arg0);
+        Warning("\t%s [cmd] [options]\n", MBOpt_GetProgramName());
 
-        Warning(" Commands:\n");
+        Warning(" Commands:\n\t");
         for (int c = 0; c < CMBCStrVec_Size(&mbopt.cmds); c++) {
-            Warning("%s, ");
+            Warning("%s, ", CMBCStrVec_GetValue(&mbopt.cmds, c));
         }
         Warning("\n");
+    } else if (MBOpt_GetProgramName() != NULL) {
+        Warning("%s Usage:\n", MBOpt_GetProgramName());
     } else {
-        Warning("%s Usage:\n", mbopt.arg0 != NULL ? mbopt.arg0 : "");
+        Warning(" Usage:\n");
     }
 
     Warning(" Options:\n", mbopt.arg0);
     for (uint32 i = 0; i < CMBOptVec_Size(&mbopt.entries); i++) {
         MBOptionEntry *e = CMBOptVec_GetPtr(&mbopt.entries, i);
-        Warning("\t%s | %s, %s: %s\n",
-                e->cmd != NULL ? e->cmd : "",
-                e->opt.shortOpt, e->opt.longOpt, e->opt.helpText);
+        if (CMBCStrVec_Size(&mbopt.cmds) > 1) {
+            ASSERT(e->cmd == NULL || strlen(e->cmd) <= 16);
+            ASSERT(strlen(e->opt.longOpt) <= 16);
+            Warning("\t%16s | %s, %16s: %s\n",
+                    e->cmd != NULL ? e->cmd : "",
+                    e->opt.shortOpt, e->opt.longOpt, e->opt.helpText);
+        } else {
+            ASSERT(strlen(e->opt.longOpt) <= 16);
+            Warning("\t| %s, %16s: %s\n",
+                    e->opt.shortOpt, e->opt.longOpt, e->opt.helpText);
+        }
     }
 }
 

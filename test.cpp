@@ -53,15 +53,6 @@ int main(int argc, char *argv[])
     MBOpt_LoadOptions(NULL, opts, ARRAYSIZE(opts));
     MBOpt_Init(argc, argv);
 
-    if (MBOpt_IsPresent("version")) {
-        MBOpt_PrintMBLibVersion();
-        exit(0);
-    }
-    if (MBOpt_IsPresent("help")) {
-        MBOpt_PrintHelpText();
-        exit(0);
-    }
-
     if (MBOpt_IsPresent("benchmark")) {
         benchmark = TRUE;
     } else if (MBOpt_IsPresent("tests")) {

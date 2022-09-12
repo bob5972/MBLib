@@ -50,6 +50,8 @@ void MBOpt_Exit(void);
 void MBOpt_PrintMBLibVersion(void);
 void MBOpt_PrintHelpText(void);
 
+const char *MBOpt_GetCmd(void);
+
 bool MBOpt_IsValid(const char *option);
 bool MBOpt_IsPresent(const char *option);
 const char *MBOpt_GetCStr(const char *option);
