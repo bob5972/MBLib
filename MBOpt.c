@@ -44,7 +44,8 @@ typedef struct MBOptGlobalData {
     bool initialized;
     const char *arg0;
     const char *argCmd;
-    const char *programVersionString;
+    const char *programVersion;
+    const char *programName;
 
     MBRegistry *mreg;
     bool entriesInitialized;
@@ -77,8 +78,36 @@ static void MBOptInitCmds(int capacity)
     }
 }
 
+void MBOpt_SetProgram(const char *name, const char *version)
+{
+    mbopt.programVersion = version;
+    mbopt.programName = name;
+}
+
+const char *MBOpt_GetProgramName(void)
+{
+    if (mbopt.programName != NULL) {
+        return mbopt.programName;
+    } else if (mbopt.arg0 != NULL) {
+        return mbopt.arg0;
+    } else {
+        return NULL;
+    }
+}
+
+const char *MBOpt_GetProgramVersion(void)
+{
+    if (mbopt.programVersion != NULL) {
+        return mbopt.programVersion;
+    } else {
+        return NULL;
+    }
+}
+
+
 void MBOpt_LoadOptions(const char *cmd, MBOption *opts, int numOpts)
 {
+    bool addCmd = TRUE;
     ASSERT(!mbopt.initialized);
     ASSERT(numOpts >= 0);
     ASSERT(numOpts < MAX_INT32);
@@ -92,14 +121,23 @@ void MBOpt_LoadOptions(const char *cmd, MBOption *opts, int numOpts)
     MBOptInitEntries(numOpts);
     MBOptInitCmds(1);
 
-    for (int i = 0; i < CMBCStrVec_Size(&mbopt.cmds); i++) {
-        const char *s = CMBCStrVec_GetValue(&mbopt.cmds, i);
-        ASSERT(cmd != NULL || s != NULL);
-        if (cmd != NULL && s != NULL) {
-            ASSERT(strcmp(cmd, s) != 0);
+    if (cmd != NULL) {
+        for (int i = 0; i < CMBCStrVec_Size(&mbopt.cmds); i++) {
+            const char *s = CMBCStrVec_GetValue(&mbopt.cmds, i);
+            ASSERT(cmd != NULL);
+            ASSERT(s != NULL);
+            if (strcmp(cmd, s) == 0) {
+                addCmd = FALSE;
+                break;
+            }
         }
+    } else {
+        addCmd = FALSE;
     }
-    CMBCStrVec_AppendValue(&mbopt.cmds, cmd);
+
+    if (addCmd) {
+        CMBCStrVec_AppendValue(&mbopt.cmds, cmd);
+    }
 
     for (uint32 i = 0; i < numOpts; i++) {
         CMBOptVec_Grow(&mbopt.entries);
@@ -123,6 +161,12 @@ void MBOpt_Init(int argc, char **argv)
     int argStart = 0;
 
     ASSERT(!mbopt.initialized);
+
+    MBOption default_opts[] = {
+        { "-h", "--help",      FALSE, "Print the help text"           },
+        { "-v", "--version",   FALSE, "Print the version information" },
+    };
+    MBOpt_LoadOptions(NULL, default_opts, ARRAYSIZE(default_opts));
 
     MBOptInitEntries(0);
     MBOptInitCmds(0);
@@ -202,11 +246,12 @@ void MBOpt_Exit(void)
 void MBOpt_PrintMBLibVersion(void)
 {
     Warning("\n");
-    if (mbopt.arg0 != NULL) {
-        if (mbopt.programVersionString != NULL) {
-            Warning("%s version %s\n", mbopt.arg0, mbopt.programVersionString);
+    if (MBOpt_GetProgramName() != NULL) {
+        if (MBOpt_GetProgramVersion() != NULL) {
+            Warning("%s version %s\n", MBOpt_GetProgramName(),
+                    MBOpt_GetProgramVersion());
         } else {
-            Warning("%s\n", mbopt.arg0);
+            Warning("%s\n", MBOpt_GetProgramName());
         }
     }
 

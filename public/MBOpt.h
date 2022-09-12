@@ -39,7 +39,10 @@ typedef struct MBOption {
     const char *helpText;
 } MBOption;
 
-void MBOpt_SetProgramVersion(const char *versionString);
+const char *MBOpt_GetProgramName(void);
+const char *MBOpt_GetProgramVersion(void);
+
+void MBOpt_SetProgram(const char *name, const char *version);
 void MBOpt_LoadOptions(const char *cmd, MBOption *opts, int numOpts);
 void MBOpt_Init(int argc, char **argv);
 void MBOpt_Exit(void);

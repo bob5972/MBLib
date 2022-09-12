@@ -30,31 +30,37 @@
 #include "MBUnitTest.h"
 #include "MBOpt.h"
 #include "MBBasic.h"
+#include "MBConfig.h"
+
+#ifdef BENCHMARK
+#define BENCHMARK_DEFAULT TRUE
+#define PROGRAM_NAME "benchmark"
+#else
+#define BENCHMARK_DEFAULT FALSE
+#define PROGRAM_NAME "test.bin"
+#endif
 
 int main(int argc, char *argv[])
 {
-    bool benchmark;
+    bool benchmark = BENCHMARK_DEFAULT;
 
     MBOption opts[] = {
-        { "-h", "--help",      FALSE, "Print the help text" },
-        { "-v", "--version",   FALSE, "Print the help text" },
         { "-b", "--benchmark", FALSE, "Run the benchmark"   },
         { "-t", "--tests",     FALSE, "Run the unit tests"  },
     };
 
+    MBOpt_SetProgram(PROGRAM_NAME, MBLIB_VERSION_STRING);
     MBOpt_LoadOptions(NULL, opts, ARRAYSIZE(opts));
     MBOpt_Init(argc, argv);
 
-    if (MBOpt_IsPresent("help") || MBOpt_IsPresent("version")) {
+    if (MBOpt_IsPresent("version")) {
+        MBOpt_PrintMBLibVersion();
+        exit(0);
+    }
+    if (MBOpt_IsPresent("help")) {
         MBOpt_PrintHelpText();
         exit(0);
     }
-
-#ifdef BENCHMARK
-    benchmark = TRUE;
-#else
-    benchmark = FALSE;
-#endif
 
     if (MBOpt_IsPresent("benchmark")) {
         benchmark = TRUE;
