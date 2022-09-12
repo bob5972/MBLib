@@ -153,8 +153,7 @@ void MBOpt_LoadOptions(const char *cmd, MBOption *opts, int numOpts)
         e->cmd = cmd;
         e->value = NULL;
 
-        ASSERT(e->opt.shortOpt != NULL);
-        ASSERT(e->opt.shortOpt[0] == '-');
+        ASSERT(e->opt.shortOpt == NULL || e->opt.shortOpt[0] == '-');
         ASSERT(e->opt.longOpt != NULL);
         ASSERT(e->opt.longOpt[0] == '-');
         ASSERT(e->opt.longOpt[1] == '-');
