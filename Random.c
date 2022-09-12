@@ -33,7 +33,7 @@
 #include "MBAssert.h"
 
 typedef struct RandomGlobalData {
-    bool initialized;
+    uint initializedCount;
     bool haveSeed;
     uint64 seed;
 
@@ -68,7 +68,7 @@ void RandomState_GenerateSeed(RandomState *r)
      * RandomState's deterministic if someone called Random_SetSeed
      * before this.
      */
-    ASSERT(randomData.initialized);
+    ASSERT(randomData.initializedCount > 0);
     RandomState_SetSeed(r, Random_Uint64());
 }
 
@@ -273,8 +273,11 @@ int RandomState_DiceSum(RandomState *r, int numDice, int diceMax)
  */
 void Random_Init(void)
 {
-    ASSERT(!randomData.initialized);
-    randomData.initialized = TRUE;
+    randomData.initializedCount++;
+
+    if (randomData.initializedCount > 1) {
+        return;
+    }
 
     if (!randomData.haveSeed) {
         Random_GenerateSeed();
@@ -284,7 +287,13 @@ void Random_Init(void)
 
 void Random_Exit(void)
 {
-    randomData.initialized = FALSE;
+    ASSERT(randomData.initializedCount > 0);
+    randomData.initializedCount--;
+
+    if (randomData.initializedCount > 0) {
+        return;
+    }
+
     randomData.haveSeed = FALSE;
 }
 
@@ -349,7 +358,7 @@ void Random_SetSeed(uint64 seed)
 
 uint32 Random_Uint32(void)
 {
-    ASSERT(randomData.initialized);
+    ASSERT(randomData.initializedCount > 0);
     ASSERT(randomData.haveSeed);
     return RandomState_Uint32(&randomData.rs);
 }
@@ -366,7 +375,7 @@ bool Random_Flip(float trueProb)
 
 float Random_Float(float min, float max)
 {
-    ASSERT(randomData.initialized);
+    ASSERT(randomData.initializedCount > 0);
     return RandomState_Float(&randomData.rs, min, max);
 }
 

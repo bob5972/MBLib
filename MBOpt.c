@@ -278,6 +278,8 @@ void MBOpt_PrintMBLibVersion(void)
 
 void MBOpt_PrintHelpText(void)
 {
+    int cmdLength = 0;
+    int optLength = 0;
     MBOpt_PrintMBLibVersion();
 
     if (CMBCStrVec_Size(&mbopt.cmds) > 1) {
@@ -286,7 +288,9 @@ void MBOpt_PrintHelpText(void)
 
         Warning(" Commands:\n\t");
         for (int c = 0; c < CMBCStrVec_Size(&mbopt.cmds); c++) {
-            Warning("%s, ", CMBCStrVec_GetValue(&mbopt.cmds, c));
+            const char *cmd = CMBCStrVec_GetValue(&mbopt.cmds, c);
+            cmdLength = MAX(cmdLength, strlen(cmd));
+            Warning("%s, ", cmd);
         }
         Warning("\n");
     } else if (MBOpt_GetProgramName() != NULL) {
@@ -295,19 +299,25 @@ void MBOpt_PrintHelpText(void)
         Warning(" Usage:\n");
     }
 
+    for (uint32 i = 0; i < CMBOptVec_Size(&mbopt.entries); i++) {
+        MBOptionEntry *e = CMBOptVec_GetPtr(&mbopt.entries, i);
+        optLength = MAX(optLength, strlen(e->opt.longOpt));
+    }
+
     Warning(" Options:\n", mbopt.arg0);
     for (uint32 i = 0; i < CMBOptVec_Size(&mbopt.entries); i++) {
         MBOptionEntry *e = CMBOptVec_GetPtr(&mbopt.entries, i);
         if (CMBCStrVec_Size(&mbopt.cmds) > 1) {
-            ASSERT(e->cmd == NULL || strlen(e->cmd) <= 16);
-            ASSERT(strlen(e->opt.longOpt) <= 16);
-            Warning("\t%16s | %s, %16s: %s\n",
-                    e->cmd != NULL ? e->cmd : "",
-                    e->opt.shortOpt, e->opt.longOpt, e->opt.helpText);
+            Warning(" %*s | %s, %*s: %s\n",
+                    cmdLength, e->cmd != NULL ? e->cmd : "",
+                    e->opt.shortOpt,
+                    optLength, e->opt.longOpt,
+                    e->opt.helpText);
         } else {
             ASSERT(strlen(e->opt.longOpt) <= 16);
-            Warning("\t| %s, %16s: %s\n",
-                    e->opt.shortOpt, e->opt.longOpt, e->opt.helpText);
+            Warning("\t| %s, %*s: %s\n",
+                    e->opt.shortOpt,
+                    optLength, e->opt.longOpt, e->opt.helpText);
         }
     }
 }
