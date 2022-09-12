@@ -36,7 +36,12 @@
 #include "MBCompare.h"
 #include "MBTypes.h"
 
+#define CMBVECTOR_MAGIC 0xD0B0B4A4A87BE62A
+
 typedef struct CMBVector {
+    DEBUG_ONLY(
+        uint64 magic;
+    );
     int size;
     int capacity;
     int itemSize;
@@ -51,13 +56,15 @@ static INLINE void CMBVector_Create(CMBVector *vector, int itemSize,
 {
     ASSERT(itemSize > 0);
     ASSERT(itemSize < MAX_INT32 / 2);
-    ASSERT(capacity > 0);
     ASSERT(capacity < MAX_INT32 / 2);
     ASSERT(size >= 0);
     ASSERT(size < MAX_INT32 / 2);
 
     ASSERT(capacity >= size);
 
+    DEBUG_ONLY(
+        vector->magic = CMBVECTOR_MAGIC;
+    );
     vector->size = size;
     vector->capacity = capacity;
     vector->itemSize = itemSize;
@@ -84,6 +91,12 @@ static INLINE void CMBVector_CreateWithSize(CMBVector *vector, int itemSize,
 static INLINE void CMBVector_Destroy(CMBVector *vector)
 {
     ASSERT(vector->pinCount == 0);
+    ASSERT(vector->magic == CMBVECTOR_MAGIC);
+
+    DEBUG_ONLY(
+        vector->magic = 0;
+    );
+
     free(vector->items);
     vector->items = NULL;
 }

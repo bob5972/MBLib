@@ -27,13 +27,28 @@
 #include <stdlib.h>
 #include <iostream>
 
-#include "MBString.hpp"
 #include "MBUnitTest.h"
+#include "MBOpt.h"
+#include "MBBasic.h"
 
 int main(int argc, char *argv[])
 {
-    MBString arg;
     bool benchmark;
+
+    MBOption opts[] = {
+        { "-h", "--help",      FALSE, "Print the help text" },
+        { "-v", "--version",   FALSE, "Print the help text" },
+        { "-b", "--benchmark", FALSE, "Run the benchmark"   },
+        { "-t", "--tests",     FALSE, "Run the unit tests"  },
+    };
+
+    MBOpt_LoadOptions(NULL, opts, ARRAYSIZE(opts));
+    MBOpt_Init(argc, argv);
+
+    if (MBOpt_IsPresent("help") || MBOpt_IsPresent("version")) {
+        MBOpt_PrintHelpText();
+        exit(0);
+    }
 
 #ifdef BENCHMARK
     benchmark = TRUE;
@@ -41,14 +56,10 @@ int main(int argc, char *argv[])
     benchmark = FALSE;
 #endif
 
-    if (argc > 1) {
-        arg = argv[1];
-
-        if (arg == "-b") {
-            benchmark = TRUE;
-        } else if (arg == "-f") {
-            benchmark = FALSE;
-        }
+    if (MBOpt_IsPresent("benchmark")) {
+        benchmark = TRUE;
+    } else if (MBOpt_IsPresent("tests")) {
+        benchmark = FALSE;
     }
 
     if (benchmark) {
@@ -56,6 +67,8 @@ int main(int argc, char *argv[])
     } else {
         MBUnitTest_RunTests();
     }
+
+    MBOpt_Exit();
 
     printf("Done.\n");
     return 0;

@@ -29,74 +29,157 @@
 #include "MBTypes.h"
 #include "MBAssert.h"
 #include "MBRegistry.h"
+#include "MBVector.h"
 
-typedef struct MBOptionValue {
+typedef struct MBOptionEntry {
+    const char *cmd;
     MBOption opt;
     bool present;
-    const char *string;
-} MBOptionValue;
+    const char *value;
+} MBOptionEntry;
+
+DECLARE_CMBVECTOR_TYPE(MBOptionEntry, CMBOptVec);
 
 typedef struct MBOptGlobalData {
     bool initialized;
     const char *arg0;
+    const char *argCmd;
+    const char *programVersionString;
 
     MBRegistry *mreg;
-    MBOptionValue *values;
-    uint32 numOpts;
+    bool entriesInitialized;
+    CMBOptVec entries;
+    bool cmdsInitialized;
+    CMBCStrVec cmds;
 } MBOptGlobalData;
 
 static MBOptGlobalData mbopt;
 
-void MBOpt_Init(MBOption *opts, int numOpts, int argc, char **argv)
+static void MBOptInitEntries(int capacity)
 {
-    ASSERT(MBUtil_IsZero(&mbopt, sizeof(mbopt)));
+    if (!mbopt.entriesInitialized) {
+        CMBOptVec_Create(&mbopt.entries, 0, capacity);
+        mbopt.entriesInitialized = TRUE;
+    } else {
+        int size = CMBOptVec_Size(&mbopt.entries);
+        CMBOptVec_EnsureCapacity(&mbopt.entries, capacity + size);
+    }
+}
+
+static void MBOptInitCmds(int capacity)
+{
+    if (!mbopt.cmdsInitialized) {
+        CMBCStrVec_Create(&mbopt.cmds, 0, capacity);
+        mbopt.cmdsInitialized = TRUE;
+    } else {
+        int size = CMBCStrVec_Size(&mbopt.cmds);
+        CMBCStrVec_EnsureCapacity(&mbopt.cmds, capacity + size);
+    }
+}
+
+void MBOpt_LoadOptions(const char *cmd, MBOption *opts, int numOpts)
+{
     ASSERT(!mbopt.initialized);
     ASSERT(numOpts >= 0);
     ASSERT(numOpts < MAX_INT32);
 
-    mbopt.mreg = MBRegistry_Alloc();
+    /*
+     * Don't allow commands to start with a dash to distinguish them from
+     * options.
+     */
+    ASSERT(cmd == NULL || cmd[0] != '-');
 
-    mbopt.values = malloc(numOpts * sizeof(mbopt.values[0]));
-    mbopt.numOpts = numOpts;
-    for (uint32 i = 0; i < numOpts; i++) {
-        MBUtil_Zero(&mbopt.values[i], sizeof(mbopt.values[i]));
+    MBOptInitEntries(numOpts);
+    MBOptInitCmds(1);
 
-        mbopt.values[i].opt = opts[i];
-        mbopt.values[i].present = FALSE;
-
-        ASSERT(mbopt.values[i].opt.shortOpt != NULL);
-        ASSERT(mbopt.values[i].opt.shortOpt[0] == '-');
-        ASSERT(mbopt.values[i].opt.longOpt != NULL);
-        ASSERT(mbopt.values[i].opt.longOpt[0] == '-');
-        ASSERT(mbopt.values[i].opt.longOpt[1] == '-');
+    for (int i = 0; i < CMBCStrVec_Size(&mbopt.cmds); i++) {
+        const char *s = CMBCStrVec_GetValue(&mbopt.cmds, i);
+        ASSERT(cmd != NULL || s != NULL);
+        if (cmd != NULL && s != NULL) {
+            ASSERT(strcmp(cmd, s) != 0);
+        }
     }
+    CMBCStrVec_AppendValue(&mbopt.cmds, cmd);
+
+    for (uint32 i = 0; i < numOpts; i++) {
+        CMBOptVec_Grow(&mbopt.entries);
+        MBOptionEntry *e = CMBOptVec_GetLastPtr(&mbopt.entries);
+
+        e->opt = opts[i];
+        e->present = FALSE;
+        e->cmd = cmd;
+        e->value = NULL;
+
+        ASSERT(e->opt.shortOpt != NULL);
+        ASSERT(e->opt.shortOpt[0] == '-');
+        ASSERT(e->opt.longOpt != NULL);
+        ASSERT(e->opt.longOpt[0] == '-');
+        ASSERT(e->opt.longOpt[1] == '-');
+    }
+}
+
+void MBOpt_Init(int argc, char **argv)
+{
+    int argStart = 0;
+
+    ASSERT(!mbopt.initialized);
+
+    MBOptInitEntries(0);
+    MBOptInitCmds(0);
+
+    mbopt.mreg = MBRegistry_Alloc();
 
     ASSERT(argc >= 1);
     mbopt.arg0 = argv[0];
+    argStart++;
 
-    for (uint32 i = 1; i < argc; i++) {
-        for (uint32 o = 0; o < numOpts; o++) {
-            if (strcmp(argv[i], mbopt.values[o].opt.shortOpt) == 0 ||
-                strcmp(argv[i], mbopt.values[o].opt.longOpt) == 0) {
-                mbopt.values[o].present = TRUE;
-                mbopt.values[o].string = "TRUE";
+    mbopt.initialized = TRUE;
+    if (argc <= 1) {
+        return;
+    }
 
-                if (mbopt.values[o].opt.extraArg) {
+    for (int i = 0; i < CMBCStrVec_Size(&mbopt.cmds); i++) {
+        const char *c = CMBCStrVec_GetValue(&mbopt.cmds, i);
+        ASSERT(argv[1] != NULL);
+        if (c != NULL && strcmp(c, argv[1]) == 0) {
+            mbopt.argCmd = argv[1];
+            argStart++;
+            break;
+        }
+    }
+
+    ASSERT(argStart == 1 || argStart == 2);
+    for (uint32 i = argStart; i < argc; i++) {
+        for (uint32 o = 0; o < CMBOptVec_Size(&mbopt.entries); o++) {
+            MBOptionEntry *e = CMBOptVec_GetPtr(&mbopt.entries, o);
+
+            if (e->cmd != NULL && mbopt.argCmd == NULL) {
+                continue;
+            } else if (e->cmd != NULL && mbopt.argCmd != NULL &&
+                       strcmp(e->cmd, mbopt.argCmd) != 0) {
+                    continue;
+            }
+
+            ASSERT(e->cmd == NULL || strcmp(e->cmd, mbopt.argCmd) == 0);
+
+            if (strcmp(argv[i], e->opt.shortOpt) == 0 ||
+                strcmp(argv[i], e->opt.longOpt) == 0) {
+                e->present = TRUE;
+                e->value = "TRUE";
+
+                if (e->opt.extraArg) {
                     if (i + 1 < argc) {
-                        mbopt.values[o].string = argv[i+1];
+                        e->value = argv[i+1];
                     } else {
                         PANIC("Option %s expected an argument\n", argv[i]);
                     }
                 }
 
-                MBRegistry_PutCopy(mbopt.mreg, &mbopt.values[o].opt.longOpt[2],
-                                   mbopt.values[o].string);
+                MBRegistry_PutCopy(mbopt.mreg, &e->opt.longOpt[2], e->value);
                 break;
             }
         }
     }
-
-    mbopt.initialized = TRUE;
 }
 
 void MBOpt_Exit(void)
@@ -104,27 +187,58 @@ void MBOpt_Exit(void)
     ASSERT(mbopt.initialized);
     MBRegistry_Free(mbopt.mreg);
     mbopt.mreg = NULL;
+
+    ASSERT(mbopt.entriesInitialized);
+    CMBOptVec_Destroy(&mbopt.entries);
+    mbopt.entriesInitialized = FALSE;
+
+    ASSERT(mbopt.cmdsInitialized);
+    CMBCStrVec_Destroy(&mbopt.cmds);
+    mbopt.cmdsInitialized = FALSE;
+
     mbopt.initialized = FALSE;
 }
 
 void MBOpt_PrintMBLibVersion(void)
 {
     Warning("\n");
-    Warning("MBLib version %s\n", MBLIB_VERSION_STRING);
-    Warning("DEBUG=%d, DEVEL=%d\n", mb_debug, mb_devel);
-    Warning("MB_HAS_SDL2=%d\n", mb_has_sdl2);
+    if (mbopt.arg0 != NULL) {
+        if (mbopt.programVersionString != NULL) {
+            Warning("%s version %s\n", mbopt.arg0, mbopt.programVersionString);
+        } else {
+            Warning("%s\n", mbopt.arg0);
+        }
+    }
+
+    Warning("\tMBLib version %s\n", MBLIB_VERSION_STRING);
+    Warning("\tMB_DEBUG=%d, MB_DEVEL=%d\n", mb_debug, mb_devel);
+    Warning("\tMB_HAS_SDL2=%d\n", mb_has_sdl2);
     Warning("\n");
 }
 
 void MBOpt_PrintHelpText(void)
 {
     MBOpt_PrintMBLibVersion();
-    Warning("%s Usage:\n", mbopt.arg0);
-    for (uint32 i = 0; i < mbopt.numOpts; i++) {
-        Warning("\t%s, %s: %s\n",
-                mbopt.values[i].opt.shortOpt,
-                mbopt.values[i].opt.longOpt,
-                mbopt.values[i].opt.helpText);
+
+    if (CMBCStrVec_Size(&mbopt.cmds) > 1) {
+        Warning("Usage:\n");
+        Warning("\t%s [cmd] [options]\n", mbopt.arg0);
+
+        Warning(" Commands:\n");
+        for (int c = 0; c < CMBCStrVec_Size(&mbopt.cmds); c++) {
+            Warning("%s, ");
+        }
+        Warning("\n");
+    } else {
+        Warning("%s Usage:\n", mbopt.arg0 != NULL ? mbopt.arg0 : "");
+    }
+
+    Warning(" Options:\n", mbopt.arg0);
+    for (uint32 i = 0; i < CMBOptVec_Size(&mbopt.entries); i++) {
+        MBOptionEntry *e = CMBOptVec_GetPtr(&mbopt.entries, i);
+        Warning("\t%s | %s, %s: %s\n",
+                e->cmd != NULL ? e->cmd : "",
+                e->opt.shortOpt, e->opt.longOpt, e->opt.helpText);
     }
 }
 
@@ -135,8 +249,19 @@ bool MBOpt_IsValid(const char *option)
         return TRUE;
     }
 
-    for (uint32 i = 0; i < mbopt.numOpts; i++) {
-        if (strcmp(option, &mbopt.values[i].opt.longOpt[2]) == 0) {
+    for (uint32 i = 0; i < CMBOptVec_Size(&mbopt.entries); i++) {
+        MBOptionEntry *e = CMBOptVec_GetPtr(&mbopt.entries, i);
+
+        if (e->cmd != NULL && mbopt.argCmd == NULL) {
+            continue;
+        } else if (e->cmd != NULL && mbopt.argCmd != NULL &&
+                   strcmp(e->cmd, mbopt.argCmd) != 0) {
+                continue;
+        }
+
+        ASSERT(e->cmd == NULL || strcmp(e->cmd, mbopt.argCmd) == 0);
+
+        if (strcmp(option, &e->opt.longOpt[2]) == 0) {
             return TRUE;
         }
     }
