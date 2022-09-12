@@ -104,11 +104,13 @@ static INLINE void CMBVector_Destroy(CMBVector *vector)
 static INLINE int CMBVector_ItemSize(const CMBVector *vector)
 {
     ASSERT(vector != NULL);
+    ASSERT(vector->magic == CMBVECTOR_MAGIC);
     return vector->itemSize;
 }
 
 static INLINE void CMBVector_Pin(CMBVector *vector)
 {
+    ASSERT(vector->magic == CMBVECTOR_MAGIC);
     if (mb_debug) {
         vector->pinCount++;
     }
@@ -116,6 +118,7 @@ static INLINE void CMBVector_Pin(CMBVector *vector)
 
 static INLINE void CMBVector_Unpin(CMBVector *vector)
 {
+    ASSERT(vector->magic == CMBVECTOR_MAGIC);
     if (mb_debug) {
         ASSERT(vector->pinCount > 0);
         vector->pinCount--;
@@ -124,12 +127,14 @@ static INLINE void CMBVector_Unpin(CMBVector *vector)
 
 static INLINE int CMBVector_Size(const CMBVector *vector)
 {
+    ASSERT(vector->magic == CMBVECTOR_MAGIC);
     ASSERT(vector->size >= 0);
     return vector->size;
 }
 
 static INLINE void CMBVector_Resize(CMBVector *vector, int size)
 {
+    ASSERT(vector->magic == CMBVECTOR_MAGIC);
     ASSERT(size >= 0);
 
     CMBVector_EnsureCapacity(vector, size);
@@ -138,39 +143,46 @@ static INLINE void CMBVector_Resize(CMBVector *vector, int size)
 
 static INLINE void CMBVector_GrowBy(CMBVector *vector, int increment)
 {
+    ASSERT(vector->magic == CMBVECTOR_MAGIC);
     ASSERT(increment >= 0);
     CMBVector_Resize(vector, vector->size + increment);
 }
 
 static INLINE void CMBVector_Grow(CMBVector *vector)
 {
+    ASSERT(vector->magic == CMBVECTOR_MAGIC);
     CMBVector_GrowBy(vector, 1);
 }
 
 static INLINE void CMBVector_ShrinkBy(CMBVector *vector, int decrement)
 {
+    ASSERT(vector->magic == CMBVECTOR_MAGIC);
     ASSERT(decrement >= 0);
     CMBVector_Resize(vector, vector->size - decrement);
 }
 
 static INLINE void CMBVector_Shrink(CMBVector *vector)
 {
+    ASSERT(vector->magic == CMBVECTOR_MAGIC);
     CMBVector_ShrinkBy(vector, 1);
 }
 
 static INLINE bool CMBVector_IsEmpty(const CMBVector *vector)
 {
+    ASSERT(vector->magic == CMBVECTOR_MAGIC);
     return CMBVector_Size(vector) == 0;
 }
 
 static INLINE void CMBVector_MakeEmpty(CMBVector *vector)
 {
+    ASSERT(vector->magic == CMBVECTOR_MAGIC);
     CMBVector_Resize(vector, 0);
 }
 
 static INLINE void *
 CMBVectorGetHelper(CMBVector *vector, int index, int itemSize)
 {
+    ASSERT(vector->magic == CMBVECTOR_MAGIC);
     ASSERT(index >= 0);
     ASSERT(index < vector->size);
     ASSERT(itemSize == vector->itemSize);
@@ -181,6 +193,7 @@ CMBVectorGetHelper(CMBVector *vector, int index, int itemSize)
 static INLINE const void *
 CMBVectorGetHelperConst(const CMBVector *vector, int index, int itemSize)
 {
+    ASSERT(vector->magic == CMBVECTOR_MAGIC);
     ASSERT(index >= 0);
     ASSERT(index < vector->size);
     ASSERT(itemSize == vector->itemSize);
@@ -190,22 +203,27 @@ CMBVectorGetHelperConst(const CMBVector *vector, int index, int itemSize)
 
 static INLINE void *CMBVector_GetPtr(CMBVector *vector, int index)
 {
+    ASSERT(vector->magic == CMBVECTOR_MAGIC);
     return CMBVectorGetHelper(vector, index, vector->itemSize);
 }
 
 static INLINE void *CMBVectorGetLastPtrHelper(CMBVector *vector, int itemSize)
 {
+    ASSERT(vector->magic == CMBVECTOR_MAGIC);
     ASSERT(vector->size > 0);
     return CMBVectorGetHelper(vector, vector->size - 1, itemSize);
 }
 
 static INLINE void *CMBVector_GetLastPtr(CMBVector *vector)
 {
+    ASSERT(vector->magic == CMBVECTOR_MAGIC);
     return CMBVectorGetLastPtrHelper(vector, vector->itemSize);
 }
 
 static INLINE void CMBVector_Copy(CMBVector *dest, const CMBVector *src)
 {
+    ASSERT(src->magic == CMBVECTOR_MAGIC);
+    ASSERT(dest->magic == CMBVECTOR_MAGIC);
     ASSERT(dest->itemSize == src->itemSize);
 
     CMBVector_Resize(dest, 0);
@@ -217,6 +235,8 @@ static INLINE void CMBVector_Copy(CMBVector *dest, const CMBVector *src)
 
 static INLINE void CMBVector_Consume(CMBVector *dest, CMBVector *src)
 {
+    ASSERT(src->magic == CMBVECTOR_MAGIC);
+    ASSERT(dest->magic == CMBVECTOR_MAGIC);
     ASSERT(dest->itemSize == src->itemSize);
 
     /*
@@ -248,11 +268,13 @@ static INLINE void *CMBVector_GetCArray(CMBVector *vector)
     /*
      * Consider pinning the array if you're using this function.
      */
+    ASSERT(vector->magic == CMBVECTOR_MAGIC);
     return vector->items;
 }
 
 static INLINE void CMBVector_Sort(CMBVector *v, const CMBComparator *comp)
 {
+    ASSERT(v->magic == CMBVECTOR_MAGIC);
     ASSERT(v != NULL);
     ASSERT(comp != NULL);
     ASSERT(v->itemSize == comp->itemSize);

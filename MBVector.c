@@ -29,11 +29,10 @@
 
 void CMBVector_EnsureCapacity(CMBVector *vector, int capacity)
 {
-    ASSERT(vector->capacity > 0);
+    ASSERT(vector->magic == CMBVECTOR_MAGIC);
     ASSERT(vector->capacity < MAX_INT32 / 2);
     ASSERT(vector->size >= 0);
     ASSERT(vector->size < MAX_INT32 / 2);
-    ASSERT(capacity >= 0);
     ASSERT(capacity < MAX_INT32 / 2);
     ASSERT(vector->itemSize > 0);
     ASSERT(vector->itemSize < MAX_INT32 / 2);
