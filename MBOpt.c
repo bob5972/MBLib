@@ -309,15 +309,15 @@ void MBOpt_PrintHelpText(void)
     for (uint32 i = 0; i < CMBOptVec_Size(&mbopt.entries); i++) {
         MBOptionEntry *e = CMBOptVec_GetPtr(&mbopt.entries, i);
         if (CMBCStrVec_Size(&mbopt.cmds) > 1) {
-            Warning(" %*s | %s, %*s: %s\n",
+            Warning(" %*s | %2s, %*s: %s\n",
                     cmdLength, e->cmd != NULL ? e->cmd : "",
-                    e->opt.shortOpt,
+                    e->opt.shortOpt != NULL ? e->opt.shortOpt : "",
                     optLength, e->opt.longOpt,
                     e->opt.helpText);
         } else {
             ASSERT(strlen(e->opt.longOpt) <= 16);
-            Warning("\t| %s, %*s: %s\n",
-                    e->opt.shortOpt,
+            Warning("\t| %2s, %*s: %s\n",
+                    e->opt.shortOpt != NULL ? e->opt.shortOpt : "",
                     optLength, e->opt.longOpt, e->opt.helpText);
         }
     }
