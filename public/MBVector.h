@@ -39,17 +39,17 @@
 #define CMBVECTOR_MAGIC 0xD0B0B4A4A87BE62A
 
 typedef struct CMBVector {
-    /*
-     * This is only used in debug checks, but sometimes causes
-     * incremental build problems if it's actually ifdef'ed.
-     */
-    uint64 magic;
-
     int size;
     int capacity;
     int itemSize;
     int pinCount;
     void *items;
+
+    /*
+     * This is only used in debug checks, but sometimes causes
+     * incremental build problems if it's actually ifdef'ed.
+     */
+    uint64 magic;
 } CMBVector;
 
 void CMBVector_EnsureCapacity(CMBVector *vector, int capacity);
