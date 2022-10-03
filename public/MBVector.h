@@ -49,7 +49,7 @@ typedef struct CMBVector {
      * This is only used in debug checks, but sometimes causes
      * incremental build problems if it's actually ifdef'ed.
      */
-    uint64 magic;
+    DEBUG_ONLY(uint64 magic);
 } CMBVector;
 
 void CMBVector_EnsureCapacity(CMBVector *vector, int capacity);
@@ -65,7 +65,7 @@ static INLINE void CMBVector_Create(CMBVector *vector, int itemSize,
 
     ASSERT(capacity >= size);
 
-    vector->magic = CMBVECTOR_MAGIC;
+    DEBUG_ONLY(vector->magic = CMBVECTOR_MAGIC);
     vector->size = size;
     vector->capacity = capacity;
     vector->itemSize = itemSize;
@@ -94,7 +94,7 @@ static INLINE void CMBVector_Destroy(CMBVector *vector)
     ASSERT(vector->pinCount == 0);
     ASSERT(vector->magic == CMBVECTOR_MAGIC);
 
-    vector->magic = 0;
+    DEBUG_ONLY(vector->magic = 0);
 
     free(vector->items);
     vector->items = NULL;
