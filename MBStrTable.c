@@ -23,6 +23,7 @@
  * SOFTWARE.
  */
 
+#include <stdint.h>
 #include "MBStrTable.h"
 #include "MBLock.h"
 
