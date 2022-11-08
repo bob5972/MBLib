@@ -183,6 +183,18 @@ int RandomState_Enum(RandomState *r,
     int x;
     ASSERT(numValues > 0);
 
+    if (mb_debug) {
+        cumulative = 0.0;
+        for (x = 0; x < numValues; x++) {
+            cumulative += dist[x].probability;
+        }
+
+        if (cumulative > 1.0001f || cumulative < 0.9999f) {
+            PANIC("Distribution out of range: got=%f, expected=1.0\n",
+                  cumulative);
+        }
+    }
+
     rval = RandomState_UnitFloat(r);
 
     cumulative = 0.0;
