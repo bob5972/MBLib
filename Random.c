@@ -208,7 +208,7 @@ int RandomState_Enum(RandomState *r,
     /*
      * Rounding error, and/or caller is dumb.
      */
-    Log(0, "%s: Distribution exceeded: cumulative = %f\n", cumulative);
+    ASSERT(FALSE);
     return dist[numValues - 1].value;
 }
 

@@ -35,8 +35,8 @@
 
 //backtraces and logfile not implemented
 
-void Warning(const char *fmt, ...);
-void Log(int level, const char *fmt, ...);
+void Warning(const char *fmt, ...)
+	__attribute__((__format__ (__printf__, 1, 2)));
 
 #define NOT_TESTED() DebugPrintHelper( __FILE__, __LINE__, "NOT_TESTED\n")
 

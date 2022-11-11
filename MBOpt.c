@@ -305,7 +305,7 @@ void MBOpt_PrintHelpText(void)
         optLength = MAX(optLength, strlen(e->opt.longOpt));
     }
 
-    Warning(" Options:\n", mbopt.arg0);
+    Warning(" Options:\n");
     for (uint32 i = 0; i < CMBOptVec_Size(&mbopt.entries); i++) {
         MBOptionEntry *e = CMBOptVec_GetPtr(&mbopt.entries, i);
         if (CMBCStrVec_Size(&mbopt.cmds) > 1) {
