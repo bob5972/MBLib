@@ -8,9 +8,9 @@ include config.mk
 
 INCLUDE_FLAGS=-I $(MBLIB_SRCDIR)/ -I $(MBLIB_SRCDIR)/public
 
-#The BUILDROOT folder is included for config.h
-CFLAGS = --std=gnu11 ${DEFAULT_CFLAGS} ${INCLUDE_FLAGS} -I $(BUILDROOT)
-CPPFLAGS = ${DEFAULT_CFLAGS} ${INCLUDE_FLAGS} -I $(BUILDROOT)
+#The BUILDTYPE_ROOT folder is included for config.h
+CFLAGS = --std=gnu11 ${DEFAULT_CFLAGS} ${INCLUDE_FLAGS} -I $(BUILDTYPE_ROOT)
+CPPFLAGS = ${DEFAULT_CFLAGS} ${INCLUDE_FLAGS} -I $(BUILDTYPE_ROOT)
 
 LIBFLAGS =
 ifeq ($(MB_HAS_SDL2), 1)
@@ -48,7 +48,7 @@ CPP_SOURCES = MBString.cpp \
               Dumper.cpp
 
 C_SOURCES = BitVector.c \
-	    MBVarMap.c \
+	    	MBVarMap.c \
             MBAssert.c \
             MBDebug.c \
             MBOpt.c \
@@ -66,7 +66,7 @@ OBJECTS=$(addprefix $(MBLIB_BUILDDIR)/, \
           $(subst .c,.o, $(C_SOURCES)))
 
 #The config check is to test if we've been configured
-all: $(BUILDROOT)/config.h $(MBLIB_BUILDDIR)/MBLib.a testbin benchmarkbin
+all: $(BUILDTYPE_ROOT)/config.h $(MBLIB_BUILDDIR)/MBLib.a testbin benchmarkbin
 
 .PHONY: all clean distclean dist
 
@@ -77,13 +77,17 @@ test: testbin
 
 benchmarkbin: $(MBLIB_BUILDDIR)/benchmark.bin
 
-$(MBLIB_BUILDDIR)/test.bin: $(MBLIB_BUILDDIR)/MBLib.a $(MBLIB_SRCDIR)/public/* $(MBLIB_SRCDIR)/test.cpp
+$(MBLIB_BUILDDIR)/test.bin: $(MBLIB_BUILDDIR)/MBLib.a \
+                            $(MBLIB_SRCDIR)/public/* \
+					        $(MBLIB_SRCDIR)/test.cpp
 	${CXX} ${CPPFLAGS} -g $(MBLIB_SRCDIR)/test.cpp \
 					   $(MBLIB_BUILDDIR)/MBLib.a \
 					   $(LIBFLAGS) \
 					   -o $(MBLIB_BUILDDIR)/test.bin
 
-$(MBLIB_BUILDDIR)/benchmark.bin: $(MBLIB_BUILDDIR)/MBLib.a $(MBLIB_SRCDIR)/public/* $(MBLIB_SRCDIR)/test.cpp
+$(MBLIB_BUILDDIR)/benchmark.bin: $(MBLIB_BUILDDIR)/MBLib.a \
+                                 $(MBLIB_SRCDIR)/public/* \
+								 $(MBLIB_SRCDIR)/test.cpp
 	${CXX} -D BENCHMARK ${CPPFLAGS} $(MBLIB_SRCDIR)/test.cpp \
 									$(MBLIB_BUILDDIR)/MBLib.a \
 									$(LIBFLAGS) \
