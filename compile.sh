@@ -1,33 +1,21 @@
 #!/bin/bash
-# MBLib -- compile.sh
+# compile.sh -- part of MBLib
 
-if [ "$1" == "debug" ]; then
-    WANTDEBUG=1
-elif [ "$1" == "release" ]; then
-    WANTDEBUG=0
+if [ -f compile.local ]; then
+    source compile.local
+fi;
+
+MOPTS="";
+COPTS="";
+
+if [ "$THREADS" != "" ]; then
+    OPTS="${OPTS} -j ${THREADS}"
 else
-    WANTDEBUG=""
+    OPTS="${OPTS} -j 8"
 fi;
 
-if [ ! -f config.mk ]; then
-    CLEAN=1;
-else
-    cat config.mk | grep DEBUG=1 > /dev/null
-    if [ "$?" == "0" ]; then
-        export MB_DEBUG=1;
-    else
-        export MB_DEBUG=0;
-    fi;
+if [ "$BUILDTYPE" != "" ]; then
+    COPTS="${COPTS} --buildType $BUILDTYPE";
 fi;
 
-if [ "$WANTDEBUG" != "" ] &&
-   [ "$WANTDEBUG" != "$MB_DEBUG" ]; then
-    CLEAN=1;
-    export MB_DEBUG="$WANTDEBUG"
-fi;
-
-if [ "$CLEAN" != "" ]; then
-    ./configure && make clean;
-fi;
-
-make -j 32
+./configure $@ ${COPTS} && make $OPTS

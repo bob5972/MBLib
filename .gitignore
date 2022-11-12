@@ -9,3 +9,4 @@ gmon.out
 .cproject
 .settings/
 *.kate-swp
+*.local
