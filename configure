@@ -8,7 +8,7 @@ use MBBasic;
 use MBBuild;
 
 $MBBasic::PROGRAM_AUTHOR = "Michael Banack";
-$MBBasic::PROGRAM_COPYRIGHT_DATE = "2021";
+$MBBasic::PROGRAM_COPYRIGHT_DATE = "2021-2022";
 
 my $gScriptOptions = {
     "MBLibOutputDirPrefix=s" => { desc => "Prefix for MBLib output dirs",
@@ -20,7 +20,14 @@ my $gScriptOptions = {
 sub Main() {
     MBBasic::LoadOptions($gScriptOptions, __PACKAGE__);
     MBBuild::Init();
-    MBBuild::Configure();
+
+    my $config = {};
+
+    $bare = $OPTIONS->{bareOptions};
+    VERIFY(!defined($bare) || ARRAYLEN($bare) == 0,
+           "Too many bare options");
+
+    MBBuild::Configure($config);
     MBBuild::Exit();
 }
 
