@@ -77,9 +77,6 @@ uint64 RandomState_GetSeed(RandomState *r)
     return r->seed;
 }
 
-/*
- * The Workhorse of the entire module.
- */
 void RandomState_SetSeed(RandomState *r, uint64 seed)
 {
     r->seed = seed;
@@ -89,6 +86,10 @@ void RandomState_SetSeed(RandomState *r, uint64 seed)
     r->bitBucketSize = 0;
 }
 
+
+/*
+ * The Workhorse of the entire module.
+ */
 uint32 RandomState_Uint32(RandomState *r)
 {
     static const uint64 constA = 2862933555777941757ULL;
