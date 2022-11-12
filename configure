@@ -20,14 +20,7 @@ my $gScriptOptions = {
 sub Main() {
     MBBasic::LoadOptions($gScriptOptions, __PACKAGE__);
     MBBuild::Init();
-
-    my $config = {};
-
-    $bare = $OPTIONS->{bareOptions};
-    VERIFY(!defined($bare) || ARRAYLEN($bare) == 0,
-           "Too many bare options");
-
-    MBBuild::Configure($config);
+    MBBuild::Configure($OPTIONS->{bareOptions});
     MBBuild::Exit();
 }
 
