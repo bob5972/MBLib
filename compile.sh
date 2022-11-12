@@ -1,4 +1,5 @@
 #!/bin/bash
+# MBLib -- compile.sh
 
 if [ "$1" == "debug" ]; then
     WANTDEBUG=1
