@@ -20,7 +20,10 @@ my $gScriptOptions = {
 sub Main() {
     MBBasic::LoadOptions($gScriptOptions, __PACKAGE__);
     MBBuild::Init();
-    MBBuild::Configure($OPTIONS->{bareOptions});
+
+    my $targets = [ 'test.bin', 'benchmark.bin' ];
+
+    MBBuild::Configure($targets, $OPTIONS->{bareOptions});
     MBBuild::Exit();
 }
 
