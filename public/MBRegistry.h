@@ -40,6 +40,7 @@ MBRegistry *MBRegistry_Alloc();
 MBRegistry *MBRegistry_AllocCopy(MBRegistry *toCopy);
 void MBRegistry_Free(MBRegistry *mreg);
 
+bool MBRegistry_IsEmpty(const MBRegistry *mreg);
 uint MBRegistry_NumEntries(const MBRegistry *mreg);
 const char *MBRegistry_GetKeyAt(MBRegistry *mreg, uint i);
 const char *MBRegistry_GetValueAt(MBRegistry *mreg, uint i);

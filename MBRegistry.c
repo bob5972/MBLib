@@ -466,7 +466,7 @@ void MBRegistryPutAllHelper(MBRegistry *dest, MBRegistry *src,
     bool usePrefix;
     MBString key;
 
-    if (MBRegistry_NumEntries(dest) == 0) {
+    if (MBRegistry_IsEmpty(dest)) {
         unique = TRUE;
     }
 
@@ -663,6 +663,20 @@ MBRegistry_GetCStrD(MBRegistry *mreg, const char *key,
         return defValue;
     }
     return str;
+}
+
+bool
+MBRegistry_IsEmpty(const MBRegistry *mreg)
+{
+    uint b;
+
+    for (b = 0; b < ARRAYSIZE(mreg->data); b++) {
+        if (CMBVector_Size(&mreg->data[b]) > 0) {
+            return TRUE;
+        }
+    }
+
+    return FALSE;
 }
 
 uint
