@@ -66,6 +66,7 @@ void MBString_Consume(MBString *consumer, MBString *strData);
 void MBString_Truncate(MBString *str, uint32 firstChar, uint32 numChars);
 
 int MBString_Compare(const MBString *lhs, const MBString *rhs);
+
 void MBString_IntToString(MBString *str, int x);
 
 static INLINE bool MBStringIsNulTerminated(const MBString *str)

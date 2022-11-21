@@ -393,39 +393,70 @@ void MBRegistry_LoadSubset(MBRegistry *mreg, const char *filename)
     MBRegistryLoad(mreg, filename, TRUE);
 }
 
+static int
+MBRegistryCompareNodeKeys(const void *lhs, const void *rhs, void *cbData)
+{
+    const MBRegistryNode *nl = lhs;
+    const MBRegistryNode *nr = rhs;
+
+    ASSERT(cbData == NULL);
+    return strcmp(nl->key, nr->key);
+}
+
 static void
 MBRegistrySave(MBRegistry *mreg, FILE *file)
 {
+    CMBVector entries;
+    CMBComparator comp;
+
     ASSERT(mreg != NULL);
     VERIFY(file != NULL);
 
-    fprintf(file, "MReg::MBLib::Version=5\n");
+    CMBVector_CreateWithSize(&entries, sizeof(MBRegistryNode),
+                             MBRegistry_NumEntries(mreg));
 
+    uint k = 0;
     for (uint b = 0; b < ARRAYSIZE(mreg->data); b++) {
-        for (uint32 i = 0; i < CMBVector_Size(&mreg->data[b]); i++) {
+        for (uint i = 0; i < CMBVector_Size(&mreg->data[b]); i++) {
             MBRegistryNode *n = CMBVector_GetPtr(&mreg->data[b], i);
-
-            if (strstr(n->key, "\"") != NULL) {
-                ASSERT(strstr(n->key, "'") == NULL);
-                fprintf(file, "'%s' = ", n->key);
-            } else if (strstr(n->key, " ") != NULL ||
-                    strstr(n->key, "=") != NULL) {
-                fprintf(file, "\"%s\" = ", n->key);
-            } else {
-                fprintf(file, "%s = ", n->key);
-            }
-
-            if (strstr(n->value, "\"") != NULL) {
-                ASSERT(strstr(n->value, "'") == NULL);
-                fprintf(file, "'%s'\n", n->value);
-            } else if (strstr(n->value, " ") != NULL ||
-                    strstr(n->value, "=") != NULL) {
-                fprintf(file, "\"%s\"\n", n->value);
-            } else {
-                fprintf(file, "%s\n", n->value);
-            }
+            MBRegistryNode *d = CMBVector_GetPtr(&entries, k++);
+            *d = *n;
         }
     }
+
+    MBUtil_Zero(&comp, sizeof(comp));
+    comp.compareFn = MBRegistryCompareNodeKeys;
+    comp.cbData = NULL;
+    comp.itemSize = sizeof(MBRegistryNode);
+    CMBVector_Sort(&entries, &comp);
+
+    fprintf(file, "MReg::MBLib::Version=5\n");
+
+    for (k = 0; k < CMBVector_Size(&entries); k++) {
+        MBRegistryNode *n = CMBVector_GetPtr(&entries, k);
+
+        if (strstr(n->key, "\"") != NULL) {
+            ASSERT(strstr(n->key, "'") == NULL);
+            fprintf(file, "'%s' = ", n->key);
+        } else if (strstr(n->key, " ") != NULL ||
+                strstr(n->key, "=") != NULL) {
+            fprintf(file, "\"%s\" = ", n->key);
+        } else {
+            fprintf(file, "%s = ", n->key);
+        }
+
+        if (strstr(n->value, "\"") != NULL) {
+            ASSERT(strstr(n->value, "'") == NULL);
+            fprintf(file, "'%s'\n", n->value);
+        } else if (strstr(n->value, " ") != NULL ||
+                strstr(n->value, "=") != NULL) {
+            fprintf(file, "\"%s\"\n", n->value);
+        } else {
+            fprintf(file, "%s\n", n->value);
+        }
+    }
+
+    CMBVector_Destroy(&entries);
 }
 
 void
