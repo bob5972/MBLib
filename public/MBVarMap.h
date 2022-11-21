@@ -72,32 +72,32 @@ bool CMBVarMap_Remove(CMBVarMap *map, MBVar key);
 void CMBVarMap_InsertAll(CMBVarMap *dest, const CMBVarMap *src);
 void CMBVarMap_DebugDump(const CMBVarMap *map);
 
-static INLINE bool CMBVarMapGetFullFlag(const CMBVarMap *map, int x)
+static inline bool CMBVarMapGetFullFlag(const CMBVarMap *map, int x)
 {
     return BitVector_Get(&map->myFlags, x * 2 + 0);
 }
 
-static INLINE void CMBVarMapSetFullFlag(CMBVarMap *map, int x)
+static inline void CMBVarMapSetFullFlag(CMBVarMap *map, int x)
 {
     BitVector_Set(&map->myFlags, x * 2 + 0);
 }
 
-static INLINE bool CMBVarMapGetActiveFlag(const CMBVarMap *map, int x)
+static inline bool CMBVarMapGetActiveFlag(const CMBVarMap *map, int x)
 {
     return BitVector_Get(&map->myFlags, x * 2 + 1);
 }
 
-static INLINE void CMBVarMapResetActiveFlag(CMBVarMap *map, int x)
+static inline void CMBVarMapResetActiveFlag(CMBVarMap *map, int x)
 {
     BitVector_Reset(&map->myFlags, x * 2 + 1);
 }
 
-static INLINE void CMBVarMapSetActiveFlag(CMBVarMap *map, int x)
+static inline void CMBVarMapSetActiveFlag(CMBVarMap *map, int x)
 {
     BitVector_Set(&map->myFlags, x * 2 + 1);
 }
 
-static INLINE void CMBVarMapIterator_Start(CMBVarMapIterator *it,
+static inline void CMBVarMapIterator_Start(CMBVarMapIterator *it,
                                            CMBVarMap *map)
 {
     it->index = 0;
@@ -105,12 +105,12 @@ static INLINE void CMBVarMapIterator_Start(CMBVarMapIterator *it,
     it->map = map;
 }
 
-static INLINE bool CMBVarMapIterator_HasNext(CMBVarMapIterator *it)
+static inline bool CMBVarMapIterator_HasNext(CMBVarMapIterator *it)
 {
     return it->used < it->map->mySize;
 }
 
-static INLINE MBVar CMBVarMapIterator_GetNext(CMBVarMapIterator *it)
+static inline MBVar CMBVarMapIterator_GetNext(CMBVarMapIterator *it)
 {
     uint32 retInd;
     ASSERT(CMBVarMapIterator_HasNext(it));
@@ -127,18 +127,18 @@ static INLINE MBVar CMBVarMapIterator_GetNext(CMBVarMapIterator *it)
     return CMBVarVec_GetValue(&it->map->myKeys, retInd);
 }
 
-static INLINE bool CMBVarMap_IsEmpty(const CMBVarMap *map)
+static inline bool CMBVarMap_IsEmpty(const CMBVarMap *map)
 {
     return map->mySize == 0;
 }
 
-static INLINE int CMBVarMap_Size(const CMBVarMap *map)
+static inline int CMBVarMap_Size(const CMBVarMap *map)
 {
     return map->mySize;
 }
 
 // Returns the new value.
-static INLINE int CMBVarMap_DecrementByInt32(CMBVarMap *map, MBVar key, int32 amount)
+static inline int CMBVarMap_DecrementByInt32(CMBVarMap *map, MBVar key, int32 amount)
 {
     return CMBVarMap_IncrementByInt32(map, key, -amount);
 }
@@ -146,32 +146,32 @@ static INLINE int CMBVarMap_DecrementByInt32(CMBVarMap *map, MBVar key, int32 am
 /*
  * CMBIntMap --
  */
-static INLINE void CMBIntMap_Create(CMBIntMap *map)
+static inline void CMBIntMap_Create(CMBIntMap *map)
 {
     VERIFY(sizeof(int) == sizeof(int32));
     CMBVarMap_Create(map);
 }
 
-static INLINE void CMBIntMap_Destroy(CMBIntMap *map)
+static inline void CMBIntMap_Destroy(CMBIntMap *map)
 {
     CMBVarMap_Destroy(map);
 }
 
-static INLINE void CMBIntMap_SetEmptyValue(CMBIntMap *map, int emptyValue)
+static inline void CMBIntMap_SetEmptyValue(CMBIntMap *map, int emptyValue)
 {
     MBVar empty = {0};
     empty.vInt32 = emptyValue;
     CMBVarMap_SetEmptyValue(map, empty);
 }
 
-static INLINE bool CMBIntMap_ContainsKey(const CMBIntMap *map, int key)
+static inline bool CMBIntMap_ContainsKey(const CMBIntMap *map, int key)
 {
     MBVar vkey = {0};
     vkey.vInt32 = key;
     return CMBVarMap_ContainsKey(map, vkey);
 }
 
-static INLINE int CMBIntMap_Get(const CMBIntMap *map, int key)
+static inline int CMBIntMap_Get(const CMBIntMap *map, int key)
 {
     MBVar vkey = {0};
     MBVar vvalue = {0};
@@ -180,7 +180,7 @@ static INLINE int CMBIntMap_Get(const CMBIntMap *map, int key)
     return vvalue.vInt32;
 }
 
-static INLINE bool CMBIntMap_Lookup(const CMBIntMap *map, int key, int *value)
+static inline bool CMBIntMap_Lookup(const CMBIntMap *map, int key, int *value)
 {
     MBVar vkey = {0};
     MBVar vvar = {0};
@@ -194,12 +194,12 @@ static INLINE bool CMBIntMap_Lookup(const CMBIntMap *map, int key, int *value)
     return retVal;
 }
 
-static INLINE void CMBIntMap_MakeEmpty(CMBIntMap *map)
+static inline void CMBIntMap_MakeEmpty(CMBIntMap *map)
 {
     CMBVarMap_MakeEmpty(map);
 }
 
-static INLINE int CMBIntMap_IncrementBy(CMBIntMap *map, int key, int amount)
+static inline int CMBIntMap_IncrementBy(CMBIntMap *map, int key, int amount)
 {
     MBVar vkey = {0};
     vkey.vInt32 = key;
@@ -207,7 +207,7 @@ static INLINE int CMBIntMap_IncrementBy(CMBIntMap *map, int key, int amount)
     return CMBVarMap_IncrementByInt32(map, vkey, amount);
 }
 
-static INLINE void CMBIntMap_Put(CMBIntMap *map, int key, int value)
+static inline void CMBIntMap_Put(CMBIntMap *map, int key, int value)
 {
     MBVar vkey = {0};
     MBVar vvar = {0};
@@ -217,7 +217,7 @@ static INLINE void CMBIntMap_Put(CMBIntMap *map, int key, int value)
     CMBVarMap_Put(map, vkey, vvar);
 }
 
-static INLINE bool CMBIntMap_Remove(CMBIntMap *map, int key)
+static inline bool CMBIntMap_Remove(CMBIntMap *map, int key)
 {
     MBVar vkey = {0};
     vkey.vInt32 = key;
@@ -225,58 +225,58 @@ static INLINE bool CMBIntMap_Remove(CMBIntMap *map, int key)
     return CMBVarMap_Remove(map, vkey);
 }
 
-static INLINE void CMBIntMap_InsertAll(CMBIntMap *dest, const CMBIntMap *src)
+static inline void CMBIntMap_InsertAll(CMBIntMap *dest, const CMBIntMap *src)
 {
     CMBVarMap_InsertAll(dest, src);
 }
 
-static INLINE void CMBIntMap_DebugDump(const CMBIntMap *map)
+static inline void CMBIntMap_DebugDump(const CMBIntMap *map)
 {
     CMBVarMap_DebugDump(map);
 }
 
-static INLINE void
+static inline void
 CMBIntMapIterator_Start(CMBIntMapIterator *it, CMBIntMap *map)
 {
     CMBVarMapIterator_Start(it, map);
 }
 
-static INLINE bool CMBIntMapIterator_HasNext(CMBIntMapIterator *it)
+static inline bool CMBIntMapIterator_HasNext(CMBIntMapIterator *it)
 {
     return CMBVarMapIterator_HasNext(it);
 }
 
-static INLINE int CMBIntMapIterator_GetNext(CMBIntMapIterator *it)
+static inline int CMBIntMapIterator_GetNext(CMBIntMapIterator *it)
 {
     MBVar vvalue = {0};
     vvalue.vInt32 = CMBIntMapIterator_GetNext(it);
     return vvalue.vInt32;
 }
 
-static INLINE bool CMBIntMap_IsEmpty(const CMBIntMap *map)
+static inline bool CMBIntMap_IsEmpty(const CMBIntMap *map)
 {
     return CMBVarMap_IsEmpty(map);
 }
 
-static INLINE int CMBIntMap_Size(const CMBIntMap *map)
+static inline int CMBIntMap_Size(const CMBIntMap *map)
 {
     return CMBVarMap_Size(map);
 }
 
 // Returns the new value.
-static INLINE int CMBIntMap_DecrementBy(CMBIntMap *map, int key, int amount)
+static inline int CMBIntMap_DecrementBy(CMBIntMap *map, int key, int amount)
 {
     return CMBIntMap_IncrementBy(map, key, -amount);
 }
 
 // Returns the new value.
-static INLINE int CMBIntMap_Increment(CMBIntMap *map, int key)
+static inline int CMBIntMap_Increment(CMBIntMap *map, int key)
 {
     return CMBIntMap_IncrementBy(map, key, 1);
 }
 
 // Returns the new value.
-static INLINE int CMBIntMap_Decrement(CMBIntMap *map, int key)
+static inline int CMBIntMap_Decrement(CMBIntMap *map, int key)
 {
     return CMBIntMap_IncrementBy(map, key, -1);
 }

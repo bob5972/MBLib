@@ -54,7 +54,7 @@ typedef struct CMBVector {
 
 void CMBVector_EnsureCapacity(CMBVector *vector, int capacity);
 
-static INLINE void CMBVector_Create(CMBVector *vector, int itemSize,
+static inline void CMBVector_Create(CMBVector *vector, int itemSize,
                                     int size, int capacity)
 {
     ASSERT(itemSize > 0);
@@ -78,18 +78,18 @@ static INLINE void CMBVector_Create(CMBVector *vector, int itemSize,
     }
 }
 
-static INLINE void CMBVector_CreateEmpty(CMBVector *vector, int itemSize)
+static inline void CMBVector_CreateEmpty(CMBVector *vector, int itemSize)
 {
     CMBVector_Create(vector, itemSize, 0, 1);
 }
 
-static INLINE void CMBVector_CreateWithSize(CMBVector *vector, int itemSize,
+static inline void CMBVector_CreateWithSize(CMBVector *vector, int itemSize,
                                             int size)
 {
     CMBVector_Create(vector, itemSize, size, size);
 }
 
-static INLINE void CMBVector_Destroy(CMBVector *vector)
+static inline void CMBVector_Destroy(CMBVector *vector)
 {
     ASSERT(vector->pinCount == 0);
     ASSERT(vector->magic == CMBVECTOR_MAGIC);
@@ -100,14 +100,14 @@ static INLINE void CMBVector_Destroy(CMBVector *vector)
     vector->items = NULL;
 }
 
-static INLINE int CMBVector_ItemSize(const CMBVector *vector)
+static inline int CMBVector_ItemSize(const CMBVector *vector)
 {
     ASSERT(vector != NULL);
     ASSERT(vector->magic == CMBVECTOR_MAGIC);
     return vector->itemSize;
 }
 
-static INLINE void CMBVector_Pin(CMBVector *vector)
+static inline void CMBVector_Pin(CMBVector *vector)
 {
     ASSERT(vector->magic == CMBVECTOR_MAGIC);
     if (mb_debug) {
@@ -115,7 +115,7 @@ static INLINE void CMBVector_Pin(CMBVector *vector)
     }
 }
 
-static INLINE void CMBVector_Unpin(CMBVector *vector)
+static inline void CMBVector_Unpin(CMBVector *vector)
 {
     ASSERT(vector->magic == CMBVECTOR_MAGIC);
     if (mb_debug) {
@@ -124,14 +124,14 @@ static INLINE void CMBVector_Unpin(CMBVector *vector)
     }
 }
 
-static INLINE int CMBVector_Size(const CMBVector *vector)
+static inline int CMBVector_Size(const CMBVector *vector)
 {
     ASSERT(vector->magic == CMBVECTOR_MAGIC);
     ASSERT(vector->size >= 0);
     return vector->size;
 }
 
-static INLINE void CMBVector_Resize(CMBVector *vector, int size)
+static inline void CMBVector_Resize(CMBVector *vector, int size)
 {
     ASSERT(vector->magic == CMBVECTOR_MAGIC);
     ASSERT(size >= 0);
@@ -140,45 +140,45 @@ static INLINE void CMBVector_Resize(CMBVector *vector, int size)
     vector->size = size;
 }
 
-static INLINE void CMBVector_GrowBy(CMBVector *vector, int increment)
+static inline void CMBVector_GrowBy(CMBVector *vector, int increment)
 {
     ASSERT(vector->magic == CMBVECTOR_MAGIC);
     ASSERT(increment >= 0);
     CMBVector_Resize(vector, vector->size + increment);
 }
 
-static INLINE void CMBVector_Grow(CMBVector *vector)
+static inline void CMBVector_Grow(CMBVector *vector)
 {
     ASSERT(vector->magic == CMBVECTOR_MAGIC);
     CMBVector_GrowBy(vector, 1);
 }
 
-static INLINE void CMBVector_ShrinkBy(CMBVector *vector, int decrement)
+static inline void CMBVector_ShrinkBy(CMBVector *vector, int decrement)
 {
     ASSERT(vector->magic == CMBVECTOR_MAGIC);
     ASSERT(decrement >= 0);
     CMBVector_Resize(vector, vector->size - decrement);
 }
 
-static INLINE void CMBVector_Shrink(CMBVector *vector)
+static inline void CMBVector_Shrink(CMBVector *vector)
 {
     ASSERT(vector->magic == CMBVECTOR_MAGIC);
     CMBVector_ShrinkBy(vector, 1);
 }
 
-static INLINE bool CMBVector_IsEmpty(const CMBVector *vector)
+static inline bool CMBVector_IsEmpty(const CMBVector *vector)
 {
     ASSERT(vector->magic == CMBVECTOR_MAGIC);
     return CMBVector_Size(vector) == 0;
 }
 
-static INLINE void CMBVector_MakeEmpty(CMBVector *vector)
+static inline void CMBVector_MakeEmpty(CMBVector *vector)
 {
     ASSERT(vector->magic == CMBVECTOR_MAGIC);
     CMBVector_Resize(vector, 0);
 }
 
-static INLINE void *
+static inline void *
 CMBVectorGetHelper(CMBVector *vector, int index, int itemSize)
 {
     ASSERT(vector->magic == CMBVECTOR_MAGIC);
@@ -189,7 +189,7 @@ CMBVectorGetHelper(CMBVector *vector, int index, int itemSize)
     return ((uint8 *)vector->items) + (index * itemSize);
 }
 
-static INLINE const void *
+static inline const void *
 CMBVectorGetHelperConst(const CMBVector *vector, int index, int itemSize)
 {
     ASSERT(vector->magic == CMBVECTOR_MAGIC);
@@ -200,26 +200,26 @@ CMBVectorGetHelperConst(const CMBVector *vector, int index, int itemSize)
     return ((uint8 *)vector->items) + (index * itemSize);
 }
 
-static INLINE void *CMBVector_GetPtr(CMBVector *vector, int index)
+static inline void *CMBVector_GetPtr(CMBVector *vector, int index)
 {
     ASSERT(vector->magic == CMBVECTOR_MAGIC);
     return CMBVectorGetHelper(vector, index, vector->itemSize);
 }
 
-static INLINE void *CMBVectorGetLastPtrHelper(CMBVector *vector, int itemSize)
+static inline void *CMBVectorGetLastPtrHelper(CMBVector *vector, int itemSize)
 {
     ASSERT(vector->magic == CMBVECTOR_MAGIC);
     ASSERT(vector->size > 0);
     return CMBVectorGetHelper(vector, vector->size - 1, itemSize);
 }
 
-static INLINE void *CMBVector_GetLastPtr(CMBVector *vector)
+static inline void *CMBVector_GetLastPtr(CMBVector *vector)
 {
     ASSERT(vector->magic == CMBVECTOR_MAGIC);
     return CMBVectorGetLastPtrHelper(vector, vector->itemSize);
 }
 
-static INLINE void CMBVector_Copy(CMBVector *dest, const CMBVector *src)
+static inline void CMBVector_Copy(CMBVector *dest, const CMBVector *src)
 {
     ASSERT(src->magic == CMBVECTOR_MAGIC);
     ASSERT(dest->magic == CMBVECTOR_MAGIC);
@@ -232,7 +232,7 @@ static INLINE void CMBVector_Copy(CMBVector *dest, const CMBVector *src)
 }
 
 
-static INLINE void CMBVector_Consume(CMBVector *dest, CMBVector *src)
+static inline void CMBVector_Consume(CMBVector *dest, CMBVector *src)
 {
     ASSERT(src->magic == CMBVECTOR_MAGIC);
     ASSERT(dest->magic == CMBVECTOR_MAGIC);
@@ -262,7 +262,7 @@ static INLINE void CMBVector_Consume(CMBVector *dest, CMBVector *src)
     CMBVector_CreateEmpty(src, dest->itemSize);
 }
 
-static INLINE void *CMBVector_GetCArray(CMBVector *vector)
+static inline void *CMBVector_GetCArray(CMBVector *vector)
 {
     /*
      * Consider pinning the array if you're using this function.
@@ -271,7 +271,7 @@ static INLINE void *CMBVector_GetCArray(CMBVector *vector)
     return vector->items;
 }
 
-static INLINE void CMBVector_Sort(CMBVector *v, const CMBComparator *comp)
+static inline void CMBVector_Sort(CMBVector *v, const CMBComparator *comp)
 {
     ASSERT(v->magic == CMBVECTOR_MAGIC);
     ASSERT(v != NULL);
@@ -287,80 +287,80 @@ static INLINE void CMBVector_Sort(CMBVector *v, const CMBComparator *comp)
         CMBVector v; \
     } _name ; \
     \
-    static INLINE void _name ## _Create \
+    static inline void _name ## _Create \
     (_name *v, int size, int capacity) \
     { CMBVector_Create(&v->v, sizeof(_type), size, capacity); } \
-    static INLINE void _name ## _CreateEmpty \
+    static inline void _name ## _CreateEmpty \
     (_name *v) \
     { CMBVector_CreateEmpty(&v->v, sizeof(_type)); } \
-    static INLINE void _name ## _CreateWithSize \
+    static inline void _name ## _CreateWithSize \
     (_name *v, int size) \
     { CMBVector_CreateWithSize(&v->v, sizeof(_type), size); } \
-    static INLINE void _name ## _Destroy \
+    static inline void _name ## _Destroy \
     (_name *v) \
     { CMBVector_Destroy(&v->v); } \
-    static INLINE void _name ## _Pin \
+    static inline void _name ## _Pin \
     (_name *v) \
     { CMBVector_Pin(&v->v); } \
-    static INLINE void _name ## _Unpin \
+    static inline void _name ## _Unpin \
     (_name *v) \
     { CMBVector_Unpin(&v->v); } \
-    static INLINE int _name ## _Size \
+    static inline int _name ## _Size \
     (const _name *v) \
     { return CMBVector_Size(&v->v); } \
-    static INLINE void _name ## _Resize \
+    static inline void _name ## _Resize \
     (_name *v, int size) \
     { CMBVector_Resize(&v->v, size); } \
-    static INLINE void _name ## _GrowBy \
+    static inline void _name ## _GrowBy \
     (_name *v, int increment) \
     { CMBVector_GrowBy(&v->v, increment); } \
-    static INLINE void _name ## _Grow \
+    static inline void _name ## _Grow \
     (_name *v) \
     { CMBVector_Grow(&v->v); } \
-    static INLINE void _name ## _ShrinkBy \
+    static inline void _name ## _ShrinkBy \
     (_name *v, int decrement) \
     { CMBVector_ShrinkBy(&v->v, decrement); } \
-    static INLINE void _name ## _Shrink \
+    static inline void _name ## _Shrink \
     (_name *v) \
     { CMBVector_Shrink(&v->v); } \
-    static INLINE bool _name ## _IsEmpty \
+    static inline bool _name ## _IsEmpty \
     (_name *v) \
     { return CMBVector_IsEmpty(&v->v); } \
-    static INLINE void _name ## _MakeEmpty \
+    static inline void _name ## _MakeEmpty \
     (_name *v) \
     { CMBVector_MakeEmpty(&v->v); } \
-    static INLINE _type *_name ## _GetCArray \
+    static inline _type *_name ## _GetCArray \
     (_name *v) \
     { return (_type *)CMBVector_GetCArray(&v->v); } \
-    static INLINE _type *_name ## _GetPtr \
+    static inline _type *_name ## _GetPtr \
     (_name *v, int index) \
     { return (_type *)CMBVectorGetHelper(&v->v, index, sizeof(_type)); } \
-    static INLINE _type *_name ## _GetLastPtr \
+    static inline _type *_name ## _GetLastPtr \
     (_name *v) \
     { return (_type *)CMBVectorGetLastPtrHelper(&v->v, sizeof(_type)); } \
-    static INLINE _type _name ## _GetValue \
+    static inline _type _name ## _GetValue \
     (const _name *v, int index) \
     { return *(_type *)CMBVectorGetHelperConst(&v->v, index, sizeof(_type)); } \
-    static INLINE void _name ## _PutValue \
+    static inline void _name ## _PutValue \
     (_name *v, int index, _type value) \
     { \
        _type *item = (_type *)CMBVectorGetHelper(&v->v, index, sizeof(_type)); \
       *item = value; \
     } \
-    static INLINE void _name ## _AppendValue \
+    static inline void _name ## _AppendValue \
     (_name *v, _type value) \
     { \
        CMBVector_Grow(&v->v); \
        _type *item = (_type *)CMBVectorGetLastPtrHelper(&v->v, sizeof(_type)); \
        *item = value; \
     } \
-    static INLINE void _name ## _Copy \
+    static inline void _name ## _Copy \
     (_name *dest, const _name *src) \
     { CMBVector_Copy(&dest->v, &src->v); } \
-    static INLINE void _name ## _Consume \
+    static inline void _name ## _Consume \
     (_name *dest, _name *src) \
     { CMBVector_Consume(&dest->v, &src->v); } \
-    static INLINE void _name ## _EnsureCapacity \
+    static inline void _name ## _EnsureCapacity \
     (_name *v, int capacity) \
     { CMBVector_EnsureCapacity(&v->v, capacity); }
 
@@ -370,7 +370,7 @@ DECLARE_CMBVECTOR_TYPE(void *, CMBPtrVec);
 DECLARE_CMBVECTOR_TYPE(MBVar, CMBVarVec);
 DECLARE_CMBVECTOR_TYPE(const char *, CMBCStrVec);
 
-static INLINE int
+static inline int
 CMBIntVec_DecrementValue(CMBIntVec *vec, int index)
 {
     int v = CMBIntVec_GetValue(vec, index);
@@ -379,7 +379,7 @@ CMBIntVec_DecrementValue(CMBIntVec *vec, int index)
     return v;
 }
 
-static INLINE int
+static inline int
 CMBIntVec_IncrementValue(CMBIntVec *vec, int index)
 {
     int v = CMBIntVec_GetValue(vec, index);

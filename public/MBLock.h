@@ -39,31 +39,31 @@ typedef struct MBLock {
     uint8 pad;
 } MBLock;
 
-static INLINE void
+static inline void
 MBLock_Create(MBLock *lock)
 {
     NOT_IMPLEMENTED();
 }
 
-static INLINE
+static inline
 void MBLock_Destroy(MBLock *lock)
 {
     NOT_IMPLEMENTED();
 }
 
-static INLINE bool
+static inline bool
 MBLock_IsLocked(MBLock *lock)
 {
     NOT_IMPLEMENTED();
 }
 
-static INLINE void
+static inline void
 MBLock_Lock(MBLock *lock)
 {
     NOT_IMPLEMENTED();
 }
 
-static INLINE void
+static inline void
 MBLock_Unlock(MBLock *lock)
 {
     NOT_IMPLEMENTED();
@@ -82,7 +82,7 @@ typedef struct MBLock {
     SDL_threadID thread;
 } MBLock;
 
-static INLINE void
+static inline void
 MBLock_Create(MBLock *lock)
 {
     ASSERT(lock != NULL);
@@ -94,7 +94,7 @@ MBLock_Create(MBLock *lock)
     }
 }
 
-static INLINE
+static inline
 void MBLock_Destroy(MBLock *lock)
 {
     ASSERT(lock != NULL);
@@ -108,7 +108,7 @@ void MBLock_Destroy(MBLock *lock)
     lock->sdlMutex = NULL;
 }
 
-static INLINE bool
+static inline bool
 MBLock_IsLocked(MBLock *lock)
 {
     ASSERT(lock != NULL);
@@ -124,7 +124,7 @@ MBLock_IsLocked(MBLock *lock)
     return SDL_GetThreadID(NULL) == lock->thread;
 }
 
-static INLINE void
+static inline void
 MBLock_Lock(MBLock *lock)
 {
     ASSERT(lock != NULL);
@@ -139,7 +139,7 @@ MBLock_Lock(MBLock *lock)
     }
 }
 
-static INLINE void
+static inline void
 MBLock_Unlock(MBLock *lock)
 {
     ASSERT(lock != NULL);

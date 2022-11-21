@@ -36,13 +36,13 @@
 	extern "C" {
 #endif
 
-static INLINE bool
+static inline bool
 MBUtil_IsDigit(char c)
 {
     return '0' <= c && c <= '9';
 }
 
-static INLINE bool
+static inline bool
 MBUtil_IsWhitespace(char c)
 {
     switch (c) {
@@ -56,13 +56,13 @@ MBUtil_IsWhitespace(char c)
     }
 }
 
-static INLINE void
+static inline void
 MBUtil_Zero(void *p, uint size)
 {
 	memset(p, 0, size);
 }
 
-static INLINE bool
+static inline bool
 MBUtil_IsZero(void *p, uint size)
 {
     uint8 *byte = (uint8 *)p;
@@ -76,25 +76,25 @@ MBUtil_IsZero(void *p, uint size)
     return TRUE;
 }
 
-static INLINE void *
+static inline void *
 MBUtil_ZAlloc(uint size)
 {
     return calloc(1, size);
 }
 
-static INLINE uint8
+static inline uint8
 MBUtil_Popcount(uint32 x)
 {
 	return __builtin_popcount(x);
 }
 
-static INLINE uint8
+static inline uint8
 MBUtil_Popcountl(uint64 x)
 {
 	return __builtin_popcountl(x);
 }
 
-static INLINE bool
+static inline bool
 MBUtil_IsPow2(uint32 x)
 {
     return MBUtil_Popcount(x) == 1;

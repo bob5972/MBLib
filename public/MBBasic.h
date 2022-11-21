@@ -45,9 +45,6 @@
 
 #define OFFSETOF(TYPE, MEMBER) ((size_t) &((TYPE *)0)->MEMBER)
 
-#define INLINE inline
-#define EXTERN extern
-
 #define INLINE_ALWAYS inline __attribute__((__always_inline__))
 #define NOINLINE inline __attribute__((__noinline__))
 

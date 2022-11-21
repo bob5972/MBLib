@@ -47,7 +47,7 @@ typedef struct CMBComparator {
 void MBCompare_SortFallback(void *items, uint32 numItems, uint32 itemSize,
                             CMBCompareFn compareFn, void *cbData);
 
-static INLINE void
+static inline void
 MBCompare_Sort(void *items, uint32 numItems, uint32 itemSize,
                CMBCompareFn compareFn, void *cbData)
 {

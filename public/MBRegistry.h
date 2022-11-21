@@ -76,33 +76,33 @@ const char *MBRegistry_Remove(MBRegistry *mreg, const char *key);
 const char *MBRegistry_GetCStrD(MBRegistry *mreg, const char *key,
                                 const char *defValue);
 
-static INLINE const char *
+static inline const char *
 MBRegistry_GetCStr(MBRegistry *mreg, const char *key)
 {
     return MBRegistry_GetCStrD(mreg, key, NULL);
 }
-static INLINE bool MBRegistry_GetBool(MBRegistry *mreg, const char *key)
+static inline bool MBRegistry_GetBool(MBRegistry *mreg, const char *key)
 {
     return MBRegistry_GetBoolD(mreg, key, FALSE);
 }
-static INLINE int MBRegistry_GetInt(MBRegistry *mreg, const char *key)
+static inline int MBRegistry_GetInt(MBRegistry *mreg, const char *key)
 {
     return MBRegistry_GetIntD(mreg, key, 0);
 }
-static INLINE int64 MBRegistry_GetInt64(MBRegistry *mreg, const char *key)
+static inline int64 MBRegistry_GetInt64(MBRegistry *mreg, const char *key)
 {
     return MBRegistry_GetInt64D(mreg, key, 0);
 }
-static INLINE uint MBRegistry_GetUint(MBRegistry *mreg, const char *key)
+static inline uint MBRegistry_GetUint(MBRegistry *mreg, const char *key)
 {
     return MBRegistry_GetUintD(mreg, key, 0);
 }
-static INLINE uint64 MBRegistry_GetUint64(MBRegistry *mreg, const char *key)
+static inline uint64 MBRegistry_GetUint64(MBRegistry *mreg, const char *key)
 {
     return MBRegistry_GetUint64D(mreg, key, 0);
 }
 
-static INLINE float MBRegistry_GetFloat(MBRegistry *mreg, const char *key)
+static inline float MBRegistry_GetFloat(MBRegistry *mreg, const char *key)
 {
     return MBRegistry_GetFloatD(mreg, key, 0.0f);
 }

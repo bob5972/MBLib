@@ -226,7 +226,7 @@ class MBString {
 
 
 //IO Functions
-static INLINE std::ostream& operator << ( std::ostream& os,
+static inline std::ostream& operator << ( std::ostream& os,
                                           const MBString& str )
 {
         return os << str.CStr();
@@ -236,7 +236,7 @@ static INLINE std::ostream& operator << ( std::ostream& os,
 std::istream& operator >> ( std::istream& is, MBString& str );
 std::istream& getline( std::istream& is, MBString& str );
 
-static INLINE bool
+static inline bool
 MBString_GetLine( std::istream& is, MBString &str)
 {
         getline(is, str);
@@ -245,44 +245,44 @@ MBString_GetLine( std::istream& is, MBString &str)
 
 
 // comparison operators:
-static INLINE bool operator == ( const MBString & lhs,
+static inline bool operator == ( const MBString & lhs,
                                  const MBString & rhs )
 {
         return lhs.compare(rhs) == 0;
 }
 
-static INLINE bool operator != ( const MBString & lhs,
+static inline bool operator != ( const MBString & lhs,
                                  const MBString & rhs )
 {
         return lhs.compare(rhs) != 0;
 }
 
-static INLINE bool operator <  ( const MBString & lhs,
+static inline bool operator <  ( const MBString & lhs,
                                  const MBString & rhs )
 {
         return lhs.compare(rhs) < 0;
 }
 
-static INLINE bool operator <= ( const MBString & lhs,
+static inline bool operator <= ( const MBString & lhs,
                                  const MBString & rhs )
 {
         return lhs.compare(rhs) <= 0;
 }
 
-static INLINE bool operator >  ( const MBString & lhs,
+static inline bool operator >  ( const MBString & lhs,
                                  const MBString & rhs )
 {
         return lhs.compare(rhs) > 0;
 }
 
-static INLINE bool operator >= ( const MBString & lhs,
+static inline bool operator >= ( const MBString & lhs,
                                  const MBString & rhs )
 {
         return lhs.compare(rhs) >= 0;
 }
 
 // concatenation operator +
-static INLINE MBString operator + ( const MBString & lhs,
+static inline MBString operator + ( const MBString & lhs,
                                     const MBString & rhs )
 {
         MBString oup(lhs.length() + rhs.length());
@@ -291,7 +291,7 @@ static INLINE MBString operator + ( const MBString & lhs,
         return oup;
 }
 
-static INLINE MBString operator + ( char ch,
+static inline MBString operator + ( char ch,
                                     const MBString & str )
 {
         MBString oup(1+str.length());
@@ -300,7 +300,7 @@ static INLINE MBString operator + ( char ch,
         return oup;
 }
 
-static INLINE MBString operator + ( const MBString & str,
+static inline MBString operator + ( const MBString & str,
                                     char ch )
 {
         MBString oup (1+str.length());

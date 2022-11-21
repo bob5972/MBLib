@@ -51,7 +51,7 @@ typedef enum BitVectorWriteType {
 } BitVectorWriteType;
 
 void BitVector_CreateWithSize(BitVector *b, int size);
-static INLINE void BitVector_Create(BitVector *b)
+static inline void BitVector_Create(BitVector *b)
 {
     BitVector_CreateWithSize(b, 0);
 }
@@ -72,7 +72,7 @@ void BitVectorSetRangeGeneric(BitVector *b, int first, int last);
 void BitVectorResetRangeGeneric(BitVector *b, int first, int last);
 void BitVectorFlipRangeGeneric(BitVector *b, int first, int last);
 
-static INLINE uint64 *BitVectorGetPtr(const BitVector *b) {
+static inline uint64 *BitVectorGetPtr(const BitVector *b) {
     BitVector *bv = (BitVector *)b;
     return bv->bits;
 }
@@ -82,7 +82,7 @@ static INLINE uint64 *BitVectorGetPtr(const BitVector *b) {
 #define BVINDEX(x) (x / BVUNITBITS)
 #define BVMASK(x)  ( ((uint64)1) << (x % BVUNITBITS))
 
-static INLINE bool BitVector_GetRaw16(int i, uint16 bits)
+static inline bool BitVector_GetRaw16(int i, uint16 bits)
 {
     ASSERT(i >= 0);
     ASSERT(i < 16);
@@ -90,21 +90,21 @@ static INLINE bool BitVector_GetRaw16(int i, uint16 bits)
 }
 
 
-static INLINE bool BitVector_GetRaw32(int i, uint32 bits)
+static inline bool BitVector_GetRaw32(int i, uint32 bits)
 {
     ASSERT(i >= 0);
     ASSERT(i < 32);
     return (bits & BVMASK(i)) != 0;
 }
 
-static INLINE bool BitVector_GetRaw64(int i, uint64 bits)
+static inline bool BitVector_GetRaw64(int i, uint64 bits)
 {
     ASSERT(i >= 0);
     ASSERT(i < 64);
     return (bits & BVMASK(i)) != 0;
 }
 
-static INLINE bool BitVector_GetRaw(int i, const uint64 *bits)
+static inline bool BitVector_GetRaw(int i, const uint64 *bits)
 {
 #if defined(__GNUC__) && (defined(ARCH_AMD64) || defined(ARCH_x86))
     if (!CONSTANT(i)) {
@@ -122,7 +122,7 @@ static INLINE bool BitVector_GetRaw(int i, const uint64 *bits)
     return (bits[BVINDEX(i)] & BVMASK(i)) != 0;
 }
 
-static INLINE void BitVector_SetRaw(int i, uint64 *bits)
+static inline void BitVector_SetRaw(int i, uint64 *bits)
 {
 #if defined(__GNUC__) && (defined(ARCH_AMD64) || defined(ARCH_x86))
     if (!CONSTANT(i)) {
@@ -138,42 +138,42 @@ static INLINE void BitVector_SetRaw(int i, uint64 *bits)
 }
 
 
-static INLINE void BitVector_SetRaw64(int i, uint64 *bits)
+static inline void BitVector_SetRaw64(int i, uint64 *bits)
 {
     ASSERT(i >= 0);
     ASSERT(i < 64);
     *bits |= BVMASK(i);
 }
 
-static INLINE void BitVector_SetRaw32(int i, uint32 *bits)
+static inline void BitVector_SetRaw32(int i, uint32 *bits)
 {
     ASSERT(i >= 0);
     ASSERT(i < 32);
     *bits |= BVMASK(i);
 }
 
-static INLINE void BitVector_SetRaw16(int i, uint16 *bits)
+static inline void BitVector_SetRaw16(int i, uint16 *bits)
 {
     ASSERT(i >= 0);
     ASSERT(i < 16);
     *bits |= BVMASK(i);
 }
 
-static INLINE void BitVector_ResetRaw64(int i, uint64 *bits)
+static inline void BitVector_ResetRaw64(int i, uint64 *bits)
 {
     ASSERT(i >= 0);
     ASSERT(i < 64);
     *bits &= ~BVMASK(i);
 }
 
-static INLINE void BitVector_ResetRaw32(int i, uint32 *bits)
+static inline void BitVector_ResetRaw32(int i, uint32 *bits)
 {
     ASSERT(i >= 0);
     ASSERT(i < 32);
     *bits &= ~BVMASK(i);
 }
 
-static INLINE void BitVector_ResetRaw16(int i, uint16 *bits)
+static inline void BitVector_ResetRaw16(int i, uint16 *bits)
 {
     ASSERT(i >= 0);
     ASSERT(i < 16);
@@ -181,7 +181,7 @@ static INLINE void BitVector_ResetRaw16(int i, uint16 *bits)
 }
 
 
-static INLINE void BitVector_ResetRaw(int i, uint64 *bits)
+static inline void BitVector_ResetRaw(int i, uint64 *bits)
 {
 #if defined(__GNUC__) && (defined(ARCH_AMD64) || defined(ARCH_x86))
     if (!CONSTANT(i)) {
@@ -195,7 +195,7 @@ static INLINE void BitVector_ResetRaw(int i, uint64 *bits)
     bits[BVINDEX(i)] &= ~BVMASK(i);
 }
 
-static INLINE void BitVector_FlipRaw(int i, uint64 *bits)
+static inline void BitVector_FlipRaw(int i, uint64 *bits)
 {
 #if defined(__GNUC__) && (defined(ARCH_AMD64) || defined(ARCH_x86))
     if (!CONSTANT(i)) {
@@ -210,7 +210,7 @@ static INLINE void BitVector_FlipRaw(int i, uint64 *bits)
     bits[BVINDEX(i)] ^= BVMASK(i);
 }
 
-static INLINE bool BitVector_Get(const CBitVector *b, int x)
+static inline bool BitVector_Get(const CBitVector *b, int x)
 {
     ASSERT(b != NULL);
     ASSERT(x >= 0);
@@ -219,7 +219,7 @@ static INLINE bool BitVector_Get(const CBitVector *b, int x)
     return BitVector_GetRaw(x, BitVectorGetPtr(b));
 }
 
-static INLINE void BitVector_Put(BitVector *b, int x, bool v)
+static inline void BitVector_Put(BitVector *b, int x, bool v)
 {
     ASSERT(b != NULL);
     ASSERT(x >= 0);
@@ -232,7 +232,7 @@ static INLINE void BitVector_Put(BitVector *b, int x, bool v)
     }
 }
 
-static INLINE void BitVector_Set(BitVector *b, int x)
+static inline void BitVector_Set(BitVector *b, int x)
 {
     ASSERT(b != NULL);
     ASSERT(x >= 0);
@@ -241,7 +241,7 @@ static INLINE void BitVector_Set(BitVector *b, int x)
     BitVector_SetRaw(x, BitVectorGetPtr(b));
 }
 
-static INLINE void BitVector_Reset(BitVector *b, int x)
+static inline void BitVector_Reset(BitVector *b, int x)
 {
     ASSERT(b != NULL);
     ASSERT(x >= 0);
@@ -250,7 +250,7 @@ static INLINE void BitVector_Reset(BitVector *b, int x)
     BitVector_ResetRaw(x, BitVectorGetPtr(b));
 }
 
-static INLINE void BitVector_Flip(BitVector *b, int x)
+static inline void BitVector_Flip(BitVector *b, int x)
 {
     ASSERT(b != NULL);
     ASSERT(x >= 0);
@@ -469,7 +469,7 @@ static INLINE_ALWAYS void BitVector_FlipRange(BitVector *b, int first, int last)
     BitVectorWriteRange(b, first, last, BITVECTOR_WRITE_FLIP);
 }
 
-static INLINE bool BitVector_TestAndSet(BitVector *b, int x)
+static inline bool BitVector_TestAndSet(BitVector *b, int x)
 {
     bool oup;
     ASSERT(b != NULL);
@@ -481,31 +481,31 @@ static INLINE bool BitVector_TestAndSet(BitVector *b, int x)
     return oup;
 }
 
-static INLINE void BitVector_MakeEmpty(BitVector *b)
+static inline void BitVector_MakeEmpty(BitVector *b)
 {
     ASSERT(b != NULL);
     b->size = 0;
 }
 
-static INLINE int BitVector_Size(const BitVector *b)
+static inline int BitVector_Size(const BitVector *b)
 {
     ASSERT(b != NULL);
     return b->size;
 }
 
-static INLINE bool BitVector_GetFillValue(const BitVector *b)
+static inline bool BitVector_GetFillValue(const BitVector *b)
 {
     ASSERT(b != NULL);
     return b->fill;
 }
 
-static INLINE void BitVector_SetFillValue(BitVector *b, bool f)
+static inline void BitVector_SetFillValue(BitVector *b, bool f)
 {
     ASSERT(b != NULL);
     b->fill = f;
 }
 
-static INLINE int BitVector_PopCount(const BitVector *b)
+static inline int BitVector_PopCount(const BitVector *b)
 {
     int x;
     int size;

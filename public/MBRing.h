@@ -38,7 +38,7 @@ typedef struct MBRing {
     uint tail;
 } MBRing;
 
-static INLINE void MBRing_Create(MBRing *ring, int itemSize)
+static inline void MBRing_Create(MBRing *ring, int itemSize)
 {
     ASSERT(ring != NULL);
     ASSERT(itemSize > 0);
@@ -47,20 +47,20 @@ static INLINE void MBRing_Create(MBRing *ring, int itemSize)
     ring->tail = 0;
 }
 
-static INLINE void MBRing_Destroy(MBRing *ring)
+static inline void MBRing_Destroy(MBRing *ring)
 {
     ASSERT(ring != NULL);
     CMBVector_Destroy(&ring->vector);
 }
 
-static INLINE void MBRing_MakeEmpty(MBRing *ring)
+static inline void MBRing_MakeEmpty(MBRing *ring)
 {
     ASSERT(ring != NULL);
     ring->head = 0;
     ring->tail = 0;
 }
 
-static INLINE int MBRing_Size(const MBRing *ring)
+static inline int MBRing_Size(const MBRing *ring)
 {
     if (ring->tail >= ring->head) {
         return ring->tail - ring->head;
@@ -71,7 +71,7 @@ static INLINE int MBRing_Size(const MBRing *ring)
 
 void MBRingResizeHelper(MBRing *ring);
 
-static INLINE uint MBRingGetMask(const MBRing *ring)
+static inline uint MBRingGetMask(const MBRing *ring)
 {
     int size = CMBVector_Size(&ring->vector);
     ASSERT(size > 0);
@@ -79,7 +79,7 @@ static INLINE uint MBRingGetMask(const MBRing *ring)
     return ((uint)size) - 1;
 }
 
-static INLINE void MBRing_InsertHead(MBRing *ring, const void *item,
+static inline void MBRing_InsertHead(MBRing *ring, const void *item,
                                      uint itemSize)
 {
     ASSERT(ring != NULL);
@@ -97,7 +97,7 @@ static INLINE void MBRing_InsertHead(MBRing *ring, const void *item,
     memcpy(dest, item, CMBVector_ItemSize(&ring->vector));
 }
 
-static INLINE void MBRing_InsertTail(MBRing *ring, const void *item,
+static inline void MBRing_InsertTail(MBRing *ring, const void *item,
                                      uint itemSize)
 {
     ASSERT(ring != NULL);
@@ -114,7 +114,7 @@ static INLINE void MBRing_InsertTail(MBRing *ring, const void *item,
     ASSERT(ring->tail != ring->head);
 }
 
-static INLINE void MBRing_RemoveHead(MBRing *ring, void *item, uint itemSize)
+static inline void MBRing_RemoveHead(MBRing *ring, void *item, uint itemSize)
 {
     ASSERT(ring != NULL);
     ASSERT(itemSize == CMBVector_ItemSize(&ring->vector));
@@ -127,7 +127,7 @@ static INLINE void MBRing_RemoveHead(MBRing *ring, void *item, uint itemSize)
     ring->head &= MBRingGetMask(ring);
 }
 
-static INLINE void MBRing_RemoveTail(MBRing *ring, void *item, uint itemSize)
+static inline void MBRing_RemoveTail(MBRing *ring, void *item, uint itemSize)
 {
     ASSERT(ring != NULL);
     ASSERT(itemSize == CMBVector_ItemSize(&ring->vector));
