@@ -62,8 +62,13 @@
     } while (FALSE)
 #endif
 
+#ifdef MB_DEBUG
 #define NOT_REACHED() \
     PanicWithMessage( __FILE__, __LINE__, "NOT_REACHED")
+#else
+#define NOT_REACHED() \
+    __builtin_unreachable()
+#endif
 
 #define NOT_IMPLEMENTED() \
     PanicWithMessage( __FILE__, __LINE__, "NOT_IMPLEMENTED")
