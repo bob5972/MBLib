@@ -157,6 +157,12 @@ class MBVector
             return myItems[0];
         }
 
+        void fill(const itemType &fill) {
+            for (uint i = 0; i < mySize; i++) {
+                myItems[i] = fill;
+            }
+        }
+
         //Modifiers
         //Resizes vector to length newSize
         void resize(int newSize);

@@ -458,6 +458,8 @@ void MBString_IntToString(MBString *str, int x)
     char c;
     int i;
 
+    ASSERT(str != NULL);
+
     if (x == 0) {
         return MBString_CopyCStr(str, "0");
     }
