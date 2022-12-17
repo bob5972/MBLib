@@ -72,6 +72,7 @@ bool MBRegistry_GetBoolD(MBRegistry *mreg, const char *key, bool defValue);
 float MBRegistry_GetFloatD(MBRegistry *mreg, const char *key, float defValue);
 
 const char *MBRegistry_Remove(MBRegistry *mreg, const char *key);
+void MBRegistry_RemoveAllWithPrefix(MBRegistry *mreg, const char *prefix);
 
 const char *MBRegistry_GetCStrD(MBRegistry *mreg, const char *key,
                                 const char *defValue);

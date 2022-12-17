@@ -222,17 +222,15 @@ void MBRegistry_PutCopyUnique(MBRegistry *mreg, const char *key,
 
 const char *MBRegistry_Remove(MBRegistry *mreg, const char *key)
 {
-    MBRegistryNode *n;
-    const char *oldValue = NULL;
     uint32 b = MBRegistryHashString(key);
 
     ASSERT(mreg != NULL);
 
     for (uint32 i = 0; i < CMBVector_Size(&mreg->data[b]); i++) {
-        n = CMBVector_GetPtr(&mreg->data[b], i);
+        MBRegistryNode * n = CMBVector_GetPtr(&mreg->data[b], i);
         if (strcmp(n->key, key) == 0) {
             MBRegistryNode *last = CMBVector_GetLastPtr(&mreg->data[b]);
-            oldValue = n->value;
+            const char *oldValue = n->value;
 
             *n = *last;
             CMBVector_Shrink(&mreg->data[b]);
@@ -241,6 +239,31 @@ const char *MBRegistry_Remove(MBRegistry *mreg, const char *key)
     }
 
     return NULL;
+}
+
+void MBRegistry_RemoveAllWithPrefix(MBRegistry *mreg, const char *prefix)
+{
+    uint prefixLen = strlen(prefix);
+    ASSERT(mreg != NULL);
+
+    for (uint32 b = 0; b < ARRAYSIZE(mreg->data); b++) {
+        for (uint32 i = 0; i < CMBVector_Size(&mreg->data[b]); i++) {
+            MBRegistryNode *n = CMBVector_GetPtr(&mreg->data[b], i);
+            bool hasNext = TRUE;
+            while (hasNext && strncmp(n->key, prefix, prefixLen) == 0) {
+                MBRegistryNode *last = CMBVector_GetLastPtr(&mreg->data[b]);
+
+                *n = *last;
+                CMBVector_Shrink(&mreg->data[b]);
+
+                if (CMBVector_Size(&mreg->data[b]) == 0) {
+                    hasNext = FALSE;
+                } else {
+                    ASSERT(n == CMBVector_GetPtr(&mreg->data[b], i));
+                }
+            }
+        }
+    }
 }
 
 void MBRegistry_MakeEmpty(MBRegistry *mreg)
