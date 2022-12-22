@@ -256,10 +256,10 @@ void MBRegistry_RemoveAllWithPrefix(MBRegistry *mreg, const char *prefix)
                 *n = *last;
                 CMBVector_Shrink(&mreg->data[b]);
 
-                if (CMBVector_Size(&mreg->data[b]) == 0) {
-                    hasNext = FALSE;
-                } else {
+                if (i < CMBVector_Size(&mreg->data[b])) {
                     ASSERT(n == CMBVector_GetPtr(&mreg->data[b], i));
+                } else {
+                    hasNext = FALSE;
                 }
             }
         }
