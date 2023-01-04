@@ -100,6 +100,15 @@ MBUtil_IsPow2(uint32 x)
     return MBUtil_Popcount(x) == 1;
 }
 
+static inline uint32 MBUtil_FFS(uint32 x)
+{
+#if WORD_BIT >= 32
+    return __builtin_ffs(x);
+#else
+    NOT_IMPLEMENTED();
+#endif
+}
+
 #ifdef __cplusplus
 	}
 #endif
