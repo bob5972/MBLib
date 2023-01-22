@@ -37,7 +37,8 @@ $(DEPROOT)/%.d: $(MBLIB_SRCDIR)/%.c Makefile
 	    -MF $@ ${CPPFLAGS} $<;
 endif
 
-CPP_SOURCES = MBString.cpp \
+CPP_SOURCES = MBParser.cpp \
+              MBString.cpp \
               MBVector.cpp \
               MBStack.cpp \
               MBQueue.cpp \
@@ -48,7 +49,7 @@ CPP_SOURCES = MBString.cpp \
               Dumper.cpp
 
 C_SOURCES = BitVector.c \
-	    	MBVarMap.c \
+	    MBVarMap.c \
             MBAssert.c \
             MBDebug.c \
             MBOpt.c \
