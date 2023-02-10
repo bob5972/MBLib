@@ -71,7 +71,10 @@
 #endif
 
 #define NOT_IMPLEMENTED() \
-    PanicWithMessage( __FILE__, __LINE__, "NOT_IMPLEMENTED")
+    do { \
+        PanicWithMessage( __FILE__, __LINE__, "NOT_IMPLEMENTED"); \
+        NOT_REACHED(); \
+    } while (FALSE)
 
 #define PANIC(...) PanicWithMessage( __FILE__, __LINE__, __VA_ARGS__)
 
