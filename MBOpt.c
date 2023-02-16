@@ -109,7 +109,6 @@ const char *MBOpt_GetCmd(void)
     return mbopt.argCmd;
 }
 
-
 void MBOpt_LoadOptions(const char *cmd, MBOption *opts, int numOpts)
 {
     bool addCmd = TRUE;
@@ -160,6 +159,31 @@ void MBOpt_LoadOptions(const char *cmd, MBOption *opts, int numOpts)
     }
 }
 
+static int MBOptFindMatch(uint32 i, char **argv)
+{
+    for (uint32 o = 0; o < CMBOptVec_Size(&mbopt.entries); o++) {
+        MBOptionEntry *e = CMBOptVec_GetPtr(&mbopt.entries, o);
+
+        if (e->cmd != NULL && mbopt.argCmd == NULL) {
+            continue;
+        } else if (e->cmd != NULL && mbopt.argCmd != NULL &&
+                   strcmp(e->cmd, mbopt.argCmd) != 0) {
+                continue;
+        }
+
+        ASSERT(e->cmd == NULL || strcmp(e->cmd, mbopt.argCmd) == 0);
+
+        if ((e->opt.shortOpt != NULL &&
+             strcmp(argv[i], e->opt.shortOpt) == 0) ||
+            (e->opt.longOpt != NULL &&
+             strcmp(argv[i], e->opt.longOpt) == 0)) {
+            return o;
+        }
+    }
+
+    return -1;
+}
+
 void MBOpt_Init(int argc, char **argv)
 {
     int argStart = 0;
@@ -198,39 +222,29 @@ void MBOpt_Init(int argc, char **argv)
 
     ASSERT(argStart == 1 || argStart == 2);
     for (uint32 i = argStart; i < argc; i++) {
-        for (uint32 o = 0; o < CMBOptVec_Size(&mbopt.entries); o++) {
+        int o = MBOptFindMatch(i, argv);
+
+        if (o != -1) {
             MBOptionEntry *e = CMBOptVec_GetPtr(&mbopt.entries, o);
 
-            if (e->cmd != NULL && mbopt.argCmd == NULL) {
-                continue;
-            } else if (e->cmd != NULL && mbopt.argCmd != NULL &&
-                       strcmp(e->cmd, mbopt.argCmd) != 0) {
-                    continue;
-            }
+            e->present = TRUE;
+            e->value = "TRUE";
 
-            ASSERT(e->cmd == NULL || strcmp(e->cmd, mbopt.argCmd) == 0);
-
-            if ((e->opt.shortOpt != NULL &&
-                 strcmp(argv[i], e->opt.shortOpt) == 0) ||
-                (e->opt.longOpt != NULL &&
-                 strcmp(argv[i], e->opt.longOpt) == 0)) {
-                e->present = TRUE;
-                e->value = "TRUE";
-
-                if (e->opt.extraArg) {
-                    if (i + 1 < argc) {
-                        e->value = argv[i+1];
-                    } else {
-                        PANIC("Option %s expected an argument\n", argv[i]);
-                    }
+            if (e->opt.extraArg) {
+                if (i + 1 < argc) {
+                    i++;
+                    e->value = argv[i];
+                } else {
+                    PANIC("Option %s expected an argument\n", argv[i]);
                 }
-
-                MBRegistry_PutCopy(mbopt.mreg, &e->opt.longOpt[2], e->value);
-                break;
             }
+
+            ASSERT(e->value != NULL);
+            MBRegistry_PutCopy(mbopt.mreg, &e->opt.longOpt[2], e->value);
+        } else {
+            PANIC("Unknown option: %s\n", argv[i]);
         }
     }
-
 
     if (MBOpt_IsPresent("version")) {
         MBOpt_PrintMBLibVersion();
