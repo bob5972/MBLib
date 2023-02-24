@@ -422,6 +422,13 @@ float Random_UnitFloat(void)
     return RandomState_UnitFloat(&randomData.rs);
 }
 
+float Random_UnitFloatFromSeed(uint64 seed)
+{
+    RandomState lr;
+    RandomState_CreateWithSeed(&lr, seed);
+    return RandomState_UnitFloat(&lr);
+}
+
 /*
  * Sum numDice random die, between 1 and diceMax, inclusive.
  */

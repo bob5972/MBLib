@@ -89,6 +89,8 @@ uint32 Random_Uint32(void);
 uint64 Random_Uint64(void);
 float Random_UnitFloat(void);
 
+float Random_UnitFloatFromSeed(uint64 seed);
+
 int Random_Enum(EnumDistribution *dist, int numValues);
 
 /*
