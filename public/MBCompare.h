@@ -44,8 +44,19 @@ typedef struct CMBComparator {
     uint32 itemSize;
 } CMBComparator;
 
-void MBCompare_SortFallback(void *items, uint32 numItems, uint32 itemSize,
-                            CMBCompareFn compareFn, void *cbData);
+int MBCompare_FindMin(void *items, uint32 numItems, uint32 itemSize,
+                      CMBCompareFn compareFn, void *cbData);
+
+void MBCompare_SortMinN(uint32 n,
+                        void *items, uint32 numItems, uint32 itemSize,
+                        CMBCompareFn compareFn, void *cbData);
+
+static inline void
+MBCompare_SortFallback(void *items, uint32 numItems, uint32 itemSize,
+                       CMBCompareFn compareFn, void *cbData)
+{
+    MBCompare_SortMinN(numItems, items, numItems, itemSize, compareFn, cbData);
+}
 
 static inline void
 MBCompare_Sort(void *items, uint32 numItems, uint32 itemSize,
@@ -57,8 +68,5 @@ MBCompare_Sort(void *items, uint32 numItems, uint32 itemSize,
     MBCompare_SortFallback(items, numItems, itemSize, compareFn, cbData);
 #endif
 }
-
-int MBCompare_FindMin(void *items, uint32 numItems, uint32 itemSize,
-                      CMBCompareFn compareFn, void *cbData);
 
 #endif // MBCOMPARE_H_202008151217

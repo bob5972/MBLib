@@ -29,22 +29,31 @@
 #include "MBAssert.h"
 
 void
-MBCompare_SortFallback(void *items, uint32 numItems, uint32 itemSize,
-                       CMBCompareFn compareFn, void *cbData)
+MBCompare_SortMinN(uint32 n,
+                   void *items, uint32 numItems, uint32 itemSize,
+                   CMBCompareFn compareFn, void *cbData)
 {
-    if (numItems <= 1) {
+    uint8 stackSwap[512];
+    void *swapSpace;
+
+    ASSERT(n <= numItems);
+
+    if (numItems <= 1 || n <= 0) {
         return;
     }
 
 #define GET_ITEM(_n) (&((uint8 *)items)[itemSize * _n])
 #define COMPARE(_lhs, _rhs) (compareFn(GET_ITEM(_lhs), GET_ITEM(_rhs), cbData))
 
-    void *swapSpace = malloc(itemSize);
+    if (itemSize <= sizeof(stackSwap)) {
+        swapSpace = stackSwap;
+    } else {
+        swapSpace = malloc(itemSize);
+    }
 
-    ASSERT(numItems <= MAX_UINT32);
-
-    for (uint32 i = 0; i < numItems; i++) {
+    for (uint32 i = 0; i < n; i++) {
         uint32 min = i;
+
         for (uint32 k = i + 1; k < numItems; k++) {
             if (COMPARE(min, k) > 0) {
                 min = k;
@@ -58,7 +67,9 @@ MBCompare_SortFallback(void *items, uint32 numItems, uint32 itemSize,
         }
     }
 
-    free(swapSpace);
+    if (swapSpace != stackSwap) {
+        free(swapSpace);
+    }
 
 #undef GET_ITEM
 #undef COMPARE

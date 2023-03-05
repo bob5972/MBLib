@@ -259,6 +259,14 @@ class MBVector
         // growing will be faster
         void ensureCapacity(int c);
 
+        void sortMinN(const MBComparator<itemType> &comp, int n) {
+            ASSERT(n >= 0);
+            ASSERT(n <= mySize);
+            ASSERT(myPinCount == 0);
+            MBCompare_SortMinN(n, myItems, mySize, sizeof(itemType),
+                               comp.getCompareFn(), comp.getCBData());
+        }
+
         void sort(const MBComparator<itemType> &comp) {
             ASSERT(myPinCount == 0);
             MBCompare_Sort(myItems, mySize, sizeof(itemType),
