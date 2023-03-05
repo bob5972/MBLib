@@ -275,7 +275,9 @@ class MBVector
 
         int findMin(const MBComparator<itemType> &comp, int start, int num) {
             ASSERT(start >= 0);
-            ASSERT(start < mySize || (start == 0 && mySize == 0));
+            ASSERT(start < mySize ||
+                   (start == 0 && mySize == 0) ||
+                   (start == mySize && num == 0));
             ASSERT(start + num <= mySize);
             return MBCompare_FindMin(&myItems[start], num, sizeof(itemType),
                                      comp.getCompareFn(), comp.getCBData());
